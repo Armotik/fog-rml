@@ -5,6 +5,117 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### TODO
+- Update documentation to include `ProjectOperator` and `EquiJoinOperator`
+- Add examples in README and user guides
+- Confirm tests
+- Add existing tests from :
+  - https://rml.io/test-cases/ 
+  - https://github.com/anuzzolese/pyrml
+  - https://github.com/RMLio/rmlmapper-java
+  - https://github.com/morph-kgc/morph-kgc
+
+#### Algebra Module (`src/pyhartig/algebra/`)
+- Add IRI syntax validation: Currently, `IRI("not an iri")` does not raise an error. According to the paper, `I` is defined as a subset of `S` containing only valid IRIs. The implementation currently trusts the user or parser to provide valid data without verification.
+- Add language tag support for Literals: The paper (footnote 3, page 3) mentions that language tags are ignored to simplify formulas, but notes it is an easy extension. The current implementation also ignores them. While acceptable for a research project, this is a critical missing feature for real-world usage (e.g., `"Bonjour"@fr`).
+- Add lightweight IRI validation: Implement a `__post_init__` method in the `IRI` dataclass to perform basic validation, such as checking that the string contains no spaces and starts with a valid scheme.
+- Add optional language field to Literal class: Add an optional `language: Optional[str] = None` field to the `Literal` class. This would align the implementation with the actual RDF standard while remaining compatible with the paper's simplification.
+- Make MappingTuple immutable: Currently, `MappingTuple` inherits from `dict`, making tuples mutable (`t["col"] = val` is allowed). This is risky because in relational and functional algebra, a tuple should be immutable. If an operator (like `Extend`) modifies a tuple in place instead of creating a new one, and that tuple is used in multiple pipeline branches (e.g., a `Union` of two projections of the same source tuple), catastrophic side effects will occur. The paper defines `t'` as a new tuple resulting from extending `t`, not a mutation of `t`. **Suggested fix**: Instead of inheriting from `dict`, encapsulate an internal dictionary. Implement `__getitem__`, `__iter__`, `__len__` (Mapping protocol) and remove `__setitem__`. Initialization should be the only way to set data. This would also make tuples hashable, allowing them to be placed in `set()` for duplicate elimination (Set vs Bag semantics).
+- Remove None from AlgebraicValue: The type `AlgebraicValue = Union[..., None, _Epsilon]` includes `None`, which creates potential confusion. In Python, `dict.get()` returns `None` if a key is missing. If `None` is explicitly stored as a value, ambiguity arises: does `None` mean `ε` (epsilon) or is it a Python value for "nothing"? The paper only knows `ε`. `None` should ideally not exist in stored values, only in function returns to indicate "key absent". **Suggested fix**: Enforce the use of `EPSILON` for errors. If a value is null in the database sense (SQL NULL), it should simply not be in the dictionary (partial function).
+
+#### Expressions Module (`src/pyhartig/expressions/`)
+- `Expression.py`: Document `evaluate()` method: Clarify in the docstring that this method should never raise an exception for data issues, but return `EPSILON` instead, in accordance with the theory.
+- `Constant.py`: Enforce strict typing for values: The constructor currently accepts `AlgebraicValue` (including raw Python `str` or `int`). To align with the paper, a `Constant` should only accept instances of `IRI`, `Literal`, or `BlankNode` (defined in `Terms.py`). Accepting raw Python types creates ambiguity: is `"12"` a string or an `xsd:string` literal? **Suggested fix**: Enforce typing in `__init__` to only accept `RdfTerm`.
+- `Reference.py`: **[CRITICAL]** Fix error handling according to Definition 9: Currently, if the attribute does not exist in the tuple, `tuple[...]` (implemented via `dict`) raises a `KeyError`. However, Definition 9 explicitly states: `eval(φ, t) = t(φ)` if `φ ∈ dom(t)`, otherwise `ε`. The current code crashes (Python exception) where the algebra requires an error value (`EPSILON`). This breaks pipeline robustness when handling incomplete data. **Suggested fix**: Use `tuple.get(attr, EPSILON)` or a try/except block returning `EPSILON`.
+- `FunctionCall.py`: Add EPSILON propagation: Per Definition 7, extension functions are defined as `f: (T ∪ {ε})ⁿ → T ∪ {ε}`, meaning functions should handle `EPSILON` inputs. However, most functions should return `EPSILON` if any argument is `EPSILON` (strict propagation). **Suggested fix**: Add an early check in `FunctionCall.evaluate()` to return `EPSILON` if any evaluated argument is `EPSILON`, avoiding redundant checks in each builtin function.
+
+#### Functions Module (`src/pyhartig/functions/`)
+- `builtins.py`: **[CRITICAL]** Fix naive IRI validation in `to_iri()`: Current check `if ":" in lex` is dangerously weak. A string like `"Error: File not found"` would pass as a valid IRI because it contains a colon, risking invalid RDF terms that will break downstream systems (triplestores). The paper assumes the function checks for a "valid IRI". **Suggested fix**: Use `urllib.parse` or an RFC 3987 regex to validate the structure, or at minimum check for no spaces.
+- `builtins.py`: Loose typing: Functions accept `AlgebraicValue` (including raw `str`, `int`, `float`). In theory, Hartig's algebra operates on RDF terms (`I`, `L`, `B`), and raw data should ideally be typed (e.g., `Literal`) before arriving here. In practice, accepting raw Python types is convenient but creates semantic ambiguity: `to_literal(12, ...)` treats Python integer `12` - is it an integer literal or a string? Current code handles this via `str(value)`, which is acceptable but less rigorous than the theory.
+- `builtins.py`: Add missing `to_bnode()` function: Appendix B of the paper defines `toBNode` (or `toBNodeS2B`) for generating Blank Nodes. This function is missing from `builtins.py`. If `MappingParser` encounters `rr:termType rr:BlankNode`, it won't know which function to call to generate the correct algebraic term (or will need ad-hoc logic).
+
+#### Mapping Parser Module (`src/pyhartig/mapping/`)
+- **[CRITICAL]** Add support for Referencing Object Maps (Joins): This is the most significant missing feature compared to the paper. Algorithm 1 (lines 11-21) explicitly describes how to handle `rr:objectMap` that reference another Triples Map (`rr:parentTriplesMap`). This involves instantiating a second `SourceOperator`, extracting join conditions, and creating an `EquiJoinOperator`. Currently, the loop treats all `objectMap` as simple extensions (`ExtendOperator`). There is no detection of `parentTriplesMap` nor instantiation of `EquiJoinOperator`. **Consequence**: The implementation currently only supports "flat" mappings (one source → one graph). It is impossible to link two JSON files or a CSV and a JSON together.
+- **[CRITICAL]** Remove tight coupling with JSON (Source agnosticism violation): Currently, `JsonSourceOperator` is hardcoded (`E_src = JsonSourceOperator(source_data=raw_data, ...)`). If a user provides an RML mapping pointing to a CSV (`ql:CSV`), the code will crash or try to parse it as JSON. The paper defines a `SRCANDROOTQUERY` abstraction (Definition 14) that should determine the source type (CSV, JSON, XML, SQL) based on `rml:referenceFormulation` and instantiate the appropriate operator. **Suggested fix**: Implement a factory pattern or registry to select the correct `SourceOperator` based on the reference formulation.
+- Incomplete Blank Node handling: Currently, unhandled cases return `Constant(AlgebraIRI("http://error"))`. Algorithm 3 (line 13) specifies the use of `toBNode` for `rr:termType rr:BlankNode`. If a mapping explicitly requests a Blank Node, the current parser returns an error or invalid constant instead of generating a unique identifier or one based on a hash function of the columns (Skolemization). **Suggested fix**: Implement `toBNode` function and integrate it into the parser for `rr:BlankNode` term type.
+- Implement Source Factory: Replace direct `JsonSourceOperator` instantiation with a method that inspects the RDF graph for `rml:referenceFormulation` and instantiates the appropriate operator (`JsonSourceOperator`, `CsvSourceOperator`, etc.).
+- Implement Join support (Algorithm 1): In the `predicateObjectMap` loop, check for `rr:parentTriplesMap`. If present, instantiate the parent source pipeline (recursively or via lookup), extract join conditions (`rr:joinCondition`), and insert an `EquiJoinOperator` between the current and parent pipelines.
+- Improve file error handling: Currently uses `except FileNotFoundError: print(...)`. In production or research, it's better to raise the exception to stop the pipeline immediately rather than continuing with `raw_data = {}` (empty dict), which produces a silently empty result that is hard to debug.
+
+#### Operators Module (`src/pyhartig/operators/`)
+- `Operator.py`: **[CRITICAL]** Switch from Eager to Lazy execution: Currently, `execute()` returns `List[MappingTuple]`, meaning each operator must wait for the previous one to finish and store everything in RAM before starting. With 1 million rows, the first `SourceOperator` creates a list of 1 million objects in memory, which is inefficient. **Suggested fix**: Switch to a Lazy model using Python generators (`Iterator[MappingTuple]` and `yield`). This would allow streaming data row by row, significantly reducing memory usage for large datasets.
+- `SourceOperator.py` / `JsonSourceOperator.py`: Optimize JSONPath parsing performance: Currently, `parse(query)` is called inside `_apply_iterator` and `_apply_extraction` methods. If `_apply_extraction` is called for each object (1M times), the query string is re-parsed 1M times. **Suggested fix**: Compile JSONPath expressions in `__init__` and store the compiled objects for reuse.
+- `UnionOperator.py`: Bag vs Set semantics: Currently uses `merged_results.extend(op.execute())`, which keeps duplicates (Bag Semantics). The formal definition (Def 2) describes a relation where `I` is a set, implying no duplicates (Set Semantics). In practice (SQL, SPARQL), Bag semantics is almost always used for performance, so the current choice is correct for a real engine. However, this is a slight deviation from the strict mathematical definition. **Note**: Consider adding an optional `distinct=True` parameter to enable Set semantics when needed.
+- `EquiJoinOperator.py`: **[CRITICAL]** Optimize join algorithm: Current implementation uses a Nested Loop Join (double `for` loop) with O(N×M) complexity. With 10,000 rows in each source, this results in 100 million comparisons, which is unusable for real data. **Suggested fix**: Implement a Hash Join (O(N+M) complexity) by building a hash map (dictionary) on the right relation indexed by the join key, then iterating over the left relation and performing direct lookups.
+
+#### Tests Suite (`tests/test_suite/`)
+- `test_01_source_operators.py`: Reduce coupling to JSON: Currently tests only `JsonSourceOperator`, but there are no tests for the abstract `SourceOperator` class. Ideally, the base logic (e.g., `itertools.product` for Cartesian product) should be tested independently of the JSONPath implementation.
+- `test_01_source_operators.py`: Add JSONPath edge case tests: Missing tests for invalid or malformed JSONPath expressions. Does it crash or return an empty list?
+- `test_02_extend_operators.py`: Improve expression typing: Tests use many raw strings. To be rigorous with the algebra, tests should use `Constant(Literal(...))` instead of raw Python strings.
+- `test_04_complete_pipelines.py`: Reduce test redundancy: This file duplicates many tests already covered in `test_03`. While useful for demonstration, this creates maintenance overhead - if `Extend` breaks, 50 tests will fail instead of 5. **Suggested fix**: Consider refactoring to focus on integration scenarios not covered elsewhere, or use fixtures/parameterization to reduce duplication.
+- `test_05_builtin_functions.py`: Add negative IRI validation tests: As noted in the code analysis, current tests validate that any string becomes an IRI. Missing negative tests: `to_iri("spaces not allowed")` should return `EPSILON`, but current tests would likely pass by creating an invalid IRI. **Suggested fix**: Add tests that verify invalid IRI strings (with spaces, without scheme, etc.) return `EPSILON`.
+- `test_06_expression_system.py`: Verify Reference behavior for missing attributes: `test_reference_nonexistent_attribute` asserts that referencing a missing attribute returns `EPSILON`. However, the code uses `t[self.attribute]` which should raise `KeyError`. If this test passes, it's correct per Definition 9, but verify why it passes - either `MappingTuple.__getitem__` is modified to not raise `KeyError`, or there's unexpected behavior. **Action**: Confirm this aligns with the critical TODO in `Reference.py`.
+- `test_07_library_integration.py`: Accessory tests: These are tests of dependencies, not tests of the project's own code. Consider moving to a separate folder or marking as optional/smoke tests.
+- `test_08_real_data_integration.py`: Fragile tests: Depends on files on disk. If someone changes `test_data.json`, tests break. **Suggested fix**: Use fixtures with data injected directly into the test (as done elsewhere) to improve test isolation and reliability.
+- `test_09_union_operator.py`: Add more tuple order tests: Missing tests for exact ordering if order matters. While `test_union_preserves_tuple_order` partially covers this, more comprehensive tests could verify order guarantees across different scenarios.
+- `test_10_explain.py` / `test_11_explain_json.py`: Fragile text-based tests: Text tests in `test_10` are fragile - if a single space changes in `explain()` formatting, the test breaks. `test_11` (JSON) is much more robust and relevant. **Suggested fix**: Consider relaxing string comparisons in `test_10` (e.g., check for key substrings rather than exact matches) or rely primarily on `test_11` for validation.
+- `test_13_equijoin_operator.py`: Add load/performance test: Since the implementation uses O(N×M) Nested Loop, current tests pass instantly with only 4 rows. Missing a test with 1000+ rows on each side to "feel" the slowness and justify the need for Hash Join optimization.
+- `test_13_equijoin_operator.py`: Verify NULL join semantics: In `test_equijoin_with_null_values`, `None = None` appears to match (True). In standard SQL, `NULL = NULL` is False. This is a debatable semantic choice for joins. The paper does not specify this case (since `ε` typically does not propagate in strict equality). **Action**: Document the chosen semantics or align with SQL NULL behavior.
+
+#### General Improvements
+
+##### CLI / Entry Point (Missing)
+- Add CLI entry point: Create `src/pyhartig/__main__.py` or `cli.py` to allow running the tool without writing Python code. Should accept command-line arguments:
+  - `-m mapping.ttl`: RML mapping file
+  - `-o output.nt`: Desired output format/file
+  - (Optional) Verbosity level for debugging
+- **Why**: Essential for validating real integration tests and allowing others to use the tool.
+
+##### Named Graphs / Graph Maps (Missing)
+- Add support for Named Graphs (Quads): RML allows generating Quads (Subject, Predicate, Object, Graph), not just Triples. Currently, `MappingParser` and tests focus only on `subject`, `predicate`, `object`. If an RML mapping contains `rr:graphMap`, it will be ignored. The algebra is flexible enough - adding a "graph" column is trivial via `ExtendOperator`. **Action**: Modify `MappingParser` to detect `rr:graphMap` and add a corresponding `ExtendOperator` that generates the `graph` attribute.
+
+##### Centralized Namespace Management (Improvement)
+- Create centralized namespace constants: In `builtins.py` and tests, there are many magic strings (`"http://www.w3.org/2001/XMLSchema#string"`, `"http://www.w3.org/1999/02/22-rdf-syntax-ns#type"`). Risk of silent typos breaking RDF data. **Suggested fix**: Create `src/pyhartig/namespaces.py` (or use `rdflib.Namespace`) with constants like `RDF_TYPE`, `XSD_STRING`, etc., and use them throughout the codebase.
+
+##### Logging vs Print (Improvement)
+- Replace `print()` with `logging` module: In `MappingParser.py` (and elsewhere), `print(f"Error: ...")` or try/except blocks print errors. This pollutes stdout, which is problematic if users want to redirect output (`python -m pyhartig ... > output.nt`). **Suggested fix**: Use standard `logging` module with `logger = logging.getLogger(__name__)`.
+
+##### Output Serialization (Missing)
+- Add RDF Serializer: `execute()` returns `List[MappingTuple]`, which is good for algebra but not RDF. Need a Serializer class/function that takes final tuples and writes them in N-Triples or Turtle format. For each tuple, extract `subject`, `predicate`, `object` (and `graph`), verify they are valid RDF terms (`IRI`, `Literal`, `BNode`), and format the line (e.g., `<http://s> <http://p> "o" .`).
+
+##### Source Factory (Missing)
+- Implement Source Factory pattern: Currently, `JsonSourceOperator` is hardcoded. Need a `SourceFactory` that reads `rml:source` and `rml:referenceFormulation` to instantiate the appropriate operator. **Benefit**: To support CSV in the future, just add `CsvSourceOperator` and register it in the Factory, without modifying `MappingParser`.
+
+#### Architectural Improvements
+
+##### Visitor Pattern for `explain()` and `execute()` (Refactoring)
+- Implement Visitor Pattern: Currently, each operator class (`Source`, `Project`, `Union`...) contains its own logic for `explain()` and `explain_json()`. This violates the Single Responsibility Principle (SRP) - an operator should only know how to perform its operation, not how to display itself. If we want to export the plan to GraphViz (`.dot`) or Mermaid.js in the future, we would need to modify all operator classes. **Suggested fix**: Operators should only have an `accept(visitor)` method. Create `ExplainVisitor`, `JsonExplainVisitor`, and later `OptimizationVisitor` classes. This separates structure from algorithm and is academically appreciated for manipulating expression trees.
+
+##### Code Quality and Standardization (DevOps)
+- Add linting and formatting configuration: `pyproject.toml` is missing configuration for Black (auto-formatting) or Ruff/Pylint. Risk of having different code styles between contributors. **Action**: Add `[tool.ruff]` or `[tool.black]` section in `pyproject.toml` and enforce it in CI.
+- Enable static type checking (Mypy): Type hints are used (`List[MappingTuple]`) but without Mypy in CI, they only serve as documentation. Enabling Mypy would detect subtle bugs (e.g., passing `None` where an `Operator` is expected). **Action**: Add `[tool.mypy]` configuration and integrate into CI pipeline.
+
+##### Path and Resource Management (Improvement)
+- Remove global `os.chdir()` usage: In `github_gitlab_test.py`, changing the Current Working Directory globally is dangerous (especially in multithreading or web applications). `MappingParser` and `SourceOperator` should handle absolute or relative paths (relative to the mapping file) without requiring `os.chdir()`. **Suggested fix**: Use `pathlib.Path` everywhere for robust path resolution.
+
+##### Function Ontology (FnO) Extension (Feature)
+- Implement dynamic function registry: Currently, functions (`concat`, `to_iri`) are hardcoded in `builtins.py`. RML normally allows calling any custom function via FnO (Function Ontology). If a user wants `to_uppercase` or `convert_currency`, they cannot add it without modifying pyhartig source code. **Suggested fix**: Implement a plugin mechanism to dynamically register external functions:
+  ```python
+  FunctionRegistry.register("http://ex.org/functions#toUpper", my_python_func)
+  ```
+
+##### Technical Documentation (Enhancement)
+- Generate API documentation with Sphinx/MkDocs: The README is excellent for an overview, but docstrings are high quality (e.g., `ProjectOperator` explains Definition 11 well) and remain buried in code. Generating a static documentation site would be a significant improvement for project presentation. **Action**: Set up Sphinx or MkDocs with autodoc to generate documentation from docstrings.
+
+##### Serialization Module (Missing - Critical)
+- Extract serialization logic from tests: In `github_gitlab_test.py` (lines 90-135), RDF serialization code is written manually in the test file. This logic should be in the library, not in tests. **Action**: Create `src/pyhartig/serializers/NTriplesSerializer.py` with proper character escaping handling. Tests should not contain business logic.
+- Implement proper RDF serializers: Create serializer classes for N-Triples, Turtle, and potentially N-Quads formats with proper escaping and validation.
+
+##### Memory Management and Streaming (Critical - Architecture)
+- **[CRITICAL]** Switch to Generator-based streaming: The entire project relies on `List[]`. Loading a 500 MB JSON file will likely consume 2-3 GB of RAM and crash Python. This is the most important architectural improvement for project viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the codebase. This differentiates a "student project" from a viable "ETL engine".
+
 ## [0.2.0] - 2025-12-21
 
 ### Added
@@ -83,15 +194,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Edge cases (null values, value preservation)
   - 17 new tests
 
-### TODO
-- Update documentation to include `ProjectOperator` and `EquiJoinOperator`
-- Add examples in README and user guides
-- Confirm tests
-- Add existing tests from :
-  - https://rml.io/test-cases/ 
-  - https://github.com/anuzzolese/pyrml
-  - https://github.com/RMLio/rmlmapper-java
-  - https://github.com/morph-kgc/morph-kgc
+
+
 
 ## [0.1.15] - 2025-12-9
 
