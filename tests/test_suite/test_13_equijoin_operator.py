@@ -19,6 +19,8 @@ import pytest
 from pyhartig.operators.EquiJoinOperator import EquiJoinOperator
 from pyhartig.operators.sources.JsonSourceOperator import JsonSourceOperator
 from pyhartig.operators.ExtendOperator import ExtendOperator
+from pyhartig.operators.Operator import Operator
+from pyhartig.algebra.Tuple import MappingTuple
 from pyhartig.operators.UnionOperator import UnionOperator
 from pyhartig.operators.ProjectOperator import ProjectOperator
 from pyhartig.expressions.Constant import Constant
@@ -753,38 +755,45 @@ class TestEquiJoinOperator:
     # Edge Cases
     # ========================================================================
 
-    def test_equijoin_with_null_values(self, debug_logger):
+    def test_equijoin_with_epsilon_values(self, debug_logger):
         """
-        Test equijoin behavior with None values in join attributes.
+        Test equijoin behavior with EPSILON values in join attributes.
+        Per the algebra, EPSILON represents undefined/error values and should
+        match other EPSILON values in join conditions.
         """
-        debug_logger("Test: EquiJoin with Null Values",
-                     "Objective: Verify None values are handled correctly in joins")
+        debug_logger("Test: EquiJoin with EPSILON Values",
+                     "Objective: Verify EPSILON values are handled correctly in joins")
 
-        left_data = {
-            "items": [
-                {"id": 1, "val": "A"},
-                {"id": None, "val": "B"}
-            ]
-        }
+        from pyhartig.algebra.Tuple import EPSILON
 
-        right_data = {
-            "items": [
-                {"ref": 1, "data": "X"},
-                {"ref": None, "data": "Y"}
-            ]
-        }
+        # Create tuples directly with EPSILON values
+        left_tuples = [
+            MappingTuple({"left_id": 1, "left_val": "A"}),
+            MappingTuple({"left_id": EPSILON, "left_val": "B"})
+        ]
 
-        left_source = JsonSourceOperator(
-            source_data=left_data,
-            iterator_query="$.items[*]",
-            attribute_mappings={"left_id": "$.id", "left_val": "$.val"}
-        )
+        right_tuples = [
+            MappingTuple({"right_ref": 1, "right_data": "X"}),
+            MappingTuple({"right_ref": EPSILON, "right_data": "Y"})
+        ]
 
-        right_source = JsonSourceOperator(
-            source_data=right_data,
-            iterator_query="$.items[*]",
-            attribute_mappings={"right_ref": "$.ref", "right_data": "$.data"}
-        )
+        # Create mock source operators that return predefined tuples
+        class MockOperator(Operator):
+            def __init__(self, tuples):
+                super().__init__()
+                self.tuples = tuples
+
+            def execute(self):
+                return self.tuples
+
+            def explain(self, indent=0, prefix=""):
+                return "MockOperator"
+
+            def explain_json(self):
+                return {"type": "MockOperator"}
+
+        left_source = MockOperator(left_tuples)
+        right_source = MockOperator(right_tuples)
 
         equijoin = EquiJoinOperator(
             left_source,
@@ -795,7 +804,7 @@ class TestEquiJoinOperator:
 
         result = equijoin.execute()
 
-        # Should have 2 matches: (1, 1) and (None, None)
+        # Should have 2 matches: (1, 1) and (EPSILON, EPSILON)
         assert len(result) == 2
 
         # Verify both matches exist

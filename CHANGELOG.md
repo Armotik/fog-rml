@@ -17,13 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - https://github.com/RMLio/rmlmapper-java
   - https://github.com/morph-kgc/morph-kgc
 
-#### Algebra Module (`src/pyhartig/algebra/`)
-- Add IRI syntax validation: Currently, `IRI("not an iri")` does not raise an error. According to the paper, `I` is defined as a subset of `S` containing only valid IRIs. The implementation currently trusts the user or parser to provide valid data without verification.
-- Add language tag support for Literals: The paper (footnote 3, page 3) mentions that language tags are ignored to simplify formulas, but notes it is an easy extension. The current implementation also ignores them. While acceptable for a research project, this is a critical missing feature for real-world usage (e.g., `"Bonjour"@fr`).
-- Add lightweight IRI validation: Implement a `__post_init__` method in the `IRI` dataclass to perform basic validation, such as checking that the string contains no spaces and starts with a valid scheme.
-- Add optional language field to Literal class: Add an optional `language: Optional[str] = None` field to the `Literal` class. This would align the implementation with the actual RDF standard while remaining compatible with the paper's simplification.
-- Make MappingTuple immutable: Currently, `MappingTuple` inherits from `dict`, making tuples mutable (`t["col"] = val` is allowed). This is risky because in relational and functional algebra, a tuple should be immutable. If an operator (like `Extend`) modifies a tuple in place instead of creating a new one, and that tuple is used in multiple pipeline branches (e.g., a `Union` of two projections of the same source tuple), catastrophic side effects will occur. The paper defines `t'` as a new tuple resulting from extending `t`, not a mutation of `t`. **Suggested fix**: Instead of inheriting from `dict`, encapsulate an internal dictionary. Implement `__getitem__`, `__iter__`, `__len__` (Mapping protocol) and remove `__setitem__`. Initialization should be the only way to set data. This would also make tuples hashable, allowing them to be placed in `set()` for duplicate elimination (Set vs Bag semantics).
-- Remove None from AlgebraicValue: The type `AlgebraicValue = Union[..., None, _Epsilon]` includes `None`, which creates potential confusion. In Python, `dict.get()` returns `None` if a key is missing. If `None` is explicitly stored as a value, ambiguity arises: does `None` mean `ε` (epsilon) or is it a Python value for "nothing"? The paper only knows `ε`. `None` should ideally not exist in stored values, only in function returns to indicate "key absent". **Suggested fix**: Enforce the use of `EPSILON` for errors. If a value is null in the database sense (SQL NULL), it should simply not be in the dictionary (partial function).
 
 #### Expressions Module (`src/pyhartig/expressions/`)
 - `Expression.py`: Document `evaluate()` method: Clarify in the docstring that this method should never raise an exception for data issues, but return `EPSILON` instead, in accordance with the theory.
@@ -115,6 +108,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ##### Memory Management and Streaming (Critical - Architecture)
 - **[CRITICAL]** Switch to Generator-based streaming: The entire project relies on `List[]`. Loading a 500 MB JSON file will likely consume 2-3 GB of RAM and crash Python. This is the most important architectural improvement for project viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the codebase. This differentiates a "student project" from a viable "ETL engine".
+
+## [0.2.1] - 2026-01-16
+
+### Added
+
+#### IRI Syntax Validation (`Terms.py`)
+- Added RFC 3987-based IRI validation via `__post_init__` in `IRI` dataclass
+- New `InvalidIRIError` exception for invalid IRIs (e.g., `IRI("not an iri")` now raises)
+- Validates scheme, authority, path, query, and fragment components
+
+#### Language Tag Support (`Terms.py`)
+- Added optional `language` field to `Literal` dataclass (e.g., `Literal("Bonjour", language="fr")`)
+- BCP 47-based language tag validation with `InvalidLanguageTagError` exception
+- Auto-sets datatype to `rdf:langString` per RDF 1.1 specification
+
+#### Immutable MappingTuple (`Tuple.py`)
+- `MappingTuple` now implements `Mapping` protocol instead of inheriting from `dict`
+- Tuples are immutable: `t["col"] = val` now raises `TypeError`
+- New methods: `extend(key, value)` and `project(attributes)` for algebraic operations
+- Tuples are now hashable, enabling use in `set()` for duplicate elimination
+
+### Changed
+
+- **AlgebraicValue**: Removed `None` from type union to avoid confusion with `EPSILON`
+- **SourceOperator**: Now converts `None` values from data sources to `EPSILON` automatically
+- **ExtendOperator**: Uses new `tuple.extend()` method instead of mutation
+- **_Epsilon**: Now hashable for use as dict keys and in sets
+
+### Breaking Changes
+
+- `MappingTuple` no longer supports item assignment (`t["key"] = value`)
+- `None` values in `MappingTuple` now raise `ValueError` (use `EPSILON` instead)
 
 ## [0.2.0] - 2025-12-21
 

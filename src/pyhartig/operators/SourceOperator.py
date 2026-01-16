@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Any, Dict, List
 from itertools import product
 
-from pyhartig.algebra.Tuple import MappingTuple
+from pyhartig.algebra.Tuple import MappingTuple, EPSILON
 from pyhartig.operators.Operator import Operator
 
 
@@ -97,6 +97,8 @@ class SourceOperator(Operator):
             # Generate all combinations of extracted values
             for combination in product(*values_lists):
                 row_dict = dict(zip(keys, combination))
+                # Convert None values to EPSILON (per algebra semantics)
+                row_dict = {k: (EPSILON if v is None else v) for k, v in row_dict.items()}
                 row = MappingTuple(row_dict)
                 result.append(row)
 

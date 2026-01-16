@@ -35,14 +35,11 @@ class ExtendOperator(Operator):
 
         new_rows = []
         for row in parent_rows:
-            # Create a new tuple (copy) to avoid side effects on the parent data
-            new_row = MappingTuple(row)
-
             # Calculate the new value using the Expression system
             computed_value = self.expression.evaluate(row)
 
-            # Assign the new value to the new attribute
-            new_row[self.new_attribute] = computed_value
+            # Create a new immutable tuple with the extended attribute
+            new_row = row.extend(self.new_attribute, computed_value)
 
             new_rows.append(new_row)
 
