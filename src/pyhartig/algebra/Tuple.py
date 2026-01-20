@@ -1,5 +1,7 @@
 from typing import Dict, Union, Iterator, Mapping
 
+from pyhartig.algebra.Terms import IRI, Literal, BlankNode
+
 
 class _Epsilon:
     """
@@ -32,8 +34,7 @@ class _Epsilon:
 EPSILON = _Epsilon()  # Singleton instance of Epsilon
 
 # Definition of AlgebraicValue type
-# Base Python types + EPSILON (None is excluded to avoid confusion with EPSILON)
-AlgebraicValue = Union[str, int, float, bool, _Epsilon]
+AlgebraicValue = Union[IRI, Literal, BlankNode, _Epsilon]
 
 
 class MappingTuple(Mapping):
