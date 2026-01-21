@@ -1,0 +1,105 @@
+================================================================================
+GitHub/GitLab Fusion Use Case - Execution Report
+================================================================================
+
+Execution Date: 2026-01-21 13:01:04
+Mapping File: data/fusion_mapping.ttl
+Source Files: data/github_issues.json, data/gitlab_issues.json
+
+Total Triples Generated: 36
+
+Statistics:
+--------------------------------------------------------------------------------
+Unique Subjects: 1
+Unique Predicates: 6
+Creators Found: 2
+Sources Found: 2
+
+Predicates Used:
+  - http://example.org/source
+  - http://schema.org/creator
+  - http://schema.org/dateCreated
+  - http://schema.org/description
+  - http://schema.org/name
+  - http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+
+Creators:
+  - Armotik
+  - import_user_E253432U_KmSA
+
+Sources:
+  - GitHub
+  - GitLab
+
+Sample Triples (first 10):
+--------------------------------------------------------------------------------
+
+[Triple 1]
+  number: "4"^^<http://www.w3.org/2001/XMLSchema#integer>
+  created_at: "2025-11-26T09:04:57Z"
+  subject: ε
+  predicate: <http://schema.org/dateCreated>
+  object: "2025-11-26T09:04:57Z"
+
+[Triple 2]
+  number: "3"^^<http://www.w3.org/2001/XMLSchema#integer>
+  created_at: "2025-11-26T09:04:45Z"
+  subject: ε
+  predicate: <http://schema.org/dateCreated>
+  object: "2025-11-26T09:04:45Z"
+
+[Triple 3]
+  number: "4"^^<http://www.w3.org/2001/XMLSchema#integer>
+  body: "Just a test issue"
+  subject: ε
+  predicate: <http://schema.org/description>
+  object: "Just a test issue"
+
+[Triple 4]
+  number: "3"^^<http://www.w3.org/2001/XMLSchema#integer>
+  body: "Just a test issue"
+  subject: ε
+  predicate: <http://schema.org/description>
+  object: "Just a test issue"
+
+[Triple 5]
+  iid: "4"^^<http://www.w3.org/2001/XMLSchema#integer>
+  description: "Just a test issue"
+  subject: ε
+  predicate: <http://schema.org/description>
+  object: "Just a test issue"
+
+[Triple 6]
+  iid: "3"^^<http://www.w3.org/2001/XMLSchema#integer>
+  description: "Just a test issue"
+  subject: ε
+  predicate: <http://schema.org/description>
+  object: "Just a test issue"
+
+[Triple 7]
+  iid: "2"^^<http://www.w3.org/2001/XMLSchema#integer>
+  description: "Just a test issue"
+  subject: ε
+  predicate: <http://schema.org/description>
+  object: "Just a test issue"
+
+[Triple 8]
+  iid: "1"^^<http://www.w3.org/2001/XMLSchema#integer>
+  description: "Just a test issue"
+  subject: ε
+  predicate: <http://schema.org/description>
+  object: "Just a test issue"
+
+[Triple 9]
+  iid: "4"^^<http://www.w3.org/2001/XMLSchema#integer>
+  created_at: "2025-11-26T10:04:57.000+01:00"
+  subject: ε
+  predicate: <http://schema.org/dateCreated>
+  object: "2025-11-26T10:04:57.000+01:00"
+
+[Triple 10]
+  iid: "3"^^<http://www.w3.org/2001/XMLSchema#integer>
+  created_at: "2025-11-26T10:04:45.000+01:00"
+  subject: ε
+  predicate: <http://schema.org/dateCreated>
+  object: "2025-11-26T10:04:45.000+01:00"

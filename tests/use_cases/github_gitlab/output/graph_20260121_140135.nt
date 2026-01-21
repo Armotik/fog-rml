@@ -1,0 +1,36 @@
+<ε> <http://schema.org/name> "Test issue 4" .
+<ε> <http://schema.org/name> "Test issue 3" .
+<ε> <http://schema.org/description> "Just a test issue" .
+<ε> <http://schema.org/description> "Just a test issue" .
+<ε> <http://schema.org/description> "Just a test issue" .
+<ε> <http://schema.org/description> "Just a test issue" .
+<ε> <http://example.org/source> "GitLab" .
+<ε> <http://example.org/source> "GitLab" .
+<ε> <http://example.org/source> "GitLab" .
+<ε> <http://example.org/source> "GitLab" .
+<ε> <http://schema.org/creator> "Armotik" .
+<ε> <http://schema.org/creator> "Armotik" .
+<ε> <http://schema.org/name> "Test issue 4" .
+<ε> <http://schema.org/name> "Test issue 3" .
+<ε> <http://schema.org/name> "Test issue 2" .
+<ε> <http://schema.org/name> "Test Issue 1" .
+<ε> <http://schema.org/creator> "import_user_E253432U_KmSA" .
+<ε> <http://schema.org/creator> "import_user_E253432U_KmSA" .
+<ε> <http://schema.org/creator> "import_user_E253432U_KmSA" .
+<ε> <http://schema.org/creator> "import_user_E253432U_KmSA" .
+<ε> <http://schema.org/dateCreated> "2025-11-26T10:04:57.000+01:00" .
+<ε> <http://schema.org/dateCreated> "2025-11-26T10:04:45.000+01:00" .
+<ε> <http://schema.org/dateCreated> "2025-11-26T10:04:37.000+01:00" .
+<ε> <http://schema.org/dateCreated> "2025-11-26T10:04:29.000+01:00" .
+<ε> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Issue> .
+<ε> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Issue> .
+<ε> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Issue> .
+<ε> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Issue> .
+<ε> <http://example.org/source> "GitHub" .
+<ε> <http://example.org/source> "GitHub" .
+<ε> <http://schema.org/description> "Just a test issue" .
+<ε> <http://schema.org/description> "Just a test issue" .
+<ε> <http://schema.org/dateCreated> "2025-11-26T09:04:57Z" .
+<ε> <http://schema.org/dateCreated> "2025-11-26T09:04:45Z" .
+<ε> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Issue> .
+<ε> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Issue> .

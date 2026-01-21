@@ -18,25 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - https://github.com/RMLio/rmlmapper-java
     - https://github.com/morph-kgc/morph-kgc
 
-#### Expressions Module (`src/pyhartig/expressions/`)
-
-- `Expression.py`: Document `evaluate()` method: Clarify in the docstring that this method should never raise an
-  exception for data issues, but return `EPSILON` instead, in accordance with the theory.
-- `Constant.py`: Enforce strict typing for values: The constructor currently accepts `AlgebraicValue` (including raw
-  Python `str` or `int`). To align with the paper, a `Constant` should only accept instances of `IRI`, `Literal`, or
-  `BlankNode` (defined in `Terms.py`). Accepting raw Python types creates ambiguity: is `"12"` a string or an
-  `xsd:string` literal? **Suggested fix**: Enforce typing in `__init__` to only accept `RdfTerm`.
-- `Reference.py`: **[CRITICAL]** Fix error handling according to Definition 9: Currently, if the attribute does not
-  exist in the tuple, `tuple[...]` (implemented via `dict`) raises a `KeyError`. However, Definition 9 explicitly
-  states: `eval(φ, t) = t(φ)` if `φ ∈ dom(t)`, otherwise `ε`. The current code crashes (Python exception) where the
-  algebra requires an error value (`EPSILON`). This breaks pipeline robustness when handling incomplete data. *
-  *Suggested fix**: Use `tuple.get(attr, EPSILON)` or a try/except block returning `EPSILON`.
-- `FunctionCall.py`: Add EPSILON propagation: Per Definition 7, extension functions are defined as
-  `f: (T ∪ {ε})ⁿ → T ∪ {ε}`, meaning functions should handle `EPSILON` inputs. However, most functions should return
-  `EPSILON` if any argument is `EPSILON` (strict propagation). **Suggested fix**: Add an early check in
-  `FunctionCall.evaluate()` to return `EPSILON` if any evaluated argument is `EPSILON`, avoiding redundant checks in
-  each builtin function.
-
 #### Mapping Parser Module (`src/pyhartig/mapping/`)
 
 - **[CRITICAL]** Add support for Referencing Object Maps (Joins): This is the most significant missing feature compared
@@ -229,6 +210,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   will likely consume 2-3 GB of RAM and crash Python. This is the most important architectural improvement for project
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
+
+## [0.2.3] - 2026-01-21
+
+### Changed
+
+- **Expressions Module (`src/pyhartig/expressions/`)**
+  - `Expression.py`: Documented the `evaluate()` method's behavior in the docstring: it must never raise an exception for data issues and should return `EPSILON` when evaluation is undefined, aligning implementation with the formal semantics.
+  - `Constant.py`: Enforced strict typing in `Constant.__init__()` so that only RDF term instances (`IRI`, `Literal`, `BlankNode`) are accepted; raw Python primitives (e.g. `str`, `int`) are rejected to avoid ambiguity between plain strings and typed `xsd:string` literals.
+  - `FunctionCall.py`: Added EPSILON propagation in `FunctionCall.evaluate()` — the function now returns `EPSILON` immediately if any evaluated argument is `EPSILON`, ensuring strict propagation and simplifying builtin implementations.
+
+### Fixed
+
+- **Expressions Module (`src/pyhartig/expressions/`)**
+  - `Reference.py`: Fixed error handling per Definition 9: when an attribute is not present in a tuple, `Reference.evaluate()` now returns `EPSILON` instead of raising `KeyError` (implementation uses safe lookup or explicit handling), improving pipeline robustness for incomplete data.
 
 ## [0.2.2] - 2026-01-20
 

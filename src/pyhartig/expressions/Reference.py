@@ -21,11 +21,7 @@ class Reference(Expression):
         :return: The value of the referenced attribute, or EPSILON if not found.
         """
         # Check if the attribute exists in the tuple data : if yes, return its value
-        if self.attribute_name in tuple_data:
-            return tuple_data[self.attribute_name]
-
-        # If the attribute does not exist, return EPSILON
-        return EPSILON
+        return tuple_data.get(self.attribute_name, EPSILON)
 
     def __repr__(self):
         """
