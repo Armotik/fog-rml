@@ -9,14 +9,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### TODO
 
-- Update documentation to include `ProjectOperator` and `EquiJoinOperator`
-- Add examples in README and user guides
-- Confirm tests
-- Add existing tests from :
-    - https://rml.io/test-cases/
-    - https://github.com/anuzzolese/pyrml
-    - https://github.com/RMLio/rmlmapper-java
-    - https://github.com/morph-kgc/morph-kgc
+#### Demo & Use Cases
+- **Implement "Multi-Repo Issues" Demo Scenario**:
+  - **Goal**: Aggregate issues from multiple heterogeneous sources (GitHub & GitLab) into a single Knowledge Graph.
+  - **CLI Tool**: Create a specific command `listissues` (just an example name might be better) :
+    ```bash
+    python listissues repo1-github repo2-gitlab repo3-github [params]
+    ```
+  - **SPARQL Integration**: Demonstrate querying the virtual graph via a `SERVICE` call:
+    ```sparql
+    Select * {
+      Values ?repo {r1 r2 r3}
+      Bind SERVICE-CALL(?repo, "mapping.ttl") as ?g
+      Graph ?g {
+        ?x ex:issue ?y .
+        ?y ex:title ?title
+      }
+    }
+    ```
+(Possible Request but not the best, might find a better one)
+- Add 2-3 standalone example programs: Create ready-to-run scripts in `examples/` demonstrating specific features (e.g., CSV+JSON join, complex transformations).
+
+#### Documentation & Onboarding
+- **[CRITICAL]** Update documentation to include `ProjectOperator` and `EquiJoinOperator`: Document the new algebraic operators implemented in v0.2.0.
+- **[CRITICAL]** Add "Usage" Section in README: Provide quick-start commands and basic usage patterns immediately visible to new users.
+- Refactor README: The current README is too heavy. Simplify structure, move detailed sections to separate `docs/` files, and keep only essential information (Installation, Quick Start, Features).
+- Add examples in README and user guides: Include short, copy-pasteable snippets for common tasks.
 
 #### Mapping Parser Module (`src/pyhartig/mapping/`)
 
@@ -112,6 +130,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   does not specify this case (since `ε` typically does not propagate in strict equality). **Action**: Document the
   chosen semantics or align with SQL NULL behavior.
 
+#### Testing & Quality
+- Confirm execution of all current tests (Regression testing).
+- Integrate external RML conformance tests (Compatibility):
+  - [RML Test Cases](https://rml.io/test-cases/)
+  - [PyRML Test Suite](https://github.com/anuzzolese/pyrml)
+  - [RMLMapper-Java Test Suite](https://github.com/RMLio/rmlmapper-java)
+  - [Morph-KGC Test Suite](https://github.com/morph-kgc/morph-kgc)
+
 #### General Improvements
 
 ##### CLI / Entry Point (Missing)
@@ -122,6 +148,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `-o output.nt`: Desired output format/file
     - (Optional) Verbosity level for debugging
 - **Why**: Essential for validating real integration tests and allowing others to use the tool.
+- Add `explain` CLI command: Expose the `explain()` functionality in the command line interface to visualize the generated pipeline tree in a human-readable format.
 
 ##### Named Graphs / Graph Maps (Missing)
 
