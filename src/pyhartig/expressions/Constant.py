@@ -1,15 +1,17 @@
 from typing import Any
 from pyhartig.expressions.Expression import Expression
 from pyhartig.algebra.Tuple import MappingTuple
+from pyhartig.algebra.Terms import IRI, Literal, BlankNode
+from typing import Union
 
-
+RdfTerm = Union[IRI, Literal, BlankNode]
 class Constant(Expression):
     """
     Represents a constant value in an expression.
     If the expression is a fixed value (e.g., rdf:type or “http://example.org/”), it always returns that value, regardless of the tuple.
     """
 
-    def __init__(self, value: Any):
+    def __init__(self, value: RdfTerm):
         """
         Initialize the Constant with a specific value (RDF Term or fixed attribute).
         :param value: The constant value

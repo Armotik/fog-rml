@@ -1,0 +1,836 @@
+[
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "created_at": {
+      "type": "Literal",
+      "value": "2025-11-26T10:04:57.000+01:00",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/dateCreated"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "2025-11-26T10:04:57.000+01:00",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "created_at": {
+      "type": "Literal",
+      "value": "2025-11-26T10:04:45.000+01:00",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/dateCreated"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "2025-11-26T10:04:45.000+01:00",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "2",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "created_at": {
+      "type": "Literal",
+      "value": "2025-11-26T10:04:37.000+01:00",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/dateCreated"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "2025-11-26T10:04:37.000+01:00",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "1",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "created_at": {
+      "type": "Literal",
+      "value": "2025-11-26T10:04:29.000+01:00",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/dateCreated"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "2025-11-26T10:04:29.000+01:00",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    },
+    "object": {
+      "type": "IRI",
+      "value": "http://schema.org/Issue"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    },
+    "object": {
+      "type": "IRI",
+      "value": "http://schema.org/Issue"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "2",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    },
+    "object": {
+      "type": "IRI",
+      "value": "http://schema.org/Issue"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "1",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    },
+    "object": {
+      "type": "IRI",
+      "value": "http://schema.org/Issue"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "description": {
+      "type": "Literal",
+      "value": "Just a test issue",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/description"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Just a test issue",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "description": {
+      "type": "Literal",
+      "value": "Just a test issue",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/description"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Just a test issue",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "2",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "description": {
+      "type": "Literal",
+      "value": "Just a test issue",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/description"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Just a test issue",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "1",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "description": {
+      "type": "Literal",
+      "value": "Just a test issue",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/description"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Just a test issue",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "number": {
+      "type": "Literal",
+      "value": "4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "title": {
+      "type": "Literal",
+      "value": "Test issue 4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/name"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Test issue 4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "number": {
+      "type": "Literal",
+      "value": "3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "title": {
+      "type": "Literal",
+      "value": "Test issue 3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/name"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Test issue 3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "number": {
+      "type": "Literal",
+      "value": "4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    },
+    "object": {
+      "type": "IRI",
+      "value": "http://schema.org/Issue"
+    }
+  },
+  {
+    "number": {
+      "type": "Literal",
+      "value": "3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    },
+    "object": {
+      "type": "IRI",
+      "value": "http://schema.org/Issue"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "title": {
+      "type": "Literal",
+      "value": "Test issue 4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/name"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Test issue 4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "title": {
+      "type": "Literal",
+      "value": "Test issue 3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/name"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Test issue 3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "2",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "title": {
+      "type": "Literal",
+      "value": "Test issue 2",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/name"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Test issue 2",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "1",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "title": {
+      "type": "Literal",
+      "value": "Test Issue 1",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/name"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Test Issue 1",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://example.org/source"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "GitLab",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://example.org/source"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "GitLab",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "2",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://example.org/source"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "GitLab",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "1",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://example.org/source"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "GitLab",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "number": {
+      "type": "Literal",
+      "value": "4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://example.org/source"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "GitHub",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "number": {
+      "type": "Literal",
+      "value": "3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://example.org/source"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "GitHub",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "number": {
+      "type": "Literal",
+      "value": "4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "body": {
+      "type": "Literal",
+      "value": "Just a test issue",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/description"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Just a test issue",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "number": {
+      "type": "Literal",
+      "value": "3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "body": {
+      "type": "Literal",
+      "value": "Just a test issue",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/description"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Just a test issue",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "author.username": {
+      "type": "Literal",
+      "value": "import_user_E253432U_KmSA",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/creator"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "import_user_E253432U_KmSA",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "author.username": {
+      "type": "Literal",
+      "value": "import_user_E253432U_KmSA",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/creator"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "import_user_E253432U_KmSA",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "2",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "author.username": {
+      "type": "Literal",
+      "value": "import_user_E253432U_KmSA",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/creator"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "import_user_E253432U_KmSA",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "iid": {
+      "type": "Literal",
+      "value": "1",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "author.username": {
+      "type": "Literal",
+      "value": "import_user_E253432U_KmSA",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/creator"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "import_user_E253432U_KmSA",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "number": {
+      "type": "Literal",
+      "value": "4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "user.login": {
+      "type": "Literal",
+      "value": "Armotik",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/creator"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Armotik",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "number": {
+      "type": "Literal",
+      "value": "3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "user.login": {
+      "type": "Literal",
+      "value": "Armotik",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/creator"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "Armotik",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "number": {
+      "type": "Literal",
+      "value": "4",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "created_at": {
+      "type": "Literal",
+      "value": "2025-11-26T09:04:57Z",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/dateCreated"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "2025-11-26T09:04:57Z",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  },
+  {
+    "number": {
+      "type": "Literal",
+      "value": "3",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "created_at": {
+      "type": "Literal",
+      "value": "2025-11-26T09:04:45Z",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "subject": {
+      "type": "string",
+      "value": "ε"
+    },
+    "predicate": {
+      "type": "IRI",
+      "value": "http://schema.org/dateCreated"
+    },
+    "object": {
+      "type": "Literal",
+      "value": "2025-11-26T09:04:45Z",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
+  }
+]

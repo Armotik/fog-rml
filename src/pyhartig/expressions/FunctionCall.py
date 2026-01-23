@@ -22,18 +22,24 @@ class FunctionCall(Expression):
         :param tuple_data: The tuple data to evaluate against.
         :return: The result of applying the function to the evaluated arguments, or EPSILON if any argument is EPSILON or an error occurs.
         """
-        # Evaluate all arguments
-        evaluated_args = [arg.evaluate(tuple_data) for arg in self.arguments]
+        evaluated_args = []
+        
+        # Evaluate arguments and check for EPSILON immediately (Strict Propagation)
+        for arg in self.arguments:
+            val = arg.evaluate(tuple_data)
+            if val is EPSILON:
+                return EPSILON
+            evaluated_args.append(val)
 
-        # If any argument evaluates to EPSILON, return EPSILON for the whole function call
-        if any(arg == EPSILON for arg in evaluated_args):
-            return EPSILON
-
-        # Apply the function to the evaluated arguments
+        # Apply the function safely to ensure total functionality
         try:
-            return self.function(*evaluated_args)
-        except Exception as e:
-            # In case of any error during function application, return EPSILON
+            result = self.function(*evaluated_args)
+            # Ensure the function itself didn't return None or an error state 
+            # that should be represented as EPSILON in this algebra.
+            return result if result is not None else EPSILON
+        except (TypeError, ValueError, ArithmeticError, Exception):
+            # Capture potential domain errors (e.g., division by zero, 
+            # incompatible types) and return the algebraic error constant.
             return EPSILON
 
     def __repr__(self):
