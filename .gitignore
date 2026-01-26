@@ -36,6 +36,8 @@ htmlcov/
 *.swo
 *~
 
-# Data files (optionnel, décommentez si nécessaire)
-# tests/use_cases/*/data/*.json
+# Data files
+tests/use_cases/*/data/
+tests/use_cases/*/output/
+*.nt
 

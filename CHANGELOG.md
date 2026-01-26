@@ -31,10 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add 2-3 standalone example programs: Create ready-to-run scripts in `examples/` demonstrating specific features (e.g., CSV+JSON join, complex transformations).
 
 #### Documentation & Onboarding
-- **[CRITICAL]** Update documentation to include `ProjectOperator` and `EquiJoinOperator`: Document the new algebraic operators implemented in v0.2.0.
-- **[CRITICAL]** Add "Usage" Section in README: Provide quick-start commands and basic usage patterns immediately visible to new users.
-- Refactor README: The current README is too heavy. Simplify structure, move detailed sections to separate `docs/` files, and keep only essential information (Installation, Quick Start, Features).
-- Add examples in README and user guides: Include short, copy-pasteable snippets for common tasks.
+- Move detailed sections to separate `docs/` files
 
 #### Mapping Parser Module (`src/pyhartig/mapping/`)
 
@@ -117,16 +114,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - [Morph-KGC Test Suite](https://github.com/morph-kgc/morph-kgc)
 
 #### General Improvements
-
-##### CLI / Entry Point (Missing)
-
-- Add CLI entry point: Create `src/pyhartig/__main__.py` or `cli.py` to allow running the tool without writing Python
-  code. Should accept command-line arguments:
-    - `-m mapping.ttl`: RML mapping file
-    - `-o output.nt`: Desired output format/file
-    - (Optional) Verbosity level for debugging
-- **Why**: Essential for validating real integration tests and allowing others to use the tool.
-- Add `explain` CLI command: Expose the `explain()` functionality in the command line interface to visualize the generated pipeline tree in a human-readable format.
 
 ##### Named Graphs / Graph Maps (Missing)
 
@@ -215,6 +202,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   will likely consume 2-3 GB of RAM and crash Python. This is the most important architectural improvement for project
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
+
+## [0.2.5] - 2026-01-26
+
+### Added
+- **NTriples Serializer**: Created `src/pyhartig/serializers/NTriplesSerializer.py` to handle the conversion of algebraic execution results (`MappingTuple`) into valid N-Triples string format, with proper character escaping and term handling.
+- **Robust Error Handling**: Added generic exception handling in `MappingParser` during source loading to catch unexpected errors (e.g., malformed JSON) in addition to `FileNotFoundError`.
+- **Plugin-based CLI Architecture**: Completely refactored `__main__.py` and the `src/pyhartig/commands/` package.
+    - Implemented a command discovery system that automatically loads any class inheriting from `BaseCommand` located in the commands directory.
+    - This allows for easy extension of the CLI functionality by third-party developers without modifying the core engine.
+    - **Implemented shared argument parsing to allow global flags (like `-v`) to be placed before or after subcommands.**
+- **`list-issues` Command**: Added a new use-case specific command that:
+    - Accepts a list of repository URLs (GitHub/GitLab) as arguments.
+    - Automatically resolves API endpoints and fetches issue data.
+    - Aggregates (merges) data from multiple repositories into unified JSON sources.
+    - Injects these sources into a user-provided RML template (replacing `{{GITHUB_SOURCE}}` and `{{GITLAB_SOURCE}}`) before execution.
+
+### Changed
+- **Logging Integration**: Replaced `print()` statements in `MappingParser.py` with the standard `logging` module, enabling verbosity control (INFO/DEBUG) and preventing stdout pollution.
+
+### Fixed
+- **Generator Exhaustion Bug**: Fixed a critical bug in `MappingParser` where a debug log statement consumed the `predicateObjectMap` iterator, causing the parser to silently skip all mappings and generate zero triples without error.
+- **Relative Path Resolution**: Fixed source file path resolution in `MappingParser`. Paths are now correctly resolved relative to the mapping file's directory, ensuring the CLI works correctly regardless of the user's current working directory.
+
+### Refactored
+- **Namespace Centralization**: Refactored `MappingParser.py` to import namespace constants from `src/pyhartig/namespaces.py` instead of using hardcoded URI strings and prefixes. This ensures a Single Source of Truth for RDF/RML namespaces.
+- **CLI Structure**: Moved the standard execution logic from `__main__.py` to `src/pyhartig/commands/run.py` to maintain separation of concerns.
+
+### Documentation
+- **README Overhaul**: Completely refactored `README.md` to prioritize "Quick Start", installation instructions, and CLI usage examples.
+- **New Operators**: Added documentation for `EquiJoinOperator` and `ProjectOperator` features in the main README.
 
 ## [0.2.4] - 2026-01-23
 

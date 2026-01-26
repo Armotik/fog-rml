@@ -1,6 +1,7 @@
-import rdflib
-from rdflib import Graph, URIRef, Literal, BNode, Namespace, Node
-from typing import List, Dict, Set, Any
+import logging
+from rdflib import Graph, URIRef, Namespace, Node
+from typing import List, Dict, Any
+from pathlib import Path
 
 from pyhartig.operators.Operator import Operator
 from pyhartig.operators.sources.JsonSourceOperator import JsonSourceOperator
@@ -13,12 +14,14 @@ from pyhartig.expressions.Reference import Reference
 from pyhartig.expressions.FunctionCall import FunctionCall
 from pyhartig.functions.builtins import to_iri, to_literal, concat
 from pyhartig.algebra.Terms import IRI as AlgebraIRI, Literal as AlgebraLiteral
+from pyhartig.namespaces import RR_BASE, RML_BASE, QL_BASE, RDF_BASE
 
-RR = Namespace("http://www.w3.org/ns/r2rml#")
-RML = Namespace("http://semweb.mmlab.be/ns/rml#")
-QL = Namespace("http://semweb.mmlab.be/ns/ql#")
-RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+RR = Namespace(RR_BASE)
+RML = Namespace(RML_BASE)
+QL = Namespace(QL_BASE)
+RDF = Namespace(RDF_BASE)
 
+logger = logging.getLogger(__name__)
 
 class MappingParser:
     """
@@ -31,6 +34,7 @@ class MappingParser:
         :param rml_file_path:  Path to the RML mapping file.
         """
         self.rml_file_path = rml_file_path
+        self.mapping_dir = Path(rml_file_path).resolve().parent
         self.graph = Graph()
 
     def parse(self) -> Operator:
@@ -38,11 +42,18 @@ class MappingParser:
         Parses an RML mapping file and translates it into an algebraic plan
         :return: Operator representing the entire mapping.
         """
+        # [INFO] Log the start of parsing
+        logger.info(f"Parsing RML mapping file: {self.rml_file_path}")
+
         # Load the RML mapping file into an RDF graph
         self.graph.parse(self.rml_file_path, format="turtle")
 
+        # [DEBUG] Log the number of triples loaded
+        logger.debug(f"RDF Graph loaded ({len(self.graph)} triples). Normalizing...")
+
         # Normalize the RML graph
         self._normalize_graph()
+        logger.debug("RML Graph normalized.")
 
         # Initialize an empty list to hold the operators for each Triples Map
         S: List[Operator] = []
@@ -52,11 +63,18 @@ class MappingParser:
         triples_maps.update(self.graph.subjects(RML.logicalSource, None))
         triples_maps.update(self.graph.subjects(RR.logicalSource, None))
 
+        # [INFO] Log the number of Triples Maps found
+        logger.info(f"Found {len(triples_maps)} TriplesMaps to process.")
+
         for tm in triples_maps:
+            # [DEBUG] Log the current Triples Map being processed
+            logger.debug(f"Processing TriplesMap: {tm}")
+
             # Line 4: Let LS be the logical source of TM
             ls_node = self.graph.value(tm, RML.logicalSource) or self.graph.value(tm, RR.logicalSource)
 
             if not ls_node:
+                logger.warning(f"Skipping TriplesMap {tm}: No logical source found.")
                 continue
 
             source_file = self.graph.value(ls_node, RML.source)
@@ -64,10 +82,23 @@ class MappingParser:
 
             import json
             try:
-                with open(str(source_file), 'r') as f:
+                src_path = Path(str(source_file))
+
+                # Resolve relative paths
+                if not src_path.is_absolute():
+                    src_path = self.mapping_dir / src_path
+
+                # [DEBUG] Log the source file being loaded
+                logger.debug(f"Loading source file: {source_file}")
+                with open(src_path, 'r', encoding='utf-8') as f:
                     raw_data = json.load(f)
             except FileNotFoundError:
-                print(f"[WARNING] Source file not found: {source_file}")
+                # [WARNING] Log missing source file
+                logger.warning(f"Source file not found at: {src_path}. Using empty dataset.")
+                raw_data = {}
+            except Exception as e:
+                # [ERROR] Log other errors during file loading
+                logger.error(f"Error loading JSON source {source_file}: {e}")
                 raw_data = {}
 
             q = str(iterator) if iterator else "$"
@@ -90,10 +121,14 @@ class MappingParser:
                 E_base = ExtendOperator(E_src, "subject", phi_sbj)
             else:
                 # Fallback if no subject map (should not happen in valid RML)
+                logger.debug(f"No SubjectMap found for {tm}, skipping subject generation.")
                 E_base = E_src
 
             # Line 9: foreach predicate-object map POM in TM do
-            poms = self.graph.objects(tm, RR.predicateObjectMap)
+            poms = list(self.graph.objects(tm, RR.predicateObjectMap))
+
+            # [DEBUG] Log number of PredicateObjectMaps found
+            logger.debug(f"Found {len(poms)} PredicateObjectMaps in TriplesMap {tm}.")
 
             for pom in poms:
                 E = E_base
@@ -119,10 +154,15 @@ class MappingParser:
             # Line 28: S := S U {E}
             if tm_branches:
                 S.extend(tm_branches)
+            else:
+                logger.debug(f"No branches generated for {tm} (maybe no POMs?).")
 
         # Line 29: return Union(S)
         if not S:
+            logger.error("Parsing failed: No operators generated.")
             raise ValueError("No valid mappings generated from RML file.")
+
+        logger.info(f"Pipeline construction complete. Total Union branches: {len(S)}")
 
         if len(S) == 1:
             return S[0]
@@ -134,11 +174,13 @@ class MappingParser:
         Normalizes the RML graph
         :return: None
         """
-        prefixes = """
-                PREFIX rr: <http://www.w3.org/ns/r2rml#>
-                PREFIX rml: <http://semweb.mmlab.be/ns/rml#>
-                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                """
+        logger.debug("Starting graph normalization (Applying rewriting rules)...")
+
+        prefixes = f"""
+                        PREFIX rr: <{RR_BASE}>
+                        PREFIX rml: <{RML_BASE}>
+                        PREFIX rdf: <{RDF_BASE}>
+                        """
 
         # Query 1: Normalization step 1 (Expand shortcuts for class IRIs)
         q1 = prefixes + """
@@ -267,6 +309,8 @@ class MappingParser:
                         OPTIONAL { ?sm rr:termType ?ttype } }
                 """
         self.graph.update(q7)
+
+        logger.debug("Graph normalization finished.")
 
     def _extract_queries(self, tm: Node) -> Dict[str, str]:
         """
