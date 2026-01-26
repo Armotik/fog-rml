@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Iterator, Dict, Any
 from pyhartig.operators.Operator import Operator
 from pyhartig.algebra.Tuple import MappingTuple
 from pyhartig.expressions.Expression import Expression
@@ -23,27 +23,28 @@ class ExtendOperator(Operator):
         self.new_attribute = new_attribute
         self.expression = expression
 
-    def execute(self) -> List[MappingTuple]:
+    def execute(self) -> Iterator[MappingTuple]:
         """
         Executes the Extend logic.
         r' = { t U {a -> eval(phi, t)} | t in r }
         :return: A list of extended MappingTuples.
         """
 
-        # Get input tuples from parent
-        parent_rows = self.parent_operator.execute()
+        # Stream and extend tuples from parent operator
+        from pyhartig.operators.Operator import StreamRows
 
-        new_rows = []
-        for row in parent_rows:
-            # Calculate the new value using the Expression system
-            computed_value = self.expression.evaluate(row)
+        def _gen():
+            for row in self.parent_operator.execute():
+                computed_value = self.expression.evaluate(row)
+                # Use the immutable extend operation to produce a new MappingTuple
+                try:
+                    new_row = row.extend(self.new_attribute, computed_value)
+                except Exception:
+                    # Fallback: construct a new MappingTuple from the underlying mapping
+                    new_row = MappingTuple({**dict(row), self.new_attribute: computed_value})
+                yield new_row
 
-            # Create a new immutable tuple with the extended attribute
-            new_row = row.extend(self.new_attribute, computed_value)
-
-            new_rows.append(new_row)
-
-        return new_rows
+        return StreamRows(_gen())
 
     def explain(self, indent: int = 0, prefix: str = "") -> str:
         """

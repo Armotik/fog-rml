@@ -48,28 +48,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   better to raise the exception to stop the pipeline immediately rather than continuing with `raw_data = {}` (empty
   dict), which produces a silently empty result that is hard to debug.
 
-#### Operators Module (`src/pyhartig/operators/`)
-
-- `Operator.py`: **[CRITICAL]** Switch from Eager to Lazy execution: Currently, `execute()` returns
-  `List[MappingTuple]`, meaning each operator must wait for the previous one to finish and store everything in RAM
-  before starting. With 1 million rows, the first `SourceOperator` creates a list of 1 million objects in memory, which
-  is inefficient. **Suggested fix**: Switch to a Lazy model using Python generators (`Iterator[MappingTuple]` and
-  `yield`). This would allow streaming data row by row, significantly reducing memory usage for large datasets.
-- `SourceOperator.py` / `JsonSourceOperator.py`: Optimize JSONPath parsing performance: Currently, `parse(query)` is
-  called inside `_apply_iterator` and `_apply_extraction` methods. If `_apply_extraction` is called for each object (1M
-  times), the query string is re-parsed 1M times. **Suggested fix**: Compile JSONPath expressions in `__init__` and
-  store the compiled objects for reuse.
-- `UnionOperator.py`: Bag vs Set semantics: Currently uses `merged_results.extend(op.execute())`, which keeps
-  duplicates (Bag Semantics). The formal definition (Def 2) describes a relation where `I` is a set, implying no
-  duplicates (Set Semantics). In practice (SQL, SPARQL), Bag semantics is almost always used for performance, so the
-  current choice is correct for a real engine. However, this is a slight deviation from the strict mathematical
-  definition. **Note**: Consider adding an optional `distinct=True` parameter to enable Set semantics when needed.
-- `EquiJoinOperator.py`: **[CRITICAL]** Optimize join algorithm: Current implementation uses a Nested Loop Join (double
-  `for` loop) with O(N×M) complexity. With 10,000 rows in each source, this results in 100 million comparisons, which is
-  unusable for real data. **Suggested fix**: Implement a Hash Join (O(N+M) complexity) by building a hash map (
-  dictionary) on the right relation indexed by the join key, then iterating over the left relation and performing direct
-  lookups.
-
 #### Tests Suite (`tests/test_suite/`)
 
 - `test_01_source_operators.py`: Reduce coupling to JSON: Currently tests only `JsonSourceOperator`, but there are no
@@ -210,6 +188,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   will likely consume 2-3 GB of RAM and crash Python. This is the most important architectural improvement for project
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
+
+## [0.2.4] - 2026-01-23
+
+### Changed
+
+- **Operators Module (`src/pyhartig/operators/`)**
+  - `Operator.py`: Switched from eager to lazy execution. `execute()` now returns an `Iterator[MappingTuple]` (generator) and operators stream rows using `yield`. Added `StreamRows` helper to provide lazy iteration plus on-demand materialization (`len()` and indexing). This reduces peak memory usage for large datasets and enables streaming pipelines.
+  - `SourceOperator.py`: `execute()` now streams rows via generators and returns a `StreamRows` wrapper. This avoids building large in-memory lists in multi-stage pipelines.
+
+- **Source / JSON parsing (`src/pyhartig/operators/` + `src/pyhartig/operators/sources/`)**
+  - `JsonSourceOperator.py`: JSONPath expressions are now compiled and cached in `__init__` (compiled iterator and per-attribute extraction cache) to avoid reparsing the same query for every context object. This significantly reduces CPU overhead when extraction queries are applied many times (e.g., for large sources).
+
+- **Union semantics (`src/pyhartig/operators/UnionOperator.py`)**
+  - Added an optional `distinct` parameter (default `False`) to control Bag vs Set semantics. By default the operator preserves Bag semantics for performance; setting `distinct=True` enables Set semantics (duplicate elimination) when needed.
+
+- **Join algorithm (`src/pyhartig/operators/EquiJoinOperator.py`)**
+  - Reworked join execution to use a hash-join style algorithm: the implementation builds an index (hash map) on the smaller side and probes it with the other side, yielding matches. This reduces worst-case behavior from O(N×M) nested loops to near O(N+M) in typical scenarios and is suitable for large relations.
+
+### Fixed
+
+- **Extend operator (`src/pyhartig/operators/ExtendOperator.py`)**
+  - Fixed incorrect in-place mutation of `MappingTuple`. `MappingTuple` is immutable by design; `ExtendOperator` now uses `MappingTuple.extend()` (or constructs a new `MappingTuple`) to produce extended rows, avoiding `TypeError` and preserving immutability guarantees.
 
 ## [0.2.3] - 2026-01-21
 

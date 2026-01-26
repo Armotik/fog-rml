@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Iterator, Dict, Any
 
 from pyhartig.algebra.Tuple import MappingTuple
 from pyhartig.operators.Operator import Operator
@@ -10,7 +10,7 @@ class UnionOperator(Operator):
     Merges the results of multiple operators into a single relation.
     """
 
-    def __init__(self, operators: list[Operator]):
+    def __init__(self, operators: list[Operator], distinct: bool = False):
         """
         Initializes the Union operator.
         :param operators: A list of operators whose results will be merged.
@@ -18,18 +18,42 @@ class UnionOperator(Operator):
         """
         super().__init__()
         self.operators = operators
+        # If True, ensure output contains no duplicate tuples (set semantics)
+        # Default False => bag semantics (fast, may contain duplicates)
+        self.distinct = bool(distinct)
 
-    def execute(self) -> List[MappingTuple]:
+    def execute(self) -> Iterator[MappingTuple]:
         """
         Executes all child operators and merges their results.
         Union(r1, r2, ..., rn) = new MpaaingRelation (A_1, I_union)
         I_union = I_1 U I_2 U ... U I_n
         :return:
         """
-        merged_results = []
-        for op in self.operators:
-            merged_results.extend(op.execute())
-        return merged_results
+        from pyhartig.operators.Operator import StreamRows
+
+        def _gen():
+            # Stream results from each child operator in order
+            if not self.distinct:
+                for op in self.operators:
+                    for row in op.execute():
+                        yield row
+                return
+
+            # distinct=True: track seen tuples and yield each unique row once
+            seen = set()
+            for op in self.operators:
+                for row in op.execute():
+                    try:
+                        key = tuple(sorted(row.items()))
+                    except Exception:
+                        key = str(row)
+
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    yield row
+
+        return StreamRows(_gen())
 
     def explain(self, indent: int = 0, prefix: str = "") -> str:
         """
@@ -59,7 +83,8 @@ class UnionOperator(Operator):
         return {
             "type": "Union",
             "parameters": {
-                "operator_count": len(self.operators)
+                "operator_count": len(self.operators),
+                "distinct": self.distinct
             },
             "children": [op.explain_json() for op in self.operators]
         }

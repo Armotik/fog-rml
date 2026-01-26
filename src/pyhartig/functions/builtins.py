@@ -20,6 +20,19 @@ def _to_string(value: AlgebraicValue) -> Union[str, None]:
 
     if isinstance(value, IRI):
         return value.value
+    
+    if isinstance(value, BlankNode):
+        return None
+
+    # Accept native Python primitives as input as well
+    if isinstance(value, bool):
+        return str(value).lower()
+
+    if isinstance(value, (int, float)):
+        return str(value)
+
+    if isinstance(value, str):
+        return value
 
     # BlankNodes do not have a standard "string" representation here
     return None

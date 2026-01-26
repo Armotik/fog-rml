@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Set
+from typing import Iterator, Dict, Any, Set
 
 from pyhartig.algebra.Tuple import MappingTuple
 from pyhartig.operators.Operator import Operator
@@ -29,7 +29,7 @@ class ProjectOperator(Operator):
         self.operator = operator
         self.attributes = set(attributes)
 
-    def execute(self) -> List[MappingTuple]:
+    def execute(self) -> Iterator[MappingTuple]:
         """
         Executes the Project logic.
 
@@ -44,30 +44,33 @@ class ProjectOperator(Operator):
         :return: A list of MappingTuples with only the specified attributes P.
         :raises KeyError: If an attribute in P is not found in a tuple (strict mode).
         """
-        # Get input tuples from parent operator
+        from pyhartig.operators.Operator import StreamRows
+
         parent_rows = self.operator.execute()
+        parent_iter = iter(parent_rows)
 
-        projected_rows = []
-        for row in parent_rows:
-            # Strict validation: ensure all attributes in P exist in the tuple
-            missing_attrs = self.attributes - set(row.keys())
-            if missing_attrs:
-                raise KeyError(
-                    f"ProjectOperator: Attribute(s) {missing_attrs} not found in tuple. "
-                    f"Available attributes: {set(row.keys())}. "
-                    f"Projection requires P ⊆ A (all projected attributes must exist in the tuple)."
-                )
+        # Try to peek the first tuple to determine the input attribute set A
+        try:
+            first = next(parent_iter)
+        except StopIteration:
+            # Empty input relation => empty result
+            return StreamRows(iter(()))
 
-            # Create t[P]: restriction of tuple t to attributes in P
-            # dom(t[P]) = P and for each a ∈ P: t[P](a) = t(a)
-            projected_data = {
-                attr: row[attr]
-                for attr in self.attributes
-            }
-            projected_row = MappingTuple(projected_data)
-            projected_rows.append(projected_row)
+        A = set(first.keys())
+        missing_attrs = self.attributes - A
+        if missing_attrs:
+            raise KeyError(
+                f"ProjectOperator: Attribute(s) {missing_attrs} not found in tuple. Available attributes: {A}."
+            )
 
-        return projected_rows
+        def _gen():
+            # Yield projection for the first tuple
+            yield MappingTuple({attr: first[attr] for attr in self.attributes})
+            # Continue with the rest of the parent iterator
+            for row in parent_iter:
+                yield MappingTuple({attr: row[attr] for attr in self.attributes})
+
+        return StreamRows(_gen())
 
     def explain(self, indent: int = 0, prefix: str = "") -> str:
         """
