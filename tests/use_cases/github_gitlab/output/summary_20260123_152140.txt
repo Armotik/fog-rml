@@ -1,0 +1,103 @@
+================================================================================
+GitHub/GitLab Fusion Use Case - Execution Report
+================================================================================
+
+Execution Date: 2026-01-23 15:21:40
+Mapping File: data/fusion_mapping.ttl
+Source Files: data/github_issues.json, data/gitlab_issues.json
+
+Total Triples Generated: 36
+
+Statistics:
+--------------------------------------------------------------------------------
+Unique Subjects: 6
+Unique Predicates: 6
+Creators Found: 2
+Sources Found: 2
+
+Predicates Used:
+  - http://example.org/source
+  - http://schema.org/creator
+  - http://schema.org/dateCreated
+  - http://schema.org/description
+  - http://schema.org/name
+  - http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+
+Creators:
+  - Armotik
+  - import_user_E253432U_KmSA
+
+Sources:
+  - GitHub
+  - GitLab
+
+Sample Triples (first 10):
+--------------------------------------------------------------------------------
+
+[Triple 1]
+  number: 4
+  created_at: 2025-11-26T09:04:57Z
+  subject: <http://github.com/issue/4>
+  predicate: <http://schema.org/dateCreated>
+  object: "2025-11-26T09:04:57Z"
+
+[Triple 2]
+  number: 3
+  created_at: 2025-11-26T09:04:45Z
+  subject: <http://github.com/issue/3>
+  predicate: <http://schema.org/dateCreated>
+  object: "2025-11-26T09:04:45Z"
+
+[Triple 3]
+  iid: 4
+  description: Just a test issue
+  subject: <http://gitlab.com/issue/4>
+  predicate: <http://schema.org/description>
+  object: "Just a test issue"
+
+[Triple 4]
+  iid: 3
+  description: Just a test issue
+  subject: <http://gitlab.com/issue/3>
+  predicate: <http://schema.org/description>
+  object: "Just a test issue"
+
+[Triple 5]
+  iid: 2
+  description: Just a test issue
+  subject: <http://gitlab.com/issue/2>
+  predicate: <http://schema.org/description>
+  object: "Just a test issue"
+
+[Triple 6]
+  iid: 1
+  description: Just a test issue
+  subject: <http://gitlab.com/issue/1>
+  predicate: <http://schema.org/description>
+  object: "Just a test issue"
+
+[Triple 7]
+  number: 4
+  subject: <http://github.com/issue/4>
+  predicate: <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
+  object: <http://schema.org/Issue>
+
+[Triple 8]
+  number: 3
+  subject: <http://github.com/issue/3>
+  predicate: <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
+  object: <http://schema.org/Issue>
+
+[Triple 9]
+  number: 4
+  user.login: Armotik
+  subject: <http://github.com/issue/4>
+  predicate: <http://schema.org/creator>
+  object: "Armotik"
+
+[Triple 10]
+  number: 3
+  user.login: Armotik
+  subject: <http://github.com/issue/3>
+  predicate: <http://schema.org/creator>
+  object: "Armotik"

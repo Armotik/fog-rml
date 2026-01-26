@@ -1,0 +1,36 @@
+<http://github.com/issue/4> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Issue> .
+<http://github.com/issue/3> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Issue> .
+<http://github.com/issue/4> <http://schema.org/description> "Just a test issue" .
+<http://github.com/issue/3> <http://schema.org/description> "Just a test issue" .
+<http://gitlab.com/issue/4> <http://example.org/source> "GitLab" .
+<http://gitlab.com/issue/3> <http://example.org/source> "GitLab" .
+<http://gitlab.com/issue/2> <http://example.org/source> "GitLab" .
+<http://gitlab.com/issue/1> <http://example.org/source> "GitLab" .
+<http://github.com/issue/4> <http://example.org/source> "GitHub" .
+<http://github.com/issue/3> <http://example.org/source> "GitHub" .
+<http://gitlab.com/issue/4> <http://schema.org/dateCreated> "2025-11-26T10:04:57.000+01:00" .
+<http://gitlab.com/issue/3> <http://schema.org/dateCreated> "2025-11-26T10:04:45.000+01:00" .
+<http://gitlab.com/issue/2> <http://schema.org/dateCreated> "2025-11-26T10:04:37.000+01:00" .
+<http://gitlab.com/issue/1> <http://schema.org/dateCreated> "2025-11-26T10:04:29.000+01:00" .
+<http://github.com/issue/4> <http://schema.org/creator> "Armotik" .
+<http://github.com/issue/3> <http://schema.org/creator> "Armotik" .
+<http://github.com/issue/4> <http://schema.org/dateCreated> "2025-11-26T09:04:57Z" .
+<http://github.com/issue/3> <http://schema.org/dateCreated> "2025-11-26T09:04:45Z" .
+<http://gitlab.com/issue/4> <http://schema.org/name> "Test issue 4" .
+<http://gitlab.com/issue/3> <http://schema.org/name> "Test issue 3" .
+<http://gitlab.com/issue/2> <http://schema.org/name> "Test issue 2" .
+<http://gitlab.com/issue/1> <http://schema.org/name> "Test Issue 1" .
+<http://gitlab.com/issue/4> <http://schema.org/creator> "import_user_E253432U_KmSA" .
+<http://gitlab.com/issue/3> <http://schema.org/creator> "import_user_E253432U_KmSA" .
+<http://gitlab.com/issue/2> <http://schema.org/creator> "import_user_E253432U_KmSA" .
+<http://gitlab.com/issue/1> <http://schema.org/creator> "import_user_E253432U_KmSA" .
+<http://gitlab.com/issue/4> <http://schema.org/description> "Just a test issue" .
+<http://gitlab.com/issue/3> <http://schema.org/description> "Just a test issue" .
+<http://gitlab.com/issue/2> <http://schema.org/description> "Just a test issue" .
+<http://gitlab.com/issue/1> <http://schema.org/description> "Just a test issue" .
+<http://github.com/issue/4> <http://schema.org/name> "Test issue 4" .
+<http://github.com/issue/3> <http://schema.org/name> "Test issue 3" .
+<http://gitlab.com/issue/4> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Issue> .
+<http://gitlab.com/issue/3> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Issue> .
+<http://gitlab.com/issue/2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Issue> .
+<http://gitlab.com/issue/1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Issue> .

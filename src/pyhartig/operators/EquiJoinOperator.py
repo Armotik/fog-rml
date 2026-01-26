@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Tuple as TypingTuple
+from typing import Dict, Any, List, Tuple as TypingTuple, Iterator
 
 from pyhartig.algebra.Tuple import MappingTuple
 from pyhartig.operators.Operator import Operator
@@ -48,7 +48,7 @@ class EquiJoinOperator(Operator):
         # J = { (a₁, a₂) | a₁ ∈ A, a₂ ∈ B } - the join condition pairs
         self.join_conditions: List[TypingTuple[str, str]] = list(zip(A, B))
 
-    def execute(self) -> List[MappingTuple]:
+    def execute(self) -> Iterator[MappingTuple]:
         """
         Executes the Equi-Join logic.
 
@@ -60,39 +60,129 @@ class EquiJoinOperator(Operator):
         :return: A list of MappingTuples resulting from the equi-join.
         :raises ValueError: If the attribute sets of the two relations are not disjoint.
         """
-        # Execute child operators to get I₁ and I₂
-        left_tuples = self.left_operator.execute()
-        right_tuples = self.right_operator.execute()
+        from pyhartig.operators.Operator import StreamRows
 
-        # Handle empty relations
-        if not left_tuples or not right_tuples:
-            return []
+        # Eager disjointness check using attribute_mappings when available
+        try:
+            left_attr_keys = set(getattr(self.left_operator, "attribute_mappings", {}).keys())
+            right_attr_keys = set(getattr(self.right_operator, "attribute_mappings", {}).keys())
+        except Exception:
+            left_attr_keys = set()
+            right_attr_keys = set()
 
-        # Verify disjoint attribute sets: A₁ ∩ A₂ = ∅
-        # Use first tuple from each side to determine attribute sets
-        if left_tuples and right_tuples:
-            left_attrs = set(left_tuples[0].keys())
-            right_attrs = set(right_tuples[0].keys())
-            common_attrs = left_attrs & right_attrs
-
+        if left_attr_keys and right_attr_keys:
+            common_attrs = left_attr_keys & right_attr_keys
             if common_attrs:
                 raise ValueError(
-                    f"EquiJoinOperator: Attribute sets must be disjoint (A₁ ∩ A₂ = ∅). "
-                    f"Common attributes found: {common_attrs}"
+                    f"EquiJoinOperator: Attribute sets must be disjoint (A₁ ∩ A₂ = ∅). Common attributes found: {common_attrs}"
                 )
 
-        result_tuples = []
+        def _gen():
+            def _build_key(t, attrs):
+                parts = [t.get(attr) for attr in attrs]
+                # SQL-like NULL semantics: if any join attribute is None, do not
+                # consider this tuple for join matching (NULL does not equal NULL).
+                if any(p is None for p in parts):
+                    return None
+                return tuple(parts)
 
-        # Nested loop join: for each t₁ ∈ I₁, for each t₂ ∈ I₂
-        for t1 in left_tuples:
-            for t2 in right_tuples:
-                # Check join condition: ∀(a₁, a₂) ∈ J : t₁(a₁) = t₂(a₂)
-                if self._satisfies_join_condition(t1, t2):
-                    # Merge tuples: t₁ ∪ t₂
-                    merged_tuple = t1.merge(t2)
-                    result_tuples.append(merged_tuple)
+            # Build hash index on the smaller side if possible to reduce memory
+            left_iterable = self.left_operator.execute()
+            right_iterable = self.right_operator.execute()
 
-        return result_tuples
+            # Try to get lengths (may materialize iterables); if both available, choose smaller
+            left_len = None
+            right_len = None
+            try:
+                left_len = len(left_iterable)
+            except Exception:
+                left_len = None
+            try:
+                right_len = len(right_iterable)
+            except Exception:
+                right_len = None
+
+            # If we can determine sizes and left is smaller, index left side
+            if left_len is not None and right_len is not None and left_len <= right_len:
+                # Build index on left
+                left_index: Dict[tuple, List[MappingTuple]] = {}
+                for lt in left_iterable:
+                    key = _build_key(lt, self.left_attributes)
+                    if key is None:
+                        continue
+                    left_index.setdefault(key, []).append(lt)
+
+                if not left_index:
+                    return
+
+                # Eager disjointness check using sample
+                sample_left = next(iter(next(iter(left_index.values()), [])), None)
+                sample_right = None
+                # try to sample right without materializing fully
+                for rt in right_iterable:
+                    sample_right = rt
+                    break
+
+                if sample_left is not None and sample_right is not None:
+                    common_attrs = set(sample_left.keys()) & set(sample_right.keys())
+                    if common_attrs:
+                        raise ValueError(
+                            f"EquiJoinOperator: Attribute sets must be disjoint (A₁ ∩ A₂ = ∅). Common attributes found: {common_attrs}"
+                        )
+
+                # Probe left index using right tuples
+                for rt in right_iterable:
+                    key = _build_key(rt, self.right_attributes)
+                    if key is None:
+                        continue
+                    matches = left_index.get(key, [])
+                    for lt in matches:
+                        yield lt.merge(rt)
+
+            else:
+                # Default: index right side and probe with left tuples (classic hash join)
+                right_index: Dict[tuple, List[MappingTuple]] = {}
+                for rt in right_iterable:
+                    key = _build_key(rt, self.right_attributes)
+                    if key is None:
+                        continue
+                    right_index.setdefault(key, []).append(rt)
+
+                if not right_index:
+                    return
+
+                # Eager disjointness check using sample
+                sample_right = next(iter(next(iter(right_index.values()), [])), None)
+                # Peek first left tuple without exhausting iterator
+                left_iter = iter(left_iterable)
+                try:
+                    first_left = next(left_iter)
+                except StopIteration:
+                    return
+
+                if sample_right is not None:
+                    common_attrs = set(first_left.keys()) & set(sample_right.keys())
+                    if common_attrs:
+                        raise ValueError(
+                            f"EquiJoinOperator: Attribute sets must be disjoint (A₁ ∩ A₂ = ∅). Common attributes found: {common_attrs}"
+                        )
+
+
+                # yield for first_left (skip if key contains None)
+                key0 = _build_key(first_left, self.left_attributes)
+                if key0 is not None:
+                    for rt in right_index.get(key0, []):
+                        yield first_left.merge(rt)
+
+                # yield for the rest
+                for lt in left_iter:
+                    key = _build_key(lt, self.left_attributes)
+                    if key is None:
+                        continue
+                    for rt in right_index.get(key, []):
+                        yield lt.merge(rt)
+
+        return StreamRows(_gen())
 
     def _satisfies_join_condition(self, t1: MappingTuple, t2: MappingTuple) -> bool:
         """
