@@ -4,7 +4,6 @@ from typing import List, Dict, Any
 from pathlib import Path
 
 from pyhartig.operators.Operator import Operator
-from pyhartig.operators.sources.JsonSourceOperator import JsonSourceOperator
 from pyhartig.operators.ExtendOperator import ExtendOperator
 from pyhartig.operators.UnionOperator import UnionOperator
 
@@ -12,16 +11,19 @@ from pyhartig.expressions.Expression import Expression
 from pyhartig.expressions.Constant import Constant
 from pyhartig.expressions.Reference import Reference
 from pyhartig.expressions.FunctionCall import FunctionCall
-from pyhartig.functions.builtins import to_iri, to_literal, concat
 from pyhartig.algebra.Terms import IRI as AlgebraIRI, Literal as AlgebraLiteral
-from pyhartig.namespaces import RR_BASE, RML_BASE, QL_BASE, RDF_BASE
+from pyhartig.namespaces import RR_BASE, RML_BASE, QL_BASE, RDF_BASE, XSD_BASE
+from pyhartig.operators.SourceFactory import SourceFactory
+from pyhartig.functions.builtins import to_iri, to_literal, concat, to_bnode
 
 RR = Namespace(RR_BASE)
 RML = Namespace(RML_BASE)
 QL = Namespace(QL_BASE)
 RDF = Namespace(RDF_BASE)
+XSD = Namespace(XSD_BASE)
 
 logger = logging.getLogger(__name__)
+
 
 class MappingParser:
     """
@@ -77,37 +79,19 @@ class MappingParser:
                 logger.warning(f"Skipping TriplesMap {tm}: No logical source found.")
                 continue
 
-            source_file = self.graph.value(ls_node, RML.source)
-            iterator = self.graph.value(ls_node, RML.iterator)
-
-            import json
-            try:
-                src_path = Path(str(source_file))
-
-                # Resolve relative paths
-                if not src_path.is_absolute():
-                    src_path = self.mapping_dir / src_path
-
-                # [DEBUG] Log the source file being loaded
-                logger.debug(f"Loading source file: {source_file}")
-                with open(src_path, 'r', encoding='utf-8') as f:
-                    raw_data = json.load(f)
-            except FileNotFoundError:
-                # [WARNING] Log missing source file
-                logger.warning(f"Source file not found at: {src_path}. Using empty dataset.")
-                raw_data = {}
-            except Exception as e:
-                # [ERROR] Log other errors during file loading
-                logger.error(f"Error loading JSON source {source_file}: {e}")
-                raw_data = {}
-
-            q = str(iterator) if iterator else "$"
-
             # Algorithm 2 Call: P := EXTRACTQUERIES(TM)
             P = self._extract_queries(tm)
 
-            # Line 5: E_src := Source(LS, q, P)
-            E_src = JsonSourceOperator(source_data=raw_data, iterator_query=q, attribute_mappings=P)
+            try:
+                E_src = SourceFactory.create_source_operator(
+                    graph=self.graph,
+                    logical_source_node=ls_node,
+                    mapping_dir=self.mapping_dir,
+                    attribute_mappings=P
+                )
+            except ValueError as e:
+                logger.error(f"Failed to create source for {tm}: {e}")
+                continue
 
             tm_branches = []
 
@@ -368,14 +352,16 @@ class MappingParser:
             term_type = self.graph.value(term_map, RR.termType)
 
             if term_type is None:
-                term_type = URIRef(f"http://www.w3.org/ns/r2rml#{default_term_type}")
+                term_type = RR[default_term_type]
 
             ref_expr = Reference(str(ref))
 
             if term_type == RR.IRI:
                 return FunctionCall(to_iri, [ref_expr])
+            elif term_type == RR.BlankNode:
+                return FunctionCall(to_bnode, [ref_expr])
             else:
-                return FunctionCall(to_literal, [ref_expr, Constant("http://www.w3.org/2001/XMLSchema#string")])
+                return FunctionCall(to_literal, [ref_expr, Constant(AlgebraIRI(str(XSD.string)))])
 
         # Line 5: Template
         tmpl = self.graph.value(term_map, RR.template)
@@ -391,20 +377,22 @@ class MappingParser:
                     var = part[1:-1]
                     args.append(Reference(var))
                 elif part:
-                    args.append(Constant(part))
+                    args.append(Constant(AlgebraLiteral(part)))
 
-            if not args: return Constant("")
+            if not args: return Constant(AlgebraLiteral(""))
 
             concat_expr = FunctionCall(concat, args)
 
             term_type = self.graph.value(term_map, RR.termType)
 
             if term_type is None:
-                term_type = URIRef(f"http://www.w3.org/ns/r2rml#{default_term_type}")
+                term_type = RR[default_term_type]
 
             if term_type == RR.IRI:
                 return FunctionCall(to_iri, [concat_expr])
-            return FunctionCall(to_literal, [concat_expr, Constant("http://www.w3.org/2001/XMLSchema#string")])
+            elif term_type == RR.BlankNode:
+                return FunctionCall(to_bnode, [concat_expr])
+            return FunctionCall(to_literal, [concat_expr, Constant(AlgebraIRI(str(XSD.string)))])
 
         return Constant(AlgebraIRI("http://error"))
 

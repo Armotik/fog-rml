@@ -48,14 +48,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Definition 14) that should determine the source type (CSV, JSON, XML, SQL) based on `rml:referenceFormulation` and
   instantiate the appropriate operator. **Suggested fix**: Implement a factory pattern or registry to select the correct
   `SourceOperator` based on the reference formulation.
-- Incomplete Blank Node handling: Currently, unhandled cases return `Constant(AlgebraIRI("http://error"))`. Algorithm
-  3 (line 13) specifies the use of `toBNode` for `rr:termType rr:BlankNode`. If a mapping explicitly requests a Blank
-  Node, the current parser returns an error or invalid constant instead of generating a unique identifier or one based
-  on a hash function of the columns (Skolemization). **Suggested fix**: Implement `toBNode` function and integrate it
-  into the parser for `rr:BlankNode` term type.
-- Implement Source Factory: Replace direct `JsonSourceOperator` instantiation with a method that inspects the RDF graph
-  for `rml:referenceFormulation` and instantiates the appropriate operator (`JsonSourceOperator`, `CsvSourceOperator`,
-  etc.).
 - Implement Join support (Algorithm 1): In the `predicateObjectMap` loop, check for `rr:parentTriplesMap`. If present,
   instantiate the parent source pipeline (recursively or via lookup), extract join conditions (`rr:joinCondition`), and
   insert an `EquiJoinOperator` between the current and parent pipelines.
@@ -137,12 +129,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `subject`, `predicate`, `object` (and `graph`), verify they are valid RDF terms (`IRI`, `Literal`, `BNode`), and
   format the line (e.g., `<http://s> <http://p> "o" .`).
 
-##### Source Factory (Missing)
-
-- Implement Source Factory pattern: Currently, `JsonSourceOperator` is hardcoded. Need a `SourceFactory` that reads
-  `rml:source` and `rml:referenceFormulation` to instantiate the appropriate operator. **Benefit**: To support CSV in
-  the future, just add `CsvSourceOperator` and register it in the Factory, without modifying `MappingParser`.
-
 #### Architectural Improvements
 
 ##### Visitor Pattern for `explain()` and `execute()` (Refactoring)
@@ -202,6 +188,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   will likely consume 2-3 GB of RAM and crash Python. This is the most important architectural improvement for project
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
+
+## [0.2.6] - 2026-01-28
+
+### Added
+- **Source Factory Pattern**: Implemented `src/pyhartig/operators/SourceFactory.py` to decouple the `MappingParser` from specific data source implementations.
+    - The factory automatically detects `rml:referenceFormulation` (e.g., `ql:JSONPath`) and instantiates the correct operator.
+- **Blank Node Support**: Updated `MappingParser` to correctly handle `rr:termType rr:BlankNode`. It now maps these terms to the `to_bnode` function (generating Skolemized Blank Nodes) instead of incorrectly treating them as Literals.
+
+### Fixed
+- **Strict Typing Compliance**: Fixed `MappingParser` to strictly use `AlgebraIRI` and `AlgebraLiteral` when creating `Constant` expressions. This resolves type errors raised by the algebraic engine which now forbids raw Python strings.
+- **Namespace Handling**: Corrected URI generation for `rr:termType` and `xsd:string` in `MappingParser`. Replaced error-prone manual concatenation (e.g., `f"{BASE}#..."`) with `rdflib.Namespace` usage to prevent malformed URIs.
+
+### Refactored
+- **MappingParser Decoupling**: Removed hardcoded JSON loading logic and `JsonSourceOperator` instantiation from `MappingParser.py`. It now delegates source creation to `SourceFactory`, making the engine extensible for future CSV/XML support without modifying the core parser.
 
 ## [0.2.5] - 2026-01-26
 

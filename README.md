@@ -212,6 +212,7 @@ src/pyhartig/
 │   └── NTriplesSerializer.py # N-Triples output
 ├── operators/          # Algebraic Operators
 │   ├── Operator.py     # Abstract base class for all operators
+│   ├── SourceFactory.py # Factory for creating Source operators
 │   ├── EquiJoinOperator.py # EquiJoin operator implementation
 │   ├── ExtendOperator.py # Extend operator implementation
 │   ├── ProjectOperator.py # Project operator implementation
