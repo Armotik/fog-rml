@@ -5,6 +5,8 @@ from rdflib import Graph, Namespace, URIRef, Node
 
 from pyhartig.operators.Operator import Operator
 from pyhartig.operators.sources.JsonSourceOperator import JsonSourceOperator
+from pyhartig.operators.sources.CsvSourceOperator import CsvSourceOperator
+from pyhartig.operators.sources.XmlSourceOperator import XmlSourceOperator
 from pyhartig.namespaces import RML_BASE, QL_BASE
 
 logger = logging.getLogger(__name__)
@@ -42,16 +44,24 @@ class SourceFactory:
         if not src_path.is_absolute():
             src_path = mapping_dir / src_path
 
-        # 3. Dispatch based on Reference Formulation
-        # Default to JSON if not specified or if explicitly JSONPath
-        if ref_formulation == QL.JSONPath or ref_formulation is None:
-            return SourceFactory._create_json_source(src_path, iterator, attribute_mappings)
+        # 3. Dispatch based on Reference Formulation using registry
+        registry = {
+            QL.JSONPath: SourceFactory._create_json_source,
+            QL.CSV: SourceFactory._create_csv_source,
+            QL.XPath: SourceFactory._create_xml_source,
+        }
 
-        # Future extension:
-        # if ref_formulation == QL.CSV:
-        #     return SourceFactory._create_csv_source(...)
+        # Default to JSON when not specified
+        factory = None
+        if ref_formulation is None:
+            factory = SourceFactory._create_json_source
+        else:
+            factory = registry.get(ref_formulation)
 
-        raise ValueError(f"Unsupported reference formulation: {ref_formulation}")
+        if factory is None:
+            raise ValueError(f"Unsupported reference formulation: {ref_formulation}")
+
+        return factory(src_path, iterator, attribute_mappings)
 
     @staticmethod
     def _create_json_source(path: Path, iterator: Node, mappings: dict) -> JsonSourceOperator:
@@ -69,10 +79,49 @@ class SourceFactory:
             with open(path, 'r', encoding='utf-8') as f:
                 raw_data = json.load(f)
         except FileNotFoundError:
-            logger.warning(f"Source file not found at: {path}. Using empty dataset.")
-            raw_data = {}
+            logger.error(f"Source file not found at: {path}")
+            raise
         except Exception as e:
             logger.error(f"Error loading JSON source {path}: {e}")
-            raw_data = {}
+            raise
 
         return JsonSourceOperator(source_data=raw_data, iterator_query=query, attribute_mappings=mappings)
+
+    @staticmethod
+    def _create_csv_source(path: Path, iterator: Node, mappings: dict) -> CsvSourceOperator:
+        # For CSV, iterator is ignored (we iterate rows). Extraction queries are column names
+        query = str(iterator) if iterator else "$"
+
+        try:
+            logger.debug(f"Loading CSV source file: {path}")
+            import csv
+            with open(path, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                raw_data = list(reader)
+        except FileNotFoundError:
+            logger.error(f"Source file not found at: {path}")
+            raise
+        except Exception as e:
+            logger.error(f"Error loading CSV source {path}: {e}")
+            raise
+
+        return CsvSourceOperator(source_data=raw_data, iterator_query=query, attribute_mappings=mappings)
+
+    @staticmethod
+    def _create_xml_source(path: Path, iterator: Node, mappings: dict) -> XmlSourceOperator:
+        # For XML, iterator is an XPath expression; extraction queries are relative XPaths
+        query = str(iterator) if iterator else "."
+
+        try:
+            logger.debug(f"Loading XML source file: {path}")
+            import xml.etree.ElementTree as ET
+            tree = ET.parse(path)
+            raw_data = tree.getroot()
+        except FileNotFoundError:
+            logger.error(f"Source file not found at: {path}")
+            raise
+        except Exception as e:
+            logger.error(f"Error loading XML source {path}: {e}")
+            raise
+
+        return XmlSourceOperator(source_data=raw_data, iterator_query=query, attribute_mappings=mappings)

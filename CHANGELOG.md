@@ -42,18 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `ExtendOperator`). There is no detection of `parentTriplesMap` nor instantiation of `EquiJoinOperator`. **Consequence
   **: The implementation currently only supports "flat" mappings (one source → one graph). It is impossible to link two
   JSON files or a CSV and a JSON together.
-- **[CRITICAL]** Remove tight coupling with JSON (Source agnosticism violation): Currently, `JsonSourceOperator` is
-  hardcoded (`E_src = JsonSourceOperator(source_data=raw_data, ...)`). If a user provides an RML mapping pointing to a
-  CSV (`ql:CSV`), the code will crash or try to parse it as JSON. The paper defines a `SRCANDROOTQUERY` abstraction (
-  Definition 14) that should determine the source type (CSV, JSON, XML, SQL) based on `rml:referenceFormulation` and
-  instantiate the appropriate operator. **Suggested fix**: Implement a factory pattern or registry to select the correct
-  `SourceOperator` based on the reference formulation.
 - Implement Join support (Algorithm 1): In the `predicateObjectMap` loop, check for `rr:parentTriplesMap`. If present,
   instantiate the parent source pipeline (recursively or via lookup), extract join conditions (`rr:joinCondition`), and
   insert an `EquiJoinOperator` between the current and parent pipelines.
-- Improve file error handling: Currently uses `except FileNotFoundError: print(...)`. In production or research, it's
-  better to raise the exception to stop the pipeline immediately rather than continuing with `raw_data = {}` (empty
-  dict), which produces a silently empty result that is hard to debug.
 
 #### Tests Suite (`tests/test_suite/`)
 
@@ -188,6 +179,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   will likely consume 2-3 GB of RAM and crash Python. This is the most important architectural improvement for project
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
+
+
+## [0.2.7] - 2026-02-04
+
+### Added
+- **SourceFactory dispatch registry**: `src/pyhartig/operators/SourceFactory.py` now includes a registry to select the correct `SourceOperator` implementation from `rml:referenceFormulation` (e.g., `ql:JSONPath`, `ql:CSV`, `ql:XPath`).
+- **CSV and XML Source Operators**: Added `src/pyhartig/operators/sources/CsvSourceOperator.py` and `src/pyhartig/operators/sources/XmlSourceOperator.py` to support `ql:CSV` and `ql:XPath` reference formulations.
+- **Unit tests for CSV/XML sources**: Added `tests/test_sources/test_csv_xml_sources.py` to validate CSV and XML source handling.
+
+### Changed
+- **Fail-fast file handling in MappingParser**: `src/pyhartig/mapping/MappingParser.py` now checks the mapping file existence and raises `FileNotFoundError` immediately if the RML file is missing (stops the pipeline rather than producing silent empty results).
+- **Source IO errors surface**: `SourceFactory` now re-raises `FileNotFoundError` and other IO errors when loading source files instead of falling back to empty data.
+
+### Fixed
+- **Removed JSON-only coupling**: `MappingParser` no longer instantiates `JsonSourceOperator` directly; it delegates source creation to `SourceFactory` to avoid parsing non-JSON sources as JSON.
+
+### Refactored
+- **Parsing robustness**: Added fallback parsing formats and a TTL-string sanitization attempt to help with common Windows path quoting issues during RML parsing.
 
 ## [0.2.6] - 2026-01-28
 

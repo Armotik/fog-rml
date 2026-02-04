@@ -48,7 +48,54 @@ class MappingParser:
         logger.info(f"Parsing RML mapping file: {self.rml_file_path}")
 
         # Load the RML mapping file into an RDF graph
-        self.graph.parse(self.rml_file_path, format="turtle")
+        # Fail fast if the mapping file does not exist to avoid silent empty results
+        from pathlib import Path as _Path
+        if not _Path(self.rml_file_path).exists():
+            logger.error(f"RML mapping file not found: {self.rml_file_path}")
+            raise FileNotFoundError(f"RML mapping file not found: {self.rml_file_path}")
+
+        try:
+            self.graph.parse(self.rml_file_path, format="turtle")
+        except Exception as e:
+            logger.error(f"Failed to parse RML file {self.rml_file_path}: {e}")
+            # Try alternative RDF formats as a fallback
+            for fmt in ("n3", "trig", "xml"):
+                try:
+                    logger.info(f"Attempting parse with format='{fmt}'")
+                    self.graph.parse(self.rml_file_path, format=fmt)
+                    logger.info(f"Parsed RML file with format '{fmt}'")
+                    break
+                except Exception:
+                    continue
+            else:
+                # Try to sanitize unescaped backslashes inside quoted strings (Windows paths)
+                try:
+                    import re
+                    with open(self.rml_file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+
+                    def _escape_backslashes_in_str(m):
+                        inner = m.group(1)
+                        if "\\\\" in inner:
+                            return '"' + inner + '"'
+                        return '"' + inner.replace('\\', '\\\\') + '"'
+
+                    sanitized = re.sub(r'"([^"\\]*(?:\\.[^"\\]*)*)"', _escape_backslashes_in_str, content)
+
+                    # Try parsing the sanitized content directly
+                    logger.info("Attempting to parse sanitized RML content (escaped backslashes in strings)")
+                    self.graph.parse(data=sanitized, format='turtle')
+                    logger.info("Parsed RML file from sanitized content")
+                except Exception as e3:
+                    # Provide a small sample of the file for diagnostics
+                    try:
+                        with open(self.rml_file_path, 'r', encoding='utf-8') as f:
+                            sample = f.read(1000)
+                        logger.debug(f"RML file sample (first 1000 chars): {repr(sample)}")
+                    except Exception as e2:
+                        logger.debug(f"Could not read file for diagnostic: {e2}")
+                    # Re-raise the original parsing error so caller can handle it
+                    raise
 
         # [DEBUG] Log the number of triples loaded
         logger.debug(f"RDF Graph loaded ({len(self.graph)} triples). Normalizing...")
@@ -125,7 +172,7 @@ class MappingParser:
                 phi_pred = self._create_ext_expr(pm, default_term_type="IRI")
 
                 # Line 25: phi_obj := CREATEEXTEXPR(OM)
-                phi_obj = self._create_ext_expr(om, default_term_type="Litteral")
+                phi_obj = self._create_ext_expr(om, default_term_type="Literal")
 
                 # Line 26: E := Extend(E, "predicate", phi_pred)
                 E = ExtendOperator(E, "predicate", phi_pred)
@@ -332,7 +379,7 @@ class MappingParser:
 
         return P
 
-    def _create_ext_expr(self, term_map: Node, default_term_type: str = "Litteral") -> Expression:
+    def _create_ext_expr(self, term_map: Node, default_term_type: str = "Literal") -> Expression:
         """
         Creates an extension expression from a term map.
         :param term_map: The term map node.
@@ -361,7 +408,7 @@ class MappingParser:
             elif term_type == RR.BlankNode:
                 return FunctionCall(to_bnode, [ref_expr])
             else:
-                return FunctionCall(to_literal, [ref_expr, Constant(AlgebraIRI(str(XSD.string)))])
+                return FunctionCall(to_literal, [ref_expr, Constant(str(XSD.string))])
 
         # Line 5: Template
         tmpl = self.graph.value(term_map, RR.template)
@@ -392,7 +439,7 @@ class MappingParser:
                 return FunctionCall(to_iri, [concat_expr])
             elif term_type == RR.BlankNode:
                 return FunctionCall(to_bnode, [concat_expr])
-            return FunctionCall(to_literal, [concat_expr, Constant(AlgebraIRI(str(XSD.string)))])
+            return FunctionCall(to_literal, [concat_expr, Constant(str(XSD.string))])
 
         return Constant(AlgebraIRI("http://error"))
 
