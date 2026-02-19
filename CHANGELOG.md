@@ -33,19 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Documentation & Onboarding
 - Move detailed sections to separate `docs/` files
 
-#### Mapping Parser Module (`src/pyhartig/mapping/`)
-
-- **[CRITICAL]** Add support for Referencing Object Maps (Joins): This is the most significant missing feature compared
-  to the paper. Algorithm 1 (lines 11-21) explicitly describes how to handle `rr:objectMap` that reference another
-  Triples Map (`rr:parentTriplesMap`). This involves instantiating a second `SourceOperator`, extracting join
-  conditions, and creating an `EquiJoinOperator`. Currently, the loop treats all `objectMap` as simple extensions (
-  `ExtendOperator`). There is no detection of `parentTriplesMap` nor instantiation of `EquiJoinOperator`. **Consequence
-  **: The implementation currently only supports "flat" mappings (one source → one graph). It is impossible to link two
-  JSON files or a CSV and a JSON together.
-- Implement Join support (Algorithm 1): In the `predicateObjectMap` loop, check for `rr:parentTriplesMap`. If present,
-  instantiate the parent source pipeline (recursively or via lookup), extract join conditions (`rr:joinCondition`), and
-  insert an `EquiJoinOperator` between the current and parent pipelines.
-
 #### Tests Suite (`tests/test_suite/`)
 
 - `test_01_source_operators.py`: Reduce coupling to JSON: Currently tests only `JsonSourceOperator`, but there are no
