@@ -180,8 +180,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
 
+## [0.2.8] - 2026-02-18
+
+### Added
+- **Referencing Object Maps (Joins) support**: Implemented handling of `rr:parentTriplesMap` in the mapping
+  parser. `MappingParser` now detects referencing object maps, instantiates a parent source pipeline, extracts
+  `rr:joinCondition` attributes, and wires an `EquiJoinOperator` between child and parent sources to produce
+  joined mapping tuples.
+- **Unit test for referencing object maps**: Added `tests/test_suite/test_15_referencing_object_maps.py` which
+  validates pipeline generation includes an `EquiJoin` and asserts expected join semantics on example JSON
+  sources (parents/children).
+
+### Changed
+- **MappingParser**: Normalizes join attribute names and extraction queries; extracts join attributes earlier so
+  parent resolution and attribute-mapping augmentation occur before parent `SourceOperator` creation. The parser
+  now constructs EquiJoin on raw sources and then applies `ExtendOperator` to generate `subject` and
+  `parent_subject` attributes to avoid attribute-name collisions during join.
+
+### Fixed
+- **Join wiring bug**: Fixed a use-before-assignment bug when resolving inline `rr:parentTriplesMap` by pre-extracting
+  join attributes and using them to resolve parent TriplesMaps that lacked an explicit logical source node after
+  normalization.
+- **JSON iterator edge-case**: `JsonSourceOperator` now unwraps a root JSON array returned by an iterator so the
+  operator iterates over elements (not the array object) — fixes missed rows when the iterator points at the root
+  list.
+
+### Tests
+- Added pipeline-level assertion ensuring the generated pipeline contains an `EquiJoin` with the expected
+  join condition (e.g., `author = user_id`).
+ - `test_15_referencing_object_maps`: Added comprehensive join tests and  integrated an additional case covering referenced `rr:parentTriplesMap`.
+ - `test_16_join_edge_cases.py`: new file containing multiple-edge-case tests (multiple
+     join conditions, template-based joins, missing parent attributes, and multi-variable template joins).
+
 
 ## [0.2.7] - 2026-02-04
+
 
 ### Added
 - **SourceFactory dispatch registry**: `src/pyhartig/operators/SourceFactory.py` now includes a registry to select the correct `SourceOperator` implementation from `rml:referenceFormulation` (e.g., `ql:JSONPath`, `ql:CSV`, `ql:XPath`).

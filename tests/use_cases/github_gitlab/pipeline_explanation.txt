@@ -3,19 +3,19 @@ Union(
   ├─ [0]:
     Extend(
       attribute: object
-      expression: Const(<http://schema.org/Issue>)
+      expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
       parent:
         └─ Extend(
           attribute: predicate
-          expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+          expression: Const(<http://schema.org/description>)
           parent:
             └─ Extend(
               attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['iid']
+                  mappings: ['number', 'body']
                 )
             )
         )
@@ -23,7 +23,7 @@ Union(
   ├─ [1]:
     Extend(
       attribute: object
-      expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
+      expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
       parent:
         └─ Extend(
           attribute: predicate
@@ -31,11 +31,11 @@ Union(
           parent:
             └─ Extend(
               attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['number', 'body']
+                  mappings: ['iid', 'description']
                 )
             )
         )
@@ -43,11 +43,11 @@ Union(
   ├─ [2]:
     Extend(
       attribute: object
-      expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
+      expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
       parent:
         └─ Extend(
           attribute: predicate
-          expression: Const(<http://schema.org/description>)
+          expression: Const(<http://schema.org/dateCreated>)
           parent:
             └─ Extend(
               attribute: subject
@@ -55,7 +55,7 @@ Union(
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['number', 'body']
+                  mappings: ['number', 'created_at']
                 )
             )
         )
@@ -63,11 +63,11 @@ Union(
   ├─ [3]:
     Extend(
       attribute: object
-      expression: Const(<http://schema.org/Issue>)
+      expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
       parent:
         └─ Extend(
           attribute: predicate
-          expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+          expression: Const(<http://schema.org/name>)
           parent:
             └─ Extend(
               attribute: subject
@@ -75,7 +75,7 @@ Union(
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['iid']
+                  mappings: ['iid', 'title']
                 )
             )
         )
@@ -83,19 +83,19 @@ Union(
   ├─ [4]:
     Extend(
       attribute: object
-      expression: Const("GitLab")
+      expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
       parent:
         └─ Extend(
           attribute: predicate
-          expression: Const(<http://example.org/source>)
+          expression: Const(<http://schema.org/dateCreated>)
           parent:
             └─ Extend(
               attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['iid']
+                  mappings: ['number', 'created_at']
                 )
             )
         )
@@ -103,11 +103,11 @@ Union(
   ├─ [5]:
     Extend(
       attribute: object
-      expression: Const(<http://schema.org/Issue>)
+      expression: Const("GitHub")
       parent:
         └─ Extend(
           attribute: predicate
-          expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+          expression: Const(<http://example.org/source>)
           parent:
             └─ Extend(
               attribute: subject
@@ -123,44 +123,24 @@ Union(
   ├─ [6]:
     Extend(
       attribute: object
-      expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
+      expression: Const(<http://schema.org/Issue>)
       parent:
         └─ Extend(
           attribute: predicate
-          expression: Const(<http://schema.org/dateCreated>)
+          expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
           parent:
             └─ Extend(
               attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['number', 'created_at']
+                  mappings: ['iid']
                 )
             )
         )
     )
   ├─ [7]:
-    Extend(
-      attribute: object
-      expression: Const("GitHub")
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://example.org/source>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['number']
-                )
-            )
-        )
-    )
-  ├─ [8]:
     Extend(
       attribute: object
       expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
@@ -180,47 +160,27 @@ Union(
             )
         )
     )
+  ├─ [8]:
+    Extend(
+      attribute: object
+      expression: Const(<http://schema.org/Issue>)
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['number']
+                )
+            )
+        )
+    )
   ├─ [9]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/name>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['number', 'title']
-                )
-            )
-        )
-    )
-  ├─ [10]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(user.login), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/creator>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['number', 'user.login']
-                )
-            )
-        )
-    )
-  ├─ [11]:
     Extend(
       attribute: object
       expression: Const("GitLab")
@@ -240,47 +200,27 @@ Union(
             )
         )
     )
-  ├─ [12]:
+  ├─ [10]:
     Extend(
       attribute: object
-      expression: to_literal(Ref(author.username), Const('http://www.w3.org/2001/XMLSchema#string'))
+      expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
       parent:
         └─ Extend(
           attribute: predicate
-          expression: Const(<http://schema.org/creator>)
+          expression: Const(<http://schema.org/description>)
           parent:
             └─ Extend(
               attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['iid', 'author.username']
+                  mappings: ['number', 'body']
                 )
             )
         )
     )
-  ├─ [13]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/dateCreated>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['iid', 'created_at']
-                )
-            )
-        )
-    )
-  ├─ [14]:
+  ├─ [11]:
     Extend(
       attribute: object
       expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
@@ -300,54 +240,14 @@ Union(
             )
         )
     )
-  ├─ [15]:
+  ├─ [12]:
     Extend(
       attribute: object
-      expression: to_literal(Ref(user.login), Const('http://www.w3.org/2001/XMLSchema#string'))
+      expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
       parent:
         └─ Extend(
           attribute: predicate
-          expression: Const(<http://schema.org/creator>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['number', 'user.login']
-                )
-            )
-        )
-    )
-  ├─ [16]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/dateCreated>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['number', 'created_at']
-                )
-            )
-        )
-    )
-  ├─ [17]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/dateCreated>)
+          expression: Const(<http://schema.org/description>)
           parent:
             └─ Extend(
               attribute: subject
@@ -355,7 +255,107 @@ Union(
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['iid', 'created_at']
+                  mappings: ['iid', 'description']
+                )
+            )
+        )
+    )
+  ├─ [13]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/description>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid', 'description']
+                )
+            )
+        )
+    )
+  ├─ [14]:
+    Extend(
+      attribute: object
+      expression: Const(<http://schema.org/Issue>)
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid']
+                )
+            )
+        )
+    )
+  ├─ [15]:
+    Extend(
+      attribute: object
+      expression: Const("GitLab")
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://example.org/source>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid']
+                )
+            )
+        )
+    )
+  ├─ [16]:
+    Extend(
+      attribute: object
+      expression: Const("GitLab")
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://example.org/source>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid']
+                )
+            )
+        )
+    )
+  ├─ [17]:
+    Extend(
+      attribute: object
+      expression: Const("GitLab")
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://example.org/source>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid']
                 )
             )
         )
@@ -371,56 +371,16 @@ Union(
           parent:
             └─ Extend(
               attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['iid', 'title']
+                  mappings: ['number', 'title']
                 )
             )
         )
     )
   ├─ [19]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/description>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['iid', 'description']
-                )
-            )
-        )
-    )
-  ├─ [20]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/description>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['iid', 'description']
-                )
-            )
-        )
-    )
-  ├─ [21]:
     Extend(
       attribute: object
       expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
@@ -431,56 +391,16 @@ Union(
           parent:
             └─ Extend(
               attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['number', 'title']
-                )
-            )
-        )
-    )
-  ├─ [22]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/description>)
-          parent:
-            └─ Extend(
-              attribute: subject
               expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['iid', 'description']
+                  mappings: ['iid', 'title']
                 )
             )
         )
     )
-  ├─ [23]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/description>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['number', 'body']
-                )
-            )
-        )
-    )
-  ├─ [24]:
+  ├─ [20]:
     Extend(
       attribute: object
       expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
@@ -500,87 +420,7 @@ Union(
             )
         )
     )
-  ├─ [25]:
-    Extend(
-      attribute: object
-      expression: Const("GitHub")
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://example.org/source>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['number']
-                )
-            )
-        )
-    )
-  ├─ [26]:
-    Extend(
-      attribute: object
-      expression: Const(<http://schema.org/Issue>)
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['iid']
-                )
-            )
-        )
-    )
-  ├─ [27]:
-    Extend(
-      attribute: object
-      expression: Const(<http://schema.org/Issue>)
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['number']
-                )
-            )
-        )
-    )
-  ├─ [28]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/name>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['iid', 'title']
-                )
-            )
-        )
-    )
-  ├─ [29]:
+  ├─ [21]:
     Extend(
       attribute: object
       expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
@@ -600,14 +440,154 @@ Union(
             )
         )
     )
-  ├─ [30]:
+  ├─ [22]:
     Extend(
       attribute: object
-      expression: Const("GitLab")
+      expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/dateCreated>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid', 'created_at']
+                )
+            )
+        )
+    )
+  ├─ [23]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/name>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['number', 'title']
+                )
+            )
+        )
+    )
+  ├─ [24]:
+    Extend(
+      attribute: object
+      expression: Const("GitHub")
       parent:
         └─ Extend(
           attribute: predicate
           expression: Const(<http://example.org/source>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['number']
+                )
+            )
+        )
+    )
+  ├─ [25]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/name>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['number', 'title']
+                )
+            )
+        )
+    )
+  ├─ [26]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/dateCreated>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid', 'created_at']
+                )
+            )
+        )
+    )
+  ├─ [27]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(author), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/creator>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid', 'author']
+                )
+            )
+        )
+    )
+  ├─ [28]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/dateCreated>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid', 'created_at']
+                )
+            )
+        )
+    )
+  ├─ [29]:
+    Extend(
+      attribute: object
+      expression: Const(<http://schema.org/Issue>)
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
           parent:
             └─ Extend(
               attribute: subject
@@ -616,6 +596,26 @@ Union(
                 └─ Source(
                   iterator: $[*]
                   mappings: ['iid']
+                )
+            )
+        )
+    )
+  ├─ [30]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(author), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/creator>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid', 'author']
                 )
             )
         )
@@ -631,16 +631,76 @@ Union(
           parent:
             └─ Extend(
               attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['iid']
+                  mappings: ['number']
                 )
             )
         )
     )
   ├─ [32]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(author), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/creator>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid', 'author']
+                )
+            )
+        )
+    )
+  ├─ [33]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(author), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/creator>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid', 'author']
+                )
+            )
+        )
+    )
+  ├─ [34]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(user), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/creator>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['number', 'user']
+                )
+            )
+        )
+    )
+  ├─ [35]:
     Extend(
       attribute: object
       expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
@@ -660,74 +720,14 @@ Union(
             )
         )
     )
-  ├─ [33]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(author.username), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/creator>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['iid', 'author.username']
-                )
-            )
-        )
-    )
-  ├─ [34]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/name>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['number', 'title']
-                )
-            )
-        )
-    )
-  ├─ [35]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(user.login), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/creator>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['number', 'user.login']
-                )
-            )
-        )
-    )
   ├─ [36]:
     Extend(
       attribute: object
-      expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
+      expression: to_literal(Ref(user), Const('http://www.w3.org/2001/XMLSchema#string'))
       parent:
         └─ Extend(
           attribute: predicate
-          expression: Const(<http://schema.org/dateCreated>)
+          expression: Const(<http://schema.org/creator>)
           parent:
             └─ Extend(
               attribute: subject
@@ -735,32 +735,12 @@ Union(
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['number', 'created_at']
+                  mappings: ['number', 'user']
                 )
             )
         )
     )
   ├─ [37]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/description>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['iid', 'description']
-                )
-            )
-        )
-    )
-  ├─ [38]:
     Extend(
       attribute: object
       expression: Const(<http://schema.org/Issue>)
@@ -780,27 +760,7 @@ Union(
             )
         )
     )
-  ├─ [39]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/dateCreated>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['iid', 'created_at']
-                )
-            )
-        )
-    )
-  ├─ [40]:
+  ├─ [38]:
     Extend(
       attribute: object
       expression: Const("GitHub")
@@ -820,7 +780,7 @@ Union(
             )
         )
     )
-  ├─ [41]:
+  ├─ [39]:
     Extend(
       attribute: object
       expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
@@ -840,47 +800,7 @@ Union(
             )
         )
     )
-  ├─ [42]:
-    Extend(
-      attribute: object
-      expression: Const("GitLab")
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://example.org/source>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['iid']
-                )
-            )
-        )
-    )
-  ├─ [43]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(author.username), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/creator>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['iid', 'author.username']
-                )
-            )
-        )
-    )
-  ├─ [44]:
+  ├─ [40]:
     Extend(
       attribute: object
       expression: Const(<http://schema.org/Issue>)
@@ -900,10 +820,10 @@ Union(
             )
         )
     )
-  ├─ [45]:
+  ├─ [41]:
     Extend(
       attribute: object
-      expression: to_literal(Ref(user.login), Const('http://www.w3.org/2001/XMLSchema#string'))
+      expression: to_literal(Ref(user), Const('http://www.w3.org/2001/XMLSchema#string'))
       parent:
         └─ Extend(
           attribute: predicate
@@ -915,32 +835,12 @@ Union(
               parent:
                 └─ Source(
                   iterator: $[*]
-                  mappings: ['number', 'user.login']
+                  mappings: ['number', 'user']
                 )
             )
         )
     )
-  ├─ [46]:
-    Extend(
-      attribute: object
-      expression: to_literal(Ref(author.username), Const('http://www.w3.org/2001/XMLSchema#string'))
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://schema.org/creator>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['iid', 'author.username']
-                )
-            )
-        )
-    )
-  └─ [47]:
+  ├─ [42]:
     Extend(
       attribute: object
       expression: Const("GitHub")
@@ -956,6 +856,106 @@ Union(
                 └─ Source(
                   iterator: $[*]
                   mappings: ['number']
+                )
+            )
+        )
+    )
+  ├─ [43]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(user), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/creator>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['number', 'user']
+                )
+            )
+        )
+    )
+  ├─ [44]:
+    Extend(
+      attribute: object
+      expression: Const(<http://schema.org/Issue>)
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid']
+                )
+            )
+        )
+    )
+  ├─ [45]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/dateCreated>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['number', 'created_at']
+                )
+            )
+        )
+    )
+  ├─ [46]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/description>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://github.com/issue/"), Ref(number)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['number', 'body']
+                )
+            )
+        )
+    )
+  └─ [47]:
+    Extend(
+      attribute: object
+      expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
+      parent:
+        └─ Extend(
+          attribute: predicate
+          expression: Const(<http://schema.org/description>)
+          parent:
+            └─ Extend(
+              attribute: subject
+              expression: to_iri(concat(Const("http://gitlab.com/issue/"), Ref(iid)))
+              parent:
+                └─ Source(
+                  iterator: $[*]
+                  mappings: ['iid', 'description']
                 )
             )
         )

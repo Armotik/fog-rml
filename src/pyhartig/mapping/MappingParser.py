@@ -6,6 +6,7 @@ from pathlib import Path
 from pyhartig.operators.Operator import Operator
 from pyhartig.operators.ExtendOperator import ExtendOperator
 from pyhartig.operators.UnionOperator import UnionOperator
+from pyhartig.operators.EquiJoinOperator import EquiJoinOperator
 
 from pyhartig.expressions.Expression import Expression
 from pyhartig.expressions.Constant import Constant
@@ -171,14 +172,139 @@ class MappingParser:
                 # Line 24: phi_pred := CREATEEXTEXPR(PM)
                 phi_pred = self._create_ext_expr(pm, default_term_type="IRI")
 
-                # Line 25: phi_obj := CREATEEXTEXPR(OM)
-                phi_obj = self._create_ext_expr(om, default_term_type="Literal")
+                # Detect referencing object maps (joins)
+                parent_tm = None
+                try:
+                    parent_tm = self.graph.value(om, RR.parentTriplesMap)
+                except Exception:
+                    parent_tm = None
 
-                # Line 26: E := Extend(E, "predicate", phi_pred)
-                E = ExtendOperator(E, "predicate", phi_pred)
+                # Pre-extract join attributes so we can use them for resolution and
+                # to augment attribute mappings before creating source operators.
+                child_attrs, parent_attrs, child_queries, parent_queries = self._extract_join_attributes(om)
 
-                # Line 27: E := Extend(E, "object", phi_obj)
-                E = ExtendOperator(E, "object", phi_obj)
+                if parent_tm:
+                    # Build parent source operator
+                    parent_ls = self.graph.value(parent_tm, RML.logicalSource) or self.graph.value(parent_tm, RR.logicalSource)
+                    if not parent_ls:
+                        # Try to log some diagnostics to help tests/debugging
+                        try:
+                            props = list(self.graph.predicate_objects(parent_tm))
+                            logger.debug(f"Parent TriplesMap {parent_tm} predicates: {props}")
+                        except Exception:
+                            pass
+
+                        # Try to locate the actual TriplesMap matching the join parent's reference
+                        # by scanning existing TriplesMaps for a subjectMap that uses the
+                        # same rml:reference or contains the same template variable.
+                        found = False
+                        if parent_attrs:
+                            for cand in triples_maps:
+                                sm_cand = self.graph.value(cand, RR.subjectMap)
+                                if not sm_cand:
+                                    continue
+                                # check rml:reference
+                                cand_ref = self.graph.value(sm_cand, RML.reference)
+                                if cand_ref:
+                                    # normalize cand_ref name and compare to parent_attrs
+                                    import re
+                                    m = re.search(r"[A-Za-z_][A-Za-z0-9_\-]*", str(cand_ref))
+                                    cand_name = m.group(0) if m else str(cand_ref)
+                                    if any(cand_name == pa for pa in parent_attrs):
+                                        parent_tm = cand
+                                        parent_ls = self.graph.value(parent_tm, RML.logicalSource) or self.graph.value(parent_tm, RR.logicalSource)
+                                        found = True
+                                        logger.debug(f"Resolved parent TriplesMap by reference: {parent_tm}")
+                                        break
+                                # check template variables inside rr:template
+                                cand_tmpl = self.graph.value(sm_cand, RR.template)
+                                if cand_tmpl:
+                                    tmpl_str = str(cand_tmpl)
+                                    for pa in parent_attrs:
+                                        # match variable name inside template {var}
+                                        if pa in tmpl_str or f"{{{pa}}}" in tmpl_str:
+                                            parent_tm = cand
+                                            parent_ls = self.graph.value(parent_tm, RML.logicalSource) or self.graph.value(parent_tm, RR.logicalSource)
+                                            found = True
+                                            logger.debug(f"Resolved parent TriplesMap by template match: {parent_tm}")
+                                            break
+                                if found:
+                                    break
+
+                        if not found and (parent_ls is None):
+                            logger.error(f"Parent TriplesMap {parent_tm} has no logicalSource; skipping join.")
+                            continue
+
+                    # Extract parent queries and ensure parent attribute mappings include the join parent attributes
+                    P_parent = self._extract_queries(parent_tm)
+                    try:
+                        for name, q in zip(parent_attrs, parent_queries):
+                            if name and q and name not in P_parent:
+                                P_parent[name] = q
+                    except Exception:
+                        pass
+
+                    try:
+                        E_parent_src = SourceFactory.create_source_operator(
+                            graph=self.graph,
+                            logical_source_node=parent_ls,
+                            mapping_dir=self.mapping_dir,
+                            attribute_mappings=P_parent
+                        )
+                    except ValueError as e:
+                        logger.error(f"Failed to create parent source for {parent_tm}: {e}")
+                        continue
+
+                    # Prepare parent subject expression (do not extend parent source yet)
+                    parent_sm = self.graph.value(parent_tm, RR.subjectMap)
+                    if parent_sm:
+                        phi_parent_sbj = self._create_ext_expr(parent_sm, default_term_type="IRI")
+                    else:
+                        phi_parent_sbj = None
+
+                    if not child_attrs or not parent_attrs:
+                        logger.error(f"No valid join conditions found in referencing object map {om}; skipping.")
+                        continue
+
+                    # Ensure the child attributes used in the join are available in the
+                    # current TriplesMap's attribute mappings (P). If not, add them using
+                    # the extracted JSONPath queries so the SourceOperator will produce
+                    # the required attributes for joining.
+                    for name, q in zip(child_attrs, child_queries):
+                        if name and q and name not in P:
+                            P[name] = q
+
+                    # Ensure parent attribute mappings include parent join attributes (already added to P_parent above)
+
+                    # Create EquiJoin between the raw source operators (before subject extension)
+                    try:
+                        join_op = EquiJoinOperator(E_src, E_parent_src, child_attrs, parent_attrs)
+                    except Exception as e:
+                        logger.error(f"Failed to create EquiJoinOperator for {tm} <> {parent_tm}: {e}")
+                        continue
+
+                    # After joining, first extend to create the child's subject attribute
+                    E_after_child = ExtendOperator(join_op, "subject", phi_sbj)
+
+                    # Then extend to create the parent's subject under a distinct name to avoid attribute collision
+                    if phi_parent_sbj is not None:
+                        E_after_parent = ExtendOperator(E_after_child, "parent_subject", phi_parent_sbj)
+                    else:
+                        E_after_parent = E_after_child
+
+                    # Finally, set predicate and set object to parent's subject
+                    E = ExtendOperator(E_after_parent, "predicate", phi_pred)
+                    E = ExtendOperator(E, "object", Reference("parent_subject"))
+
+                else:
+                    # Line 25: phi_obj := CREATEEXTEXPR(OM)
+                    phi_obj = self._create_ext_expr(om, default_term_type="Literal")
+
+                    # Line 26: E := Extend(E, "predicate", phi_pred)
+                    E = ExtendOperator(E, "predicate", phi_pred)
+
+                    # Line 27: E := Extend(E, "object", phi_obj)
+                    E = ExtendOperator(E, "object", phi_obj)
 
                 tm_branches.append(E)
 
@@ -351,6 +477,15 @@ class MappingParser:
         """
         P = {}
 
+        def _normalize_name(s: str) -> str:
+            import re
+            if not s:
+                return s
+            m = re.search(r"[A-Za-z_][A-Za-z0-9_\-]*", s)
+            if m:
+                return m.group(0)
+            return s
+
         def scan_map(term_map) -> None:
             """
             Scans a term map for references and templates to extract query parameters.
@@ -361,14 +496,16 @@ class MappingParser:
 
             ref = self.graph.value(term_map, RML.reference)
             if ref:
-                P[str(ref)] = str(ref)
+                ref_str = str(ref)
+                name = _normalize_name(ref_str)
+                P[name] = ref_str
 
             tmpl = self.graph.value(term_map, RR.template)
             if tmpl:
                 import re
                 vars = re.findall(r'\{([^}]+)\}', str(tmpl))
                 for v in vars:
-                    P[v] = v
+                    P[v] = f"$.{v}"
 
         sm = self.graph.value(tm, RR.subjectMap)
         scan_map(sm)
@@ -378,6 +515,60 @@ class MappingParser:
             scan_map(self.graph.value(pom, RR.objectMap))
 
         return P
+
+    def _extract_join_attributes(self, object_map: Node):
+        """
+        Extract lists of join attribute names and their extraction queries from rr:joinCondition nodes attached to an object map.
+        Returns (child_attrs, parent_attrs, child_queries, parent_queries) where each is a list.
+        """
+        child_attrs = []
+        parent_attrs = []
+        child_queries = []
+        parent_queries = []
+
+        def _normalize_name(s: str) -> str:
+            import re
+            if not s:
+                return s
+            m = re.search(r"[A-Za-z_][A-Za-z0-9_\-]*", s)
+            if m:
+                return m.group(0)
+            return s
+
+        for jc in self.graph.objects(object_map, RR.joinCondition):
+            parent = self.graph.value(jc, RR.parent)
+            child = self.graph.value(jc, RR.child)
+
+            def _extract(node):
+                if node is None:
+                    return None, None
+                try:
+                    ref = self.graph.value(node, RML.reference)
+                    if ref:
+                        q = str(ref)
+                        return _normalize_name(q), q
+                    tmpl = self.graph.value(node, RR.template)
+                    if tmpl:
+                        import re
+                        vars = re.findall(r'\{([^}]+)\}', str(tmpl))
+                        if len(vars) == 1:
+                            v = vars[0]
+                            return v, f"$.{v}"
+                        return str(tmpl), None
+                except Exception:
+                    pass
+                return str(node), None
+
+            p_name, p_q = _extract(parent)
+            c_name, c_q = _extract(child)
+
+            if c_name and p_name:
+                child_attrs.append(c_name)
+                parent_attrs.append(p_name)
+                child_queries.append(c_q)
+                parent_queries.append(p_q)
+
+        return child_attrs, parent_attrs, child_queries, parent_queries
 
     def _create_ext_expr(self, term_map: Node, default_term_type: str = "Literal") -> Expression:
         """
@@ -401,7 +592,20 @@ class MappingParser:
             if term_type is None:
                 term_type = RR[default_term_type]
 
-            ref_expr = Reference(str(ref))
+            # Normalize attribute name for references so Reference expressions
+            # and attribute mappings use consistent attribute keys
+            def _normalize_name(s: str) -> str:
+                import re
+                if not s:
+                    return s
+                m = re.search(r"[A-Za-z_][A-Za-z0-9_\-]*", s)
+                if m:
+                    return m.group(0)
+                return s
+
+            ref_str = str(ref)
+            ref_name = _normalize_name(ref_str)
+            ref_expr = Reference(ref_name)
 
             if term_type == RR.IRI:
                 return FunctionCall(to_iri, [ref_expr])

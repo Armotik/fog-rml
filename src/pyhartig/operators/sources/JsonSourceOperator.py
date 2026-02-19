@@ -56,7 +56,13 @@ class JsonSourceOperator(SourceOperator):
             self._compiled_iterator = jsonpath_expr
 
         source = self._data if self._data is not None else data
-        return [match.value for match in jsonpath_expr.find(source)]
+        matches = [match.value for match in jsonpath_expr.find(source)]
+        # If the iterator expression returned a single list (root array),
+        # treat its elements as the iteration contexts (common case when
+        # rml:iterator is '$' and the JSON source is an array).
+        if len(matches) == 1 and isinstance(matches[0], list):
+            return matches[0]
+        return matches
 
     def _apply_extraction(self, context: Any, query: str) -> List[Any]:
         """
