@@ -219,7 +219,9 @@ src/pyhartig/
 │   ├── UnionOperator.py  # Union operator implementation
 │   ├── SourceOperator.py # Abstract Source operator
 │   └── sources/        # Source operator implementations
+│       └── CsvSourceOperator.py # CSV data source operator
 │       └── JsonSourceOperator.py # JSON data source operator
+│       └── XmlSourceOperator.py # XML data source operator
 ├── namespaces.py    # Common RDF namespaces
 └── __main__.py       # Entry point for CLI
 tests/                  # Unit tests for all components
