@@ -306,6 +306,15 @@ class MappingParser:
                     # Line 27: E := Extend(E, "object", phi_obj)
                     E = ExtendOperator(E, "object", phi_obj)
 
+                # Named-graph support: prefer POM-level graphMap, fallback to subject-level graphMap
+                gm_node = self.graph.value(pom, RR.graphMap) or (sm and self.graph.value(sm, RR.graphMap))
+                if gm_node:
+                    try:
+                        phi_graph = self._create_ext_expr(gm_node, default_term_type="IRI")
+                        E = ExtendOperator(E, "graph", phi_graph)
+                    except Exception as e:
+                        logger.error(f"Failed to create graph extension for POM {pom} in TM {tm}: {e}")
+
                 tm_branches.append(E)
 
             # Line 28: S := S U {E}
@@ -492,7 +501,8 @@ class MappingParser:
             :param term_map: The term map to scan.
             :return: None
             """
-            if not term_map: return
+            if not term_map:
+                return
 
             ref = self.graph.value(term_map, RML.reference)
             if ref:
@@ -509,10 +519,15 @@ class MappingParser:
 
         sm = self.graph.value(tm, RR.subjectMap)
         scan_map(sm)
+        # Also scan any subject-level graphMap so variables used to build named graphs
+        # get included in attribute mappings
+        scan_map(self.graph.value(sm, RR.graphMap))
 
         for pom in self.graph.objects(tm, RR.predicateObjectMap):
             scan_map(self.graph.value(pom, RR.predicateMap))
             scan_map(self.graph.value(pom, RR.objectMap))
+            # Include any graphMap attached to the predicate-object map
+            scan_map(self.graph.value(pom, RR.graphMap))
 
         return P
 

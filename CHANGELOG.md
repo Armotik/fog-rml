@@ -85,14 +85,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### General Improvements
 
-##### Named Graphs / Graph Maps (Missing)
-
-- Add support for Named Graphs (Quads): RML allows generating Quads (Subject, Predicate, Object, Graph), not just
-  Triples. Currently, `MappingParser` and tests focus only on `subject`, `predicate`, `object`. If an RML mapping
-  contains `rr:graphMap`, it will be ignored. The algebra is flexible enough - adding a "graph" column is trivial via
-  `ExtendOperator`. **Action**: Modify `MappingParser` to detect `rr:graphMap` and add a corresponding `ExtendOperator`
-  that generates the `graph` attribute.
-
 ##### Logging vs Print (Improvement)
 
 - Replace `print()` with `logging` module: In `MappingParser.py` (and elsewhere), `print(f"Error: ...")` or try/except
@@ -166,6 +158,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   will likely consume 2-3 GB of RAM and crash Python. This is the most important architectural improvement for project
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
+
+## [0.2.9] - 2026-02-20
+
+### Added
+- **Named Graphs (rr:graphMap) support**: `MappingParser` now detects `rr:graphMap` on
+  `rr:predicateObjectMap` and `rr:subjectMap` and attaches an `ExtendOperator`
+  that produces a `graph` attribute for each generated tuple. This enables
+  generation of quads (subject, predicate, object, graph) from RML mappings.
+- **Unit tests**: Added `tests/test_suite/test_17_named_graphs.py` covering
+  template- and reference-based graph maps and POM-level override semantics.
+
+### Changed
+- **SourceFactory path resolution**: `SourceFactory.create_source_operator`
+  accepts `rml:reference` as a fallback for the logical source file, resolves
+  relative paths against the mapping file directory, and includes additional
+  fallback heuristics (CWD fallback, mapping-dir search) to make test and
+  example mappings more robust.
+
+### Fixed
+- Ensure graph attribute generation coexists with existing `Extend`/`EquiJoin`
+  wiring and does not break pipeline branch generation.
 
 ## [0.2.8] - 2026-02-18
 
