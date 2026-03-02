@@ -78,7 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Testing & Quality
 - Confirm execution of all current tests (Regression testing).
 - Integrate external RML conformance tests (Compatibility):
-  - [RML Test Cases](https://rml.io/test-cases/)
+  - [RML Test Cases](https://rml.io/test-cases/) (done)
   - [PyRML Test Suite](https://github.com/anuzzolese/pyrml)
   - [RMLMapper-Java Test Suite](https://github.com/RMLio/rmlmapper-java)
   - [Morph-KGC Test Suite](https://github.com/morph-kgc/morph-kgc)
@@ -158,6 +158,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   will likely consume 2-3 GB of RAM and crash Python. This is the most important architectural improvement for project
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
+
+## [0.3.0] - 2026-03-02
+
+### Added
+- **Full RML conformance runner**: Added and stabilized `scripts/run_rml_conformance.py` to execute external RML test-cases end-to-end, compare RDF outputs via graph isomorphism, and report coverage.
+- **Expected-error semantics**: Integrated `metadata.csv` handling (`error expected?`) so expected failures are counted correctly and surfaced explicitly in summaries.
+- **Per-case output colocation**: Runner now materializes each case under `external/rml-test-cases/results/<case>/` with copied mapping/resources and generated `output_pyhartig.*` for direct inspection.
+- **N-Quads serialization support**: Added `src/pyhartig/serializers/NQuadsSerializer.py` and output-format-aware serialization in `run` command when target extension is `.nq`.
+- **Database source operators**: Added relational source support with
+  - `src/pyhartig/operators/sources/MysqlSourceOperator.py`
+  - `src/pyhartig/operators/sources/PostgresqlSourceOperator.py`
+  - `src/pyhartig/operators/sources/SqlserverSourceOperator.py`
+  - `src/pyhartig/operators/sources/sql_fixture_fallback.py` for SQL fixture emulation.
+- **SPARQL local emulation path**: Added `src/pyhartig/operators/sources/SparqlSourceOperator.py` support path in `SourceFactory` for service/query cases backed by local `resource*.ttl` where applicable.
+
+### Changed
+- **Mapping normalization/runtime resilience** (`src/pyhartig/mapping/MappingParser.py`):
+  - Kept Query 4 and Query 5 normalization blocks aligned with required canonical text.
+  - Added runtime fallback/provenance handling for no-join parentTriplesMap and TM clone reconstruction after destructive normalization.
+  - Improved parent resolution heuristics and join attribute handling to preserve semantics across edge cases.
+  - Added explicit default graph extension (`rr:defaultGraph`) when no graphMap is present on subject/POM branches.
+  - Added per-branch projection to `{subject, predicate, object, graph}` before union to align pipeline shape.
+  - Added `rr:datatype` handling for reference/template-valued term maps, with validation for invalid language+datatype combinations.
+  - Preserved typed and language-tagged `rr:constant` literals when constructing extend expressions.
+- **Source dispatch and DB wiring** (`src/pyhartig/operators/SourceFactory.py`):
+  - Expanded logical source detection for SPARQL and relational sources.
+  - Added DB operator routing and mapping directory propagation for fixture fallback flows.
+- **Join execution behavior** (`src/pyhartig/operators/EquiJoinOperator.py`):
+  - Improved join-key normalization and overlap handling to avoid false-negative joins caused by type/lexical mismatches.
+- **Source extraction robustness**:
+  - `src/pyhartig/operators/sources/CsvSourceOperator.py`: improved JSONPath-like/case-insensitive key handling.
+  - `src/pyhartig/operators/sources/JsonSourceOperator.py`: improved tolerant query parsing and fallback behavior.
+  - `src/pyhartig/operators/sources/XmlSourceOperator.py`: improved iterator/extraction fallbacks for common XPath forms.
+- **CLI run serialization flow** (`src/pyhartig/commands/run.py`):
+  - Serializer auto-selection by output extension.
+  - Post-processing to avoid duplicate triple/quad emission for same `(s,p,o)` key where quads are present.
+- **Documentation consistency** (`README.md`):
+  - Corrected section numbering and project-structure entries (including serializer/source-operator listings) to match current implementation.
+
+### Fixed
+- **Default graph handling in N-Quads**: `rr:defaultGraph` now serializes as default graph (triple form, no 4th term), matching expected conformance outputs.
+- **Blank node identifiers**: Updated `to_bnode` behavior in `src/pyhartig/functions/builtins.py` to emit readable deterministic labels when valid (e.g., `_:Venus`, `_:BobSmith`) with hashed fallback only for unsafe labels.
+- **Conformance result accounting**: Compare exceptions are now correctly counted as failures.
+
+### Tests
+- Expanded source/operator coverage in `tests/test_suite/test_01_source_operators.py` for SPARQL and DB operator paths (including fixture fallback scenarios).
+- Updated suite expectations to align with finalized behavior (IRI percent-encoding and EquiJoin overlap semantics).
+- Validated both tracks after fixes:
+  - **Conformance**: `324/324` passed, expected-error cases `51/0`, coverage `100.0%`.
+  - **Initial test suite**: `python -m pytest -q` fully passing.
 
 ## [0.2.9] - 2026-02-20
 

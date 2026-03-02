@@ -65,7 +65,7 @@ python -m pyhartig --help
 ---
 
 
-## 2. Features
+## 3. Features
 
 `pyhartig` provides a set of composable Python objects representing the core algebraic operators for querying
 heterogeneous data sources.
@@ -103,7 +103,7 @@ Current implementation status covers the foundations required to reproduce **Sou
     * `explain_json()` method for programmatic access to pipeline structure
     * Detailed expression and operator visualization
 
-## 3. Command Line Interface (CLI)
+## 4. Command Line Interface (CLI)
 
 PyHartig provides a plugin-based CLI architecture for executing mappings and utility tasks.
 
@@ -135,7 +135,35 @@ python -m pyhartig -vv list-issues \
 * **Aggregation**: Fetches data from APIs and merges them into unified sources.
 * **Templating**: Injects data into the provided RML template before execution.
 
-## 4. Python API Usage
+### 3.3. Run External RML Conformance Tests
+Use the conformance runner to execute external RML test cases and compare pyhartig output with expected RDF.
+
+```bash
+python scripts/run_rml_conformance.py \
+    --tests-dir external/rml-test-cases/test-cases \
+    --output-dir external/rml-test-cases/results
+```
+
+Optional flags:
+* `--suite <name>`: Restrict execution to a sub-suite/folder.
+* `--verbose`: Print per-case execution details.
+
+Example (single case):
+
+```bash
+python scripts/run_rml_conformance.py \
+    --tests-dir external/rml-test-cases/test-cases/RMLTC0007g-JSON \
+    --output-dir external/rml-test-cases/results
+```
+
+Behavior summary:
+* Detects mapping + expected output files per case.
+* Executes `pyhartig run` with an output format matching the expected file extension.
+* Compares output via RDF graph isomorphism (triples/quads aware).
+* Uses `metadata.csv` when available to track expected-error cases.
+* Writes per-case artifacts to `results/<case>/` (mapping/resources + `output_pyhartig.*`).
+
+## 5. Python API Usage
 You can embed the engine directly in your own Python scripts.
 
 ### 4.1. **Basic Pipeline Execution**
@@ -188,7 +216,7 @@ for row in pipeline.execute():
     print(row)
 ```
 
-## 5. Project Structure
+## 6. Project Structure
 
 ```text
 src/pyhartig/
@@ -208,8 +236,9 @@ src/pyhartig/
 │   └── builtins.py     # Implementation of toIRI, concat, etc.
 ├── mapping/            # RML Mapping Parser
 │   └── MappingParser.py # Parses RML files into operator pipelines
-├── serialiazers/      # Serialization utilities
-│   └── NTriplesSerializer.py # N-Triples output
+├── serializers/      # Serialization utilities
+│   ├── NTriplesSerializer.py # N-Triples output
+│   └── NQuadsSerializer.py # N-Quads output
 ├── operators/          # Algebraic Operators
 │   ├── Operator.py     # Abstract base class for all operators
 │   ├── SourceFactory.py # Factory for creating Source operators
@@ -222,6 +251,10 @@ src/pyhartig/
 │       └── CsvSourceOperator.py # CSV data source operator
 │       └── JsonSourceOperator.py # JSON data source operator
 │       └── XmlSourceOperator.py # XML data source operator
+│       └── SparqlSourceOperator.py # SPARQL source operator
+│       └── MysqlSourceOperator.py # MySQL source operator
+│       └── PostgresqlSourceOperator.py # PostgreSQL source operator
+│       └── SqlserverSourceOperator.py # SQL Server source operator
 ├── namespaces.py    # Common RDF namespaces
 └── __main__.py       # Entry point for CLI
 tests/                  # Unit tests for all components
@@ -238,7 +271,7 @@ pyproject.toml          # Project configuration and dependencies
 requirements.txt        # Additional dependencies
 ```
 
-## 6. Testing
+## 7. Testing
 To run the test suite, ensure you have installed the testing dependencies and execute:
 
 ```bash
@@ -249,6 +282,30 @@ pytest tests/
 pytest tests/test_suite/test_13_equijoin_operator.py
 ```
 
+### 6.1. Initial Regression Suite
+Run the project regression suite (quiet mode):
+
+```bash
+python -m pytest -q
+```
+
+### 6.2. RML Conformance Suite
+Run the external RML conformance checks:
+
+```bash
+python scripts/run_rml_conformance.py \
+    --tests-dir external/rml-test-cases/test-cases \
+    --output-dir external/rml-test-cases/results
+```
+
+The conformance summary reports:
+* total executed cases,
+* passed/failed counts,
+* expected-error pass/fail counts,
+* coverage percentage.
+
+Generated outputs are retained under `external/rml-test-cases/results` in per-case folders for inspection.
+
 ### Test Coverage
 * Cartesian Product Flattening
 * Recursive Expression Evaluation
@@ -256,7 +313,7 @@ pytest tests/test_suite/test_13_equijoin_operator.py
 * Strict Mode Projections
 * Real-world Data Integration Scenarios
 
-## 7. Authors
+## 8. Authors
 
 This project is developed by:
 
@@ -264,7 +321,7 @@ This project is developed by:
 * **Léo FERMÉ**
 * **Mohamed Lamine MERAH**
 
-### 7.1. Supervision
+### 8.1. Supervision
 
 This project is supervised by:
 
@@ -272,16 +329,16 @@ This project is supervised by:
 * **Full Professor Hala SKAF-MOLLI**
 * **Associate Professor Gabriela MONTOYA**
 
-## 8. License
+## 9. License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 9. Acknowledgements
+## 10. Acknowledgements
 
 We would like to thank the LS2N and GDD team for their support and resources provided during this project.
 We also acknowledge the foundational work of Olaf Hartig, which inspired this implementation.
 
-## 10. Contact
+## 11. Contact
 
 For any questions or contributions, please open an issue or contact the authors directly.
 

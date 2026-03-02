@@ -38,6 +38,10 @@ class JsonSourceOperator(SourceOperator):
         self._compiled_attribute_exprs: Dict[str, Any] = {}
         for q in set(self.attribute_mappings.values()):
             try:
+                # Try to parse the provided query as-is. Many mappings use
+                # bare attribute names (e.g. "ID") which are valid as
+                # relative JSONPath expressions, but to be robust also
+                # accept plain names by compiling a `$.name` fallback.
                 self._compiled_attribute_exprs[q] = parse(q)
             except Exception:
                 # Defer parsing until first use
@@ -52,8 +56,11 @@ class JsonSourceOperator(SourceOperator):
         """
         jsonpath_expr = self._compiled_iterator
         if jsonpath_expr is None:
-            jsonpath_expr = parse(query)
-            self._compiled_iterator = jsonpath_expr
+            try:
+                jsonpath_expr = parse(query)
+                self._compiled_iterator = jsonpath_expr
+            except Exception:
+                return []
 
         source = self._data if self._data is not None else data
         matches = [match.value for match in jsonpath_expr.find(source)]
@@ -73,15 +80,49 @@ class JsonSourceOperator(SourceOperator):
         """
         jsonpath_expr = self._compiled_attribute_exprs.get(query)
         if jsonpath_expr is None:
-            # Compile and cache on first use
-            jsonpath_expr = parse(query)
-            self._compiled_attribute_exprs[query] = jsonpath_expr
+            # Compile and cache on first use. Be tolerant: if the provided
+            # query is a bare attribute name (which causes jsonpath_ng.parse
+            # to raise), try compiling a `$.<name>` alternative before
+            # letting an exception propagate.
+            try:
+                jsonpath_expr = parse(query)
+            except Exception:
+                if not query.startswith('$'):
+                    alt_q = f'$.{query}'
+                    try:
+                        jsonpath_expr = parse(alt_q)
+                        # cache the alternative under the original query key
+                        self._compiled_attribute_exprs[query] = jsonpath_expr
+                    except Exception:
+                        # leave as None so caller handles missing matches
+                        jsonpath_expr = None
+                else:
+                    jsonpath_expr = None
+            else:
+                self._compiled_attribute_exprs[query] = jsonpath_expr
 
-        matches = jsonpath_expr.find(context)
+        # If we couldn't compile an expression, treat as no matches and
+        # fall through to the alternative-fallback below.
+        if jsonpath_expr is None:
+            matches = []
+        else:
+            matches = jsonpath_expr.find(context)
 
         # If no matches found, return empty list
         if not matches:
-            return []
+            # Fallback: if we didn't get any matches, and the original query
+            # isn't a JSONPath expression, try `$.<name>` as a last resort.
+            if not query.startswith('$'):
+                try:
+                    alt_q = f'$.{query}'
+                    alt_expr = parse(alt_q)
+                    # cache the alternative compiled expression for future use
+                    self._compiled_attribute_exprs[query] = alt_expr
+                    matches = alt_expr.find(context)
+                except Exception:
+                    pass
+            if not matches:
+                return []
 
         # Flatten the results
         results: List[Any] = []

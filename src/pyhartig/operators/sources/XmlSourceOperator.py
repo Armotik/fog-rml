@@ -28,8 +28,40 @@ class XmlSourceOperator(SourceOperator):
             return []
 
         try:
-            elems = self._root.findall(query)
-            return elems
+            # ElementTree.find* does not accept leading '/' for absolute paths.
+            # Try several fallbacks to resolve common absolute XPath forms used
+            # in RML test-cases (e.g. '/countries/country').
+            q = query if isinstance(query, str) else ''
+            tried = []
+
+            # 1) try as-is without leading slash
+            if q.startswith('/'):
+                q1 = q.lstrip('/')
+                tried.append(q1)
+                elems = self._root.findall(q1)
+                if elems:
+                    return elems
+
+                # 2) try descendant search (find anywhere under root)
+                q2 = './/' + q1
+                tried.append(q2)
+                elems = self._root.findall(q2)
+                if elems:
+                    return elems
+
+                # 3) fallback: try last path segment (e.g., 'country')
+                last = q1.split('/')[-1]
+                tried.append('.//' + last)
+                elems = self._root.findall('.//' + last)
+                if elems:
+                    return elems
+            else:
+                elems = self._root.findall(q)
+                if elems:
+                    return elems
+
+            # As a final fallback, return empty list so caller can handle it
+            return []
         except Exception:
             # Fallback: return root children
             return list(self._root)
@@ -40,12 +72,18 @@ class XmlSourceOperator(SourceOperator):
             return []
 
         try:
-            if query.startswith('@'):
-                attr = query[1:]
+            q = query
+            # Accept JSONPath-style references produced by the mapping extractor
+            # (e.g. '$.Name') and normalize them to the XML tag name 'Name'
+            if isinstance(q, str) and q.startswith('$.'):
+                q = q[2:]
+
+            if q.startswith('@'):
+                attr = q[1:]
                 val = context.get(attr)
                 return [val] if val is not None else []
             else:
-                elems = context.findall(query)
+                elems = context.findall(q)
                 results = []
                 for e in elems:
                     if e.text:

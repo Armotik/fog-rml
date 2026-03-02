@@ -36,8 +36,15 @@ htmlcov/
 *.swo
 *~
 
+# Local Python environments
+.venv/
+venv/
+
 # Data files
 tests/use_cases/*/data/
 tests/use_cases/*/output/
 *.nt
+
+# External conformance generated artifacts
+external/rml-test-cases/results/
 

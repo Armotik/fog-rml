@@ -35,18 +35,56 @@ class CsvSourceOperator(SourceOperator):
         if not query:
             return []
 
-        # If query exactly matches a column, return that value
-        if query in context:
-            val = context.get(query)
+        # Some mappings use JSONPath-like queries (e.g. '$.ID') even for CSV;
+        # normalize by stripping a leading '$.' so column lookups succeed.
+        # Also support bracket notation like $['Column Name'] or $("Column Name")
+        q = query
+        if q.startswith("$."):
+            q = q[2:]
+        elif q.startswith("$") and len(q) > 1 and q[1] == '.':
+            q = q[2:]
+        else:
+            # handle bracket notation $['col'] or $("col")
+            if q.startswith("$["):
+                # find the closing ]
+                try:
+                    end = q.index(']')
+                    inner = q[2:end]
+                    # strip surrounding quotes if present
+                    if (inner.startswith("'") and inner.endswith("'")) or (inner.startswith('"') and inner.endswith('"')):
+                        inner = inner[1:-1]
+                    q = inner
+                except Exception:
+                    # leave q as-is if parsing fails
+                    q = query
+
+        def _lookup_key(d: Dict[str, Any], key: str):
+            if key in d:
+                return d[key]
+            low = key.lower()
+            for dk, dv in d.items():
+                if isinstance(dk, str) and dk.lower() == low:
+                    return dv
+            raise KeyError(key)
+
+        # If query exactly matches a column (or case-insensitive equivalent), return that value
+        try:
+            val = _lookup_key(context, q)
             return [val] if val is not None else []
+        except Exception:
+            pass
 
         # Support dotted keys like 'user.name'
         parts = query.split('.')
         cur = context
         for p in parts:
-            if isinstance(cur, dict) and p in cur:
-                cur = cur[p]
-            else:
+            if isinstance(cur, dict):
+                try:
+                    cur = _lookup_key(cur, p)
+                    continue
+                except Exception:
+                    return []
+            if not isinstance(cur, dict):
                 return []
 
         return [cur]

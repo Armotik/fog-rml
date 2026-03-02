@@ -447,7 +447,7 @@ class TestBuiltinFunctions:
                      f"Final IRI: {iri.value}")
         
         assert isinstance(iri, IRI)
-        assert "John Doe" in iri.value
+        assert "John%20Doe" in iri.value
         
         debug_logger("Validation", 
                      "✓ Functions successfully composed\n"

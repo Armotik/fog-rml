@@ -8,7 +8,13 @@ Tests validate iterator and extraction query mechanisms.
 
 import pytest
 import json
+import types
+from pathlib import Path
 from pyhartig.operators.sources.JsonSourceOperator import JsonSourceOperator
+from pyhartig.operators.sources.SparqlSourceOperator import SparqlSourceOperator
+from pyhartig.operators.sources.MysqlSourceOperator import MysqlSourceOperator
+from pyhartig.operators.sources.PostgresqlSourceOperator import PostgresqlSourceOperator
+from pyhartig.operators.sources.SqlserverSourceOperator import SqlserverSourceOperator
 
 
 class TestJsonSourceOperator:
@@ -331,3 +337,261 @@ class TestJsonSourceOperator:
         debug_logger("Validation",
                      f"✓ All combinations generated correctly:\n"
                      f"  {combinations}")
+
+
+class TestSparqlSourceOperator:
+    def test_local_resource_emulation(self, tmp_path: Path):
+        resource = tmp_path / "resource1.ttl"
+        resource.write_text(
+            """
+            @prefix ex: <http://example.com/> .
+
+            ex:a ex:name "Alice" .
+            ex:b ex:name "Bob" .
+            """,
+            encoding="utf-8",
+        )
+
+        operator = SparqlSourceOperator(
+            endpoint="http://localhost:PORT/ds1/sparql",
+            sparql_query="""
+                PREFIX ex: <http://example.com/>
+                SELECT ?name WHERE { ?s ex:name ?name }
+            """,
+            iterator_query="$.results.bindings[*]",
+            attribute_mappings={"name": "name.value"},
+            mapping_dir=tmp_path,
+            source_node="http://example.com/base#InputSPARQL1",
+        )
+
+        rows = operator.execute()
+        names = {row["name"] for row in rows}
+
+        assert names == {"Alice", "Bob"}
+
+
+class TestMysqlSourceOperator:
+    def test_mysql_query_with_mocked_driver(self, monkeypatch):
+        captured = {"sql": None, "kwargs": None}
+
+        class FakeCursor:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                return False
+
+            def execute(self, sql):
+                captured["sql"] = sql
+
+            def fetchall(self):
+                return [{"ID": 10, "Name": "Venus"}]
+
+        class FakeConnection:
+            def cursor(self):
+                return FakeCursor()
+
+            def close(self):
+                return None
+
+        fake_pymysql = types.SimpleNamespace(
+            connect=lambda **kwargs: captured.update({"kwargs": kwargs}) or FakeConnection(),
+            cursors=types.SimpleNamespace(DictCursor=object),
+        )
+
+        monkeypatch.setitem(__import__("sys").modules, "pymysql", fake_pymysql)
+
+        operator = MysqlSourceOperator(
+            dsn="mysql://root:secret@localhost:3306/testdb",
+            query="SELECT ID, Name FROM student",
+            table_name=None,
+            iterator_query="$",
+            attribute_mappings={"id": "ID", "name": "Name"},
+        )
+
+        rows = operator.execute()
+
+        assert len(rows) == 1
+        assert str(rows[0]["id"]) == '"10"^^http://www.w3.org/2001/XMLSchema#integer'
+        assert rows[0]["name"] == "Venus"
+        assert captured["sql"] == "SELECT ID, Name FROM student"
+        assert captured["kwargs"]["database"] == "testdb"
+
+    def test_mysql_sql_fixture_fallback_without_dsn(self, tmp_path: Path, monkeypatch):
+        monkeypatch.delenv("PYHARTIG_MYSQL_DSN", raising=False)
+        monkeypatch.setenv("PYHARTIG_DB_SQLITE_FALLBACK", "1")
+
+        fixture = tmp_path / "resource.sql"
+        fixture.write_text(
+            """
+            CREATE TABLE student (ID INTEGER, Name TEXT);
+            INSERT INTO student (ID, Name) VALUES (10, 'Venus');
+            """,
+            encoding="utf-8",
+        )
+
+        operator = MysqlSourceOperator(
+            dsn="CONNECTIONDSN",
+            query=None,
+            table_name="student",
+            iterator_query="$",
+            attribute_mappings={"id": "ID", "name": "Name"},
+            mapping_dir=tmp_path,
+        )
+
+        rows = operator.execute()
+
+        assert len(rows) == 1
+        assert str(rows[0]["id"]) == '"10"^^http://www.w3.org/2001/XMLSchema#integer'
+        assert rows[0]["name"] == "Venus"
+
+
+class TestPostgresqlSourceOperator:
+    def test_postgresql_query_with_mocked_driver(self, monkeypatch):
+        captured = {"sql": None, "kwargs": None}
+
+        class FakeCursor:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                return False
+
+            def execute(self, sql):
+                captured["sql"] = sql
+
+            def fetchall(self):
+                return [{"id": 7, "name": "Nadia"}]
+
+        class FakeConnection:
+            def cursor(self, cursor_factory=None):
+                return FakeCursor()
+
+            def close(self):
+                return None
+
+        fake_psycopg2 = types.SimpleNamespace(
+            connect=lambda **kwargs: captured.update({"kwargs": kwargs}) or FakeConnection(),
+        )
+        fake_psycopg2_extras = types.SimpleNamespace(RealDictCursor=object)
+
+        monkeypatch.setitem(__import__("sys").modules, "psycopg2", fake_psycopg2)
+        monkeypatch.setitem(__import__("sys").modules, "psycopg2.extras", fake_psycopg2_extras)
+
+        operator = PostgresqlSourceOperator(
+            dsn="postgresql://postgres:secret@localhost:5432/sampledb",
+            query="SELECT id, name FROM student",
+            table_name=None,
+            iterator_query="$",
+            attribute_mappings={"id": "id", "name": "name"},
+        )
+
+        rows = operator.execute()
+
+        assert len(rows) == 1
+        assert str(rows[0]["id"]) == '"7"^^http://www.w3.org/2001/XMLSchema#integer'
+        assert rows[0]["name"] == "Nadia"
+        assert captured["sql"] == "SELECT id, name FROM student"
+        assert captured["kwargs"]["dbname"] == "sampledb"
+
+    def test_postgresql_sql_fixture_fallback_without_dsn(self, tmp_path: Path, monkeypatch):
+        monkeypatch.delenv("PYHARTIG_POSTGRES_DSN", raising=False)
+        monkeypatch.setenv("PYHARTIG_DB_SQLITE_FALLBACK", "1")
+
+        fixture = tmp_path / "resource.sql"
+        fixture.write_text(
+            """
+            CREATE TABLE student (id INTEGER, name TEXT);
+            INSERT INTO student (id, name) VALUES (7, 'Nadia');
+            """,
+            encoding="utf-8",
+        )
+
+        operator = PostgresqlSourceOperator(
+            dsn="CONNECTIONDSN",
+            query=None,
+            table_name="student",
+            iterator_query="$",
+            attribute_mappings={"id": "id", "name": "name"},
+            mapping_dir=tmp_path,
+        )
+
+        rows = operator.execute()
+
+        assert len(rows) == 1
+        assert str(rows[0]["id"]) == '"7"^^http://www.w3.org/2001/XMLSchema#integer'
+        assert rows[0]["name"] == "Nadia"
+
+
+class TestSqlserverSourceOperator:
+    def test_sqlserver_query_with_mocked_driver(self, monkeypatch):
+        captured = {"sql": None, "conn": None}
+
+        class FakeCursor:
+            description = [("id",), ("name",)]
+
+            def execute(self, sql):
+                captured["sql"] = sql
+
+            def fetchall(self):
+                return [(3, "Lina")]
+
+            def close(self):
+                return None
+
+        class FakeConnection:
+            def cursor(self):
+                return FakeCursor()
+
+            def close(self):
+                return None
+
+        fake_pyodbc = types.SimpleNamespace(
+            connect=lambda conn: captured.update({"conn": conn}) or FakeConnection(),
+        )
+
+        monkeypatch.setitem(__import__("sys").modules, "pyodbc", fake_pyodbc)
+
+        operator = SqlserverSourceOperator(
+            dsn="sqlserver://sa:secret@localhost:1433/master",
+            query="SELECT id, name FROM student",
+            table_name=None,
+            iterator_query="$",
+            attribute_mappings={"id": "id", "name": "name"},
+        )
+
+        rows = operator.execute()
+
+        assert len(rows) == 1
+        assert str(rows[0]["id"]) == '"3"^^http://www.w3.org/2001/XMLSchema#integer'
+        assert rows[0]["name"] == "Lina"
+        assert captured["sql"] == "SELECT id, name FROM student"
+        assert "SERVER=localhost,1433" in captured["conn"]
+
+    def test_sqlserver_sql_fixture_fallback_without_dsn(self, tmp_path: Path, monkeypatch):
+        monkeypatch.delenv("PYHARTIG_SQLSERVER_DSN", raising=False)
+        monkeypatch.setenv("PYHARTIG_DB_SQLITE_FALLBACK", "1")
+
+        fixture = tmp_path / "resource.sql"
+        fixture.write_text(
+            """
+            CREATE TABLE student (id INTEGER, name TEXT);
+            INSERT INTO student (id, name) VALUES (3, 'Lina');
+            """,
+            encoding="utf-8",
+        )
+
+        operator = SqlserverSourceOperator(
+            dsn="CONNECTIONDSN",
+            query=None,
+            table_name="student",
+            iterator_query="$",
+            attribute_mappings={"id": "id", "name": "name"},
+            mapping_dir=tmp_path,
+        )
+
+        rows = operator.execute()
+
+        assert len(rows) == 1
+        assert str(rows[0]["id"]) == '"3"^^http://www.w3.org/2001/XMLSchema#integer'
+        assert rows[0]["name"] == "Lina"

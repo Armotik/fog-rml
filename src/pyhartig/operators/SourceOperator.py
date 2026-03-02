@@ -1,8 +1,9 @@
 from abc import abstractmethod
 from typing import Any, Dict, Iterator
 from itertools import product
+import os
 
-from pyhartig.algebra.Tuple import MappingTuple
+from pyhartig.algebra.Tuple import MappingTuple, EPSILON
 from pyhartig.operators.Operator import Operator
 
 
@@ -72,19 +73,25 @@ class SourceOperator(Operator):
 
     def execute(self) -> Iterator[MappingTuple]:
         from pyhartig.operators.Operator import StreamRows
+        strict_references = os.getenv("PYHARTIG_STRICT_REFERENCES", "0") == "1"
 
         def _gen():
             # Apply the iterator to get context objects (may be list or generator)
             contexts = self._apply_iterator(self.source_data, self.iterator_query)
+            context_count = 0
+            attr_has_value = {attr_name: False for attr_name in self.attribute_mappings}
 
             # For each context, apply the extraction queries for each attribute
             for context in contexts:
+                context_count += 1
 
                 extracted_values = {}
 
                 # Extract values for each attribute
                 for attr_name, extraction_query in self.attribute_mappings.items():
                     values = self._apply_extraction(context, extraction_query)
+                    if values:
+                        attr_has_value[attr_name] = True
                     extracted_values[attr_name] = values
 
                 keys = list(extracted_values.keys())
@@ -93,6 +100,16 @@ class SourceOperator(Operator):
                 # Generate all combinations of extracted values and yield rows
                 for combination in product(*values_lists):
                     row_dict = dict(zip(keys, combination))
+                    # Replace None values with EPSILON to represent undefined values
+                    for k, v in list(row_dict.items()):
+                        if v is None:
+                            row_dict[k] = EPSILON
                     yield MappingTuple(row_dict)
+
+            if strict_references and context_count > 0:
+                missing_attrs = [name for name, has_value in attr_has_value.items() if not has_value]
+                if missing_attrs:
+                    missing = ", ".join(sorted(missing_attrs))
+                    raise ValueError(f"Undefined logical reference(s): {missing}")
 
         return StreamRows(_gen())

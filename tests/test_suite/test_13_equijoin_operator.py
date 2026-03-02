@@ -300,12 +300,12 @@ class TestEquiJoinOperator:
 
     def test_equijoin_disjoint_attribute_violation(self, debug_logger):
         """
-        Test that EquiJoin raises error when attribute sets are not disjoint.
+        Test that EquiJoin tolerates overlapping attribute names when tuples are compatible.
 
-        Precondition: A₁ ∩ A₂ = ∅
+        Overlap is allowed and merge-time compatibility decides validity.
         """
         debug_logger("Test: Disjoint Attribute Violation",
-                     "Objective: Verify error when A₁ ∩ A₂ ≠ ∅")
+                     "Objective: Verify non-fatal behavior when A₁ ∩ A₂ ≠ ∅")
 
         left_data = {"items": [{"id": 1, "name": "A"}]}
         right_data = {"items": [{"id": 1, "value": "X"}]}
@@ -330,8 +330,11 @@ class TestEquiJoinOperator:
             B=["id"]
         )
 
-        with pytest.raises(ValueError, match="disjoint"):
-            equijoin.execute()
+        result = equijoin.execute()
+        assert len(result) == 1
+        assert result[0]["id"] == 1
+        assert result[0]["name"] == "A"
+        assert result[0]["value"] == "X"
 
     def test_equijoin_unequal_attribute_lists(self, debug_logger):
         """
