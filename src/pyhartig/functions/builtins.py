@@ -6,6 +6,7 @@ import re
 from pyhartig.algebra.Tuple import EPSILON, _Epsilon, AlgebraicValue
 from pyhartig.algebra.Terms import IRI, Literal, BlankNode
 from pyhartig.functions.registry import FunctionRegistry
+from pyhartig.namespaces import XSD_STRING
 
 
 def _to_string(value: AlgebraicValue) -> Union[str, None]:
@@ -160,7 +161,7 @@ def to_iri(value: AlgebraicValue, base: str = None, template_mode: bool = True) 
 def to_literal(value: AlgebraicValue, datatype: str) -> Union[Literal, _Epsilon]:
     if value == EPSILON or value is None:
         return EPSILON
-    if isinstance(value, Literal) and datatype == "http://www.w3.org/2001/XMLSchema#string":
+    if isinstance(value, Literal) and datatype == XSD_STRING.value:
         return value
     lex = _to_string(value)
     if lex is None:
@@ -181,7 +182,7 @@ def percent_encode_component(value: AlgebraicValue) -> Union[Literal, _Epsilon]:
         return EPSILON
     # conservative safe set: unreserved characters per RFC3986
     encoded = urllib.parse.quote(lex, safe='-._~A-Za-z0-9')
-    return Literal(encoded, "http://www.w3.org/2001/XMLSchema#string")
+    return Literal(encoded, XSD_STRING.value)
 
 
 def to_literal_lang(value: AlgebraicValue, lang: str) -> Union[Literal, _Epsilon]:
@@ -203,7 +204,7 @@ def to_bnode(value: AlgebraicValue) -> Union[BlankNode, _Epsilon]:
         candidate = lex.strip()
         if candidate and re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", candidate):
             return BlankNode(candidate)
-    hash_object = hashlib.sha1(lex.encode('utf-8'))
+    hash_object = hashlib.sha256(lex.encode('utf-8'))
     bnode_id = f"b{hash_object.hexdigest()}"
     return BlankNode(bnode_id)
 
@@ -215,17 +216,15 @@ def concat(*args: AlgebraicValue) -> Union[Literal, _Epsilon]:
         if s is None:
             return EPSILON
         result += s
-    return Literal(result, "http://www.w3.org/2001/XMLSchema#string")
+    return Literal(result, XSD_STRING.value)
 
 
-# Register built-in functions in the FunctionRegistry under pyhartig namespace
 try:
-    FunctionRegistry.register("http://pyhartig.org/functions#to_iri", to_iri)
-    FunctionRegistry.register("http://pyhartig.org/functions#to_literal", to_literal)
     FunctionRegistry.register("http://pyhartig.org/functions#concat", concat)
-    FunctionRegistry.register("http://pyhartig.org/functions#to_bnode", to_bnode)
-    FunctionRegistry.register("http://pyhartig.org/functions#to_literal_lang", to_literal_lang)
-    FunctionRegistry.register("http://pyhartig.org/functions#percent_encode_component", percent_encode_component)
+    FunctionRegistry.register("http://pyhartig.org/functions#toIRI", to_iri)
+    FunctionRegistry.register("http://pyhartig.org/functions#toLiteral", to_literal)
+    FunctionRegistry.register("http://pyhartig.org/functions#toBNode", to_bnode)
+    FunctionRegistry.register("http://pyhartig.org/functions#toLiteralLang", to_literal_lang)
+    FunctionRegistry.register("http://pyhartig.org/functions#percentEncodeComponent", percent_encode_component)
 except Exception:
-    # Best-effort registration; failures here should not break import.
     pass

@@ -17,6 +17,7 @@ from pyhartig.expressions.Reference import Reference
 from pyhartig.expressions.FunctionCall import FunctionCall
 from pyhartig.functions.builtins import to_iri, to_literal, concat
 from pyhartig.algebra.Terms import IRI, Literal
+from pyhartig.namespaces import FOAF_PERSON, RDF_TYPE, XSD_INTEGER, XSD_STRING
 
 
 class TestCompletePipelines:
@@ -113,7 +114,7 @@ class TestCompletePipelines:
         extend_type = ExtendOperator(
             parent_operator=extend_subject,
             new_attribute="rdf_type",
-            expression=Constant(IRI("http://xmlns.com/foaf/0.1/Person"))
+            expression=Constant(FOAF_PERSON)
         )
         
         debug_logger("Stage 3: Add RDF Type", 
@@ -124,7 +125,7 @@ class TestCompletePipelines:
             function=to_literal,
             arguments=[
                 Reference("member_name"),
-                Constant("http://www.w3.org/2001/XMLSchema#string")
+                Constant(XSD_STRING.value)
             ]
         )
         extend_name = ExtendOperator(
@@ -141,7 +142,7 @@ class TestCompletePipelines:
             function=to_literal,
             arguments=[
                 Reference("role"),
-                Constant("http://www.w3.org/2001/XMLSchema#string")
+                Constant(XSD_STRING.value)
             ]
         )
         extend_role = ExtendOperator(
@@ -270,7 +271,7 @@ class TestCompletePipelines:
             function=to_literal,
             arguments=[
                 Reference("full_name"),
-                Constant("http://www.w3.org/2001/XMLSchema#string")
+                Constant(XSD_STRING.value)
             ]
         )
         pipeline = ExtendOperator(pipeline, "name_lit", full_name_lit_expr)
@@ -280,7 +281,7 @@ class TestCompletePipelines:
             function=to_literal,
             arguments=[
                 Reference("age"),
-                Constant("http://www.w3.org/2001/XMLSchema#integer")
+                Constant(XSD_INTEGER.value)
             ]
         )
         pipeline = ExtendOperator(pipeline, "age_lit", age_lit_expr)
@@ -395,7 +396,7 @@ class TestCompletePipelines:
             function=to_literal,
             arguments=[
                 Reference("project_title"),
-                Constant("http://www.w3.org/2001/XMLSchema#string")
+                Constant(XSD_STRING.value)
             ]
         )
         pipeline = ExtendOperator(pipeline, "title_lit", title_lit_expr)
@@ -480,7 +481,7 @@ class TestCompletePipelines:
             function=to_literal,
             arguments=[
                 Reference("entry_value"),
-                Constant("http://www.w3.org/2001/XMLSchema#string")
+                Constant(XSD_STRING.value)
             ]
         )
         pipeline = ExtendOperator(pipeline, "value_lit", value_lit_expr)
@@ -618,7 +619,7 @@ class TestCompletePipelines:
         final_pipeline = ExtendOperator(
             parent_operator=union_op,
             new_attribute="rdf_type",
-            expression=Constant(IRI("http://xmlns.com/foaf/0.1/Person"))
+            expression=Constant(FOAF_PERSON)
         )
 
         result = final_pipeline.execute()
@@ -850,13 +851,13 @@ class TestCompletePipelines:
         people_type = ExtendOperator(
             parent_operator=people_uri,
             new_attribute="predicate",
-            expression=Constant(IRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"))
+            expression=Constant(RDF_TYPE)
         )
 
         people_type_obj = ExtendOperator(
             parent_operator=people_type,
             new_attribute="object",
-            expression=Constant(IRI("http://xmlns.com/foaf/0.1/Person"))
+            expression=Constant(FOAF_PERSON)
         )
 
         # Pipeline 2: Projects
@@ -884,7 +885,7 @@ class TestCompletePipelines:
         projects_type = ExtendOperator(
             parent_operator=projects_uri,
             new_attribute="predicate",
-            expression=Constant(IRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"))
+            expression=Constant(RDF_TYPE)
         )
 
         projects_type_obj = ExtendOperator(
@@ -928,7 +929,7 @@ class TestCompletePipelines:
 
         # Verify specific triples
         alice_triple = [t for t in result if "P1" in t["subject"].value][0]
-        assert alice_triple["object"].value == "http://xmlns.com/foaf/0.1/Person"
+        assert alice_triple["object"].value == FOAF_PERSON.value
 
         alpha_triple = [t for t in result if "PR1" in t["subject"].value][0]
         assert alpha_triple["object"].value == "http://example.org/ontology/Project"

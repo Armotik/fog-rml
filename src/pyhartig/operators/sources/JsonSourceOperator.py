@@ -1,30 +1,22 @@
-from typing import Any, List, Dict
+import json
+from typing import Any, List, Dict, TypeAlias
 from pathlib import Path
 from jsonpath_ng import parse
 
 from pyhartig.operators.SourceOperator import SourceOperator
 
+JsonScalar: TypeAlias = str | int | float | bool | None
+JsonValue: TypeAlias = JsonScalar | list["JsonValue"] | dict[str, "JsonValue"]
+
 
 class JsonSourceOperator(SourceOperator):
 
-    def __init__(self, source_data: Any, iterator_query: str, attribute_mappings: Dict[str, str]):
-        super().__init__(source_data, iterator_query, attribute_mappings)
+    def __init__(self, source_data: JsonValue | str | Path, iterator_query: str, attribute_mappings: Dict[str, str]):
+        prepared_source = self._prepare_source_data(source_data)
+        super().__init__(prepared_source, iterator_query, attribute_mappings)
 
-        # Accept either a parsed JSON structure or a path to a JSON file/string
-        self._data = None
-        try:
-            if isinstance(source_data, (str, Path)):
-                p = Path(source_data)
-                with p.open("r", encoding="utf-8") as f:
-                    import json
-
-                    self._data = json.load(f)
-            else:
-                # assume it's already parsed JSON-like
-                self._data = source_data
-        except Exception:
-            # keep None and let _apply_iterator raise/handle when used
-            self._data = source_data
+        # Keep a sanitized JSON payload only; invalid inputs degrade to None.
+        self._data: JsonValue | None = prepared_source
 
         # Pre-compile JSONPath expressions to avoid reparsing the same query many times.
         # Keep a compiled iterator expression and a cache for attribute extraction expressions.
@@ -46,6 +38,56 @@ class JsonSourceOperator(SourceOperator):
             except Exception:
                 # Defer parsing until first use
                 self._compiled_attribute_exprs[q] = None
+
+    @classmethod
+    def from_json_file(cls, source_path: str | Path, iterator_query: str,
+                       attribute_mappings: Dict[str, str]) -> "JsonSourceOperator":
+        """
+        Build an operator from a validated local JSON file.
+        """
+        sanitized_data = cls._load_json_file(source_path)
+        return cls(sanitized_data, iterator_query, attribute_mappings)
+
+    @classmethod
+    def _prepare_source_data(cls, source_data: JsonValue | str | Path) -> JsonValue | None:
+        try:
+            if isinstance(source_data, (str, Path)):
+                return cls._load_json_file(source_data)
+            return cls._sanitize_json_value(source_data)
+        except Exception:
+            return None
+
+    @staticmethod
+    def _resolve_json_path(source_path: str | Path) -> Path:
+        resolved_path = Path(source_path).expanduser().resolve(strict=True)
+        if not resolved_path.is_file():
+            raise ValueError(f"JSON source is not a file: {resolved_path}")
+        return resolved_path
+
+    @classmethod
+    def _load_json_file(cls, source_path: str | Path) -> JsonValue:
+        json_path = cls._resolve_json_path(source_path)
+        with json_path.open("r", encoding="utf-8") as f:
+            loaded_data = json.load(f)
+        return cls._sanitize_json_value(loaded_data)
+
+    @classmethod
+    def _sanitize_json_value(cls, value: Any) -> JsonValue:
+        if value is None or isinstance(value, (str, int, float, bool)):
+            return value
+
+        if isinstance(value, list):
+            return [cls._sanitize_json_value(item) for item in value]
+
+        if isinstance(value, dict):
+            sanitized_object: dict[str, JsonValue] = {}
+            for key, item in value.items():
+                if not isinstance(key, str):
+                    raise ValueError(f"JSON object keys must be strings, received {type(key)!r}")
+                sanitized_object[key] = cls._sanitize_json_value(item)
+            return sanitized_object
+
+        raise ValueError(f"Unsupported JSON payload type: {type(value)!r}")
 
     def _apply_iterator(self, data: Any, query: str) -> List[Any]:
         """

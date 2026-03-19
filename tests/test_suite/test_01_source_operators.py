@@ -10,6 +10,8 @@ import pytest
 import json
 import types
 from pathlib import Path
+from pyhartig.namespaces import XSD_INTEGER
+from pyhartig.operators.SourceFactory import SourceFactory
 from pyhartig.operators.sources.JsonSourceOperator import JsonSourceOperator
 from pyhartig.operators.sources.SparqlSourceOperator import SparqlSourceOperator
 from pyhartig.operators.sources.MysqlSourceOperator import MysqlSourceOperator
@@ -338,6 +340,54 @@ class TestJsonSourceOperator:
                      f"✓ All combinations generated correctly:\n"
                      f"  {combinations}")
 
+    def test_json_source_loaded_from_file_path(self, tmp_path: Path):
+        data_file = tmp_path / "team.json"
+        data_file.write_text(
+            json.dumps(
+                {
+                    "team": [
+                        {"id": 1, "name": "Alice"},
+                        {"id": 2, "name": "Bob"},
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        operator = JsonSourceOperator(
+            source_data=data_file,
+            iterator_query="$.team[*]",
+            attribute_mappings={
+                "person_id": "$.id",
+                "person_name": "$.name",
+            },
+        )
+
+        result = operator.execute()
+
+        assert len(result) == 2
+        assert result[0]["person_name"] == "Alice"
+        assert result[1]["person_name"] == "Bob"
+
+    def test_source_factory_json_source_from_file(self, tmp_path: Path):
+        data_file = tmp_path / "members.json"
+        data_file.write_text(
+            json.dumps({"team": [{"id": 7, "name": "Nadia"}]}),
+            encoding="utf-8",
+        )
+
+        operator = SourceFactory._create_json_source(
+            path=data_file,
+            iterator="$.team[*]",
+            mappings={"person_id": "$.id", "person_name": "$.name"},
+        )
+
+        result = operator.execute()
+
+        assert len(result) == 1
+        assert result[0]["person_id"] == 7
+        assert result[0]["person_name"] == "Nadia"
+
 
 class TestSparqlSourceOperator:
     def test_local_resource_emulation(self, tmp_path: Path):
@@ -412,7 +462,7 @@ class TestMysqlSourceOperator:
         rows = operator.execute()
 
         assert len(rows) == 1
-        assert str(rows[0]["id"]) == '"10"^^http://www.w3.org/2001/XMLSchema#integer'
+        assert str(rows[0]["id"]) == f'"10"^^{XSD_INTEGER.value}'
         assert rows[0]["name"] == "Venus"
         assert captured["sql"] == "SELECT ID, Name FROM student"
         assert captured["kwargs"]["database"] == "testdb"
@@ -442,7 +492,7 @@ class TestMysqlSourceOperator:
         rows = operator.execute()
 
         assert len(rows) == 1
-        assert str(rows[0]["id"]) == '"10"^^http://www.w3.org/2001/XMLSchema#integer'
+        assert str(rows[0]["id"]) == f'"10"^^{XSD_INTEGER.value}'
         assert rows[0]["name"] == "Venus"
 
 
@@ -489,7 +539,7 @@ class TestPostgresqlSourceOperator:
         rows = operator.execute()
 
         assert len(rows) == 1
-        assert str(rows[0]["id"]) == '"7"^^http://www.w3.org/2001/XMLSchema#integer'
+        assert str(rows[0]["id"]) == f'"7"^^{XSD_INTEGER.value}'
         assert rows[0]["name"] == "Nadia"
         assert captured["sql"] == "SELECT id, name FROM student"
         assert captured["kwargs"]["dbname"] == "sampledb"
@@ -519,7 +569,7 @@ class TestPostgresqlSourceOperator:
         rows = operator.execute()
 
         assert len(rows) == 1
-        assert str(rows[0]["id"]) == '"7"^^http://www.w3.org/2001/XMLSchema#integer'
+        assert str(rows[0]["id"]) == f'"7"^^{XSD_INTEGER.value}'
         assert rows[0]["name"] == "Nadia"
 
 
@@ -563,7 +613,7 @@ class TestSqlserverSourceOperator:
         rows = operator.execute()
 
         assert len(rows) == 1
-        assert str(rows[0]["id"]) == '"3"^^http://www.w3.org/2001/XMLSchema#integer'
+        assert str(rows[0]["id"]) == f'"3"^^{XSD_INTEGER.value}'
         assert rows[0]["name"] == "Lina"
         assert captured["sql"] == "SELECT id, name FROM student"
         assert "SERVER=localhost,1433" in captured["conn"]
@@ -593,5 +643,5 @@ class TestSqlserverSourceOperator:
         rows = operator.execute()
 
         assert len(rows) == 1
-        assert str(rows[0]["id"]) == '"3"^^http://www.w3.org/2001/XMLSchema#integer'
+        assert str(rows[0]["id"]) == f'"3"^^{XSD_INTEGER.value}'
         assert rows[0]["name"] == "Lina"

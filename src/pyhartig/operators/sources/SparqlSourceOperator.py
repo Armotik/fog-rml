@@ -65,9 +65,10 @@ class SparqlSourceOperator(JsonSourceOperator):
 
         upper_q = query_text.upper()
         if "SELECT" in upper_q and "WHERE" in upper_q:
-            select_match = re.search(r"\bSELECT\b(.*?)\bWHERE\b", query_text, flags=re.IGNORECASE | re.DOTALL)
-            if select_match:
-                select_part = select_match.group(1)
+            select_start = upper_q.find("SELECT")
+            where_start = upper_q.find("WHERE", select_start + len("SELECT"))
+            if select_start != -1 and where_start != -1:
+                select_part = query_text[select_start + len("SELECT"):where_start]
                 if "*" not in select_part:
                     vars_in_select = re.findall(r"\?[A-Za-z_][A-Za-z0-9_]*", select_part)
                     seen = set()
@@ -97,9 +98,15 @@ class SparqlSourceOperator(JsonSourceOperator):
         resource_file = None
         if source_node:
             svc_name = source_node.split("#")[-1] if "#" in source_node else source_node.rsplit("/", 1)[-1]
-            match = re.search(r"(\d+)$", svc_name)
-            if match:
-                numbered_resource = mapping_dir / f"resource{match.group(1)}.ttl"
+            suffix_digits = []
+            for char in reversed(svc_name):
+                if char.isdigit():
+                    suffix_digits.append(char)
+                else:
+                    break
+            if suffix_digits:
+                resource_number = "".join(reversed(suffix_digits))
+                numbered_resource = mapping_dir / f"resource{resource_number}.ttl"
                 if numbered_resource.exists():
                     resource_file = numbered_resource
 
@@ -131,7 +138,8 @@ class SparqlSourceOperator(JsonSourceOperator):
             # zero rows for SELECT vars with an empty WHERE block. RML test-cases
             # with constant subject/predicate/object still expect one mapping tuple.
             if not bindings:
-                if re.search(r"WHERE\s*\{\s*\}", str(sparql_query), flags=re.IGNORECASE | re.DOTALL):
+                compact_query = "".join(str(sparql_query).split()).upper()
+                if "WHERE{}" in compact_query:
                     bindings = [{}]
 
             return {"head": {"vars": list(result.vars)}, "results": {"bindings": bindings}}

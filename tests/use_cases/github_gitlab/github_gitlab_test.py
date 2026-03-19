@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from pyhartig.mapping.MappingParser import MappingParser
 from pyhartig.algebra.Terms import IRI, Literal
+from pyhartig.namespaces import XSD_STRING
 from datetime import datetime
 
 
@@ -132,7 +133,7 @@ class TestGithubGitlabUseCase:
                     elif isinstance(obj, Literal):
                         # Escape quotes and backslashes
                         lex = obj.lexical_form.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
-                        if obj.datatype_iri and obj.datatype_iri != "http://www.w3.org/2001/XMLSchema#string":
+                        if obj.datatype_iri and obj.datatype_iri != XSD_STRING.value:
                             obj_str = f'"{lex}"^^<{obj.datatype_iri}>'
                         else:
                             obj_str = f'"{lex}"'
@@ -217,7 +218,7 @@ class TestGithubGitlabUseCase:
                         f.write(f"  {key}: <{value.value}>\n")
                     elif isinstance(value, Literal):
                         f.write(f"  {key}: \"{value.lexical_form}\"")
-                        if value.datatype_iri and value.datatype_iri != "http://www.w3.org/2001/XMLSchema#string":
+                        if value.datatype_iri and value.datatype_iri != XSD_STRING.value:
                             f.write(f"^^<{value.datatype_iri}>")
                         f.write("\n")
                     else:

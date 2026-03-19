@@ -15,6 +15,7 @@ from pyhartig.expressions.Reference import Reference
 from pyhartig.expressions.FunctionCall import FunctionCall
 from pyhartig.functions.builtins import to_iri, to_literal, concat
 from pyhartig.algebra.Terms import IRI, Literal
+from pyhartig.namespaces import FOAF_PERSON, XSD_STRING
 
 
 class TestOperatorComposition:
@@ -88,7 +89,7 @@ class TestOperatorComposition:
         extend_op = ExtendOperator(
             parent_operator=source_op,
             new_attribute="rdf_type",
-            expression=Constant(IRI("http://xmlns.com/foaf/0.1/Person"))
+            expression=Constant(FOAF_PERSON)
         )
 
         debug_logger("Pipeline Configuration",
@@ -153,7 +154,7 @@ class TestOperatorComposition:
         extend_type = ExtendOperator(
             parent_operator=extend_subject,
             new_attribute="type",
-            expression=Constant(IRI("http://xmlns.com/foaf/0.1/Person"))
+            expression=Constant(FOAF_PERSON)
         )
 
         # Third extension: convert name to literal
@@ -161,7 +162,7 @@ class TestOperatorComposition:
             function=to_literal,
             arguments=[
                 Reference("name"),
-                Constant("http://www.w3.org/2001/XMLSchema#string")
+                Constant(XSD_STRING.value)
             ]
         )
         extend_name = ExtendOperator(
@@ -409,7 +410,7 @@ class TestOperatorComposition:
             new_attribute="label",
             expression=FunctionCall(
                 function=to_literal,
-                arguments=[Reference("name"), Constant("http://www.w3.org/2001/XMLSchema#string")]
+                arguments=[Reference("name"), Constant(XSD_STRING.value)]
             )
         )
 

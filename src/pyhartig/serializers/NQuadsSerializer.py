@@ -2,7 +2,7 @@ from typing import Optional
 
 from pyhartig.algebra.Tuple import MappingTuple, EPSILON
 from pyhartig.algebra.Terms import IRI, Literal, BlankNode
-from pyhartig.namespaces import XSD_STRING
+from pyhartig.namespaces import RR_DEFAULT_GRAPH, XSD_STRING
 from urllib.parse import urlsplit, urlunsplit, quote
 
 
@@ -31,7 +31,7 @@ class NQuadsSerializer:
         except TypeError:
             return None
 
-        if isinstance(graph, IRI) and graph.value == "http://www.w3.org/ns/r2rml#defaultGraph":
+        if isinstance(graph, IRI) and graph.value == RR_DEFAULT_GRAPH.value:
             graph = None
 
         if graph:

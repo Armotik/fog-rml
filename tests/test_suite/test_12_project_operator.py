@@ -21,6 +21,7 @@ from pyhartig.expressions.Reference import Reference
 from pyhartig.expressions.FunctionCall import FunctionCall
 from pyhartig.functions.builtins import to_iri, concat
 from pyhartig.algebra.Terms import IRI
+from pyhartig.namespaces import FOAF_NAME
 
 
 class TestProjectOperator:
@@ -532,7 +533,7 @@ class TestProjectOperatorIntegration:
         extend_predicate = ExtendOperator(
             parent_operator=extend_subject,
             new_attribute="predicate",
-            expression=Constant(IRI("http://xmlns.com/foaf/0.1/name"))
+            expression=Constant(FOAF_NAME)
         )
 
         # Keep only S, P, O attributes for triple
@@ -583,4 +584,3 @@ class TestProjectOperatorIntegration:
             # Schema-specific attributes should not be present
             assert "dept" not in row
             assert "role" not in row
-

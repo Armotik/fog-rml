@@ -15,6 +15,7 @@ from pyhartig.expressions.FunctionCall import FunctionCall
 from pyhartig.functions.builtins import to_iri, to_literal, concat
 from pyhartig.algebra.Tuple import EPSILON
 from pyhartig.algebra.Terms import IRI, Literal
+from pyhartig.namespaces import XSD_INTEGER, XSD_STRING
 
 
 class TestExtendOperator:
@@ -347,7 +348,7 @@ class TestExtendOperator:
             function=to_literal,
             arguments=[
                 concat_expr,
-                Constant("http://www.w3.org/2001/XMLSchema#string")
+                Constant(XSD_STRING.value)
             ]
         )
         
@@ -537,7 +538,7 @@ class TestExtendOperator:
             function=to_literal,
             arguments=[
                 Reference("number"),
-                Constant("http://www.w3.org/2001/XMLSchema#integer")
+                Constant(XSD_INTEGER.value)
             ]
         )
         
@@ -558,7 +559,7 @@ class TestExtendOperator:
         
         assert len(result) == 2
         assert isinstance(result[0]["typed_number"], Literal)
-        assert result[0]["typed_number"].datatype_iri == "http://www.w3.org/2001/XMLSchema#integer"
+        assert result[0]["typed_number"].datatype_iri == XSD_INTEGER.value
         assert result[0]["typed_number"].lexical_form == "42"
         
         debug_logger("Validation", 
@@ -602,7 +603,7 @@ class TestExtendOperator:
             function=to_literal,
             arguments=[
                 Reference("name"),
-                Constant("http://www.w3.org/2001/XMLSchema#string")
+                Constant(XSD_STRING.value)
             ]
         )
         extend3 = ExtendOperator(

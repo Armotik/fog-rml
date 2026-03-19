@@ -7,18 +7,53 @@ from datetime import date, datetime
 from decimal import Decimal
 
 from pyhartig.algebra.Terms import Literal as AlgebraLiteral
+from pyhartig.namespaces import (
+	XSD_BOOLEAN,
+	XSD_DATE,
+	XSD_DATETIME,
+	XSD_DECIMAL,
+	XSD_DOUBLE,
+	XSD_INTEGER,
+)
+
+
+def _drop_sqlite_unsupported_line(stripped_line: str) -> bool:
+	upper_line = stripped_line.upper()
+	return (
+		(upper_line.startswith("USE ") and stripped_line.endswith(";"))
+		or ((upper_line.startswith("CREATE DATABASE ") or upper_line.startswith("DROP DATABASE ")) and stripped_line.endswith(";"))
+		or upper_line == "GO"
+		or (upper_line.startswith("SET ") and stripped_line.endswith(";"))
+		or upper_line.startswith("EXEC ")
+	)
+
+
+def _rewrite_drop_table_cascade(line: str) -> str:
+	stripped_line = line.strip()
+	upper_line = stripped_line.upper()
+	if not (upper_line.startswith("DROP TABLE IF EXISTS ") and stripped_line.endswith(";")):
+		return line
+
+	statement = stripped_line[:-1].rstrip()
+	if not statement.upper().endswith(" CASCADE"):
+		return line
+
+	indent = line[:len(line) - len(line.lstrip())]
+	statement = statement[:-len("CASCADE")].rstrip()
+	return f"{indent}{statement};"
 
 
 def _normalize_sql_script(script: str) -> str:
 	text = script
 
 	# Remove database-selection/setup statements not supported by sqlite
-	text = re.sub(r"(?im)^\s*USE\s+[^;]+;\s*$", "", text)
-	text = re.sub(r"(?im)^\s*(CREATE|DROP)\s+DATABASE\s+[^;]+;\s*$", "", text)
-	text = re.sub(r"(?im)^\s*GO\s*$", "", text)
-	text = re.sub(r"(?im)^\s*SET\s+[^;]+;\s*$", "", text)
-	text = re.sub(r"(?im)^\s*EXEC\s+[^\n]*$", "", text)
-	text = re.sub(r"(?i)\bDROP\s+TABLE\s+IF\s+EXISTS\s+([^;]+?)\s+CASCADE\s*;", r"DROP TABLE IF EXISTS \1;", text)
+	normalized_lines = []
+	for raw_line in text.splitlines():
+		stripped_line = raw_line.strip()
+		if _drop_sqlite_unsupported_line(stripped_line):
+			continue
+		normalized_lines.append(_rewrite_drop_table_cascade(raw_line))
+	text = "\n".join(normalized_lines)
 
 	# Replace schema-qualified references commonly used in fixtures
 	text = re.sub(r"(?i)\btest\.", "", text)
@@ -101,44 +136,44 @@ def _normalize_cell_value(value: Any, hint: Optional[Dict[str, Any]] = None) -> 
 
 	if hint_type in ("boolean", "bool", "bit"):
 		if isinstance(value, (int, float)):
-			return AlgebraLiteral("true" if int(value) != 0 else "false", "http://www.w3.org/2001/XMLSchema#boolean")
+			return AlgebraLiteral("true" if int(value) != 0 else "false", XSD_BOOLEAN.value)
 		if isinstance(value, str):
 			lv = value.strip().lower()
 			if lv in ("1", "true", "t", "yes"):
-				return AlgebraLiteral("true", "http://www.w3.org/2001/XMLSchema#boolean")
+				return AlgebraLiteral("true", XSD_BOOLEAN.value)
 			if lv in ("0", "false", "f", "no"):
-				return AlgebraLiteral("false", "http://www.w3.org/2001/XMLSchema#boolean")
+				return AlgebraLiteral("false", XSD_BOOLEAN.value)
 
 	if hint_type == "char" and isinstance(value, str) and hint_size:
 		value = value.ljust(int(hint_size))
 
 	if hint_type == "date" and isinstance(value, str):
 		if re.match(r"^\d{4}-\d{2}-\d{2}$", value):
-			return AlgebraLiteral(value, "http://www.w3.org/2001/XMLSchema#date")
+			return AlgebraLiteral(value, XSD_DATE.value)
 
 	if hint_type in ("datetime", "timestamp") and isinstance(value, str):
 		if re.match(r"^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}$", value):
-			return AlgebraLiteral(value.replace(" ", "T"), "http://www.w3.org/2001/XMLSchema#dateTime")
+			return AlgebraLiteral(value.replace(" ", "T"), XSD_DATETIME.value)
 
 	# Preserve relational native types as typed literals so object maps without
 	# explicit rr:datatype can still reflect SQL datatypes.
 	if isinstance(value, bool):
-		return AlgebraLiteral("true" if value else "false", "http://www.w3.org/2001/XMLSchema#boolean")
+		return AlgebraLiteral("true" if value else "false", XSD_BOOLEAN.value)
 	if isinstance(value, int):
-		return AlgebraLiteral(str(value), "http://www.w3.org/2001/XMLSchema#integer")
+		return AlgebraLiteral(str(value), XSD_INTEGER.value)
 	if isinstance(value, Decimal):
-		return AlgebraLiteral(str(value), "http://www.w3.org/2001/XMLSchema#decimal")
+		return AlgebraLiteral(str(value), XSD_DECIMAL.value)
 	if isinstance(value, float):
-		return AlgebraLiteral(str(value), "http://www.w3.org/2001/XMLSchema#double")
+		return AlgebraLiteral(str(value), XSD_DOUBLE.value)
 	if isinstance(value, datetime):
-		return AlgebraLiteral(value.isoformat(), "http://www.w3.org/2001/XMLSchema#dateTime")
+		return AlgebraLiteral(value.isoformat(), XSD_DATETIME.value)
 	if isinstance(value, date):
-		return AlgebraLiteral(value.isoformat(), "http://www.w3.org/2001/XMLSchema#date")
+		return AlgebraLiteral(value.isoformat(), XSD_DATE.value)
 	if isinstance(value, str):
 		if re.match(r"^\d{4}-\d{2}-\d{2}$", value):
-			return AlgebraLiteral(value, "http://www.w3.org/2001/XMLSchema#date")
+			return AlgebraLiteral(value, XSD_DATE.value)
 		if re.match(r"^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}$", value):
-			return AlgebraLiteral(value.replace(" ", "T"), "http://www.w3.org/2001/XMLSchema#dateTime")
+			return AlgebraLiteral(value.replace(" ", "T"), XSD_DATETIME.value)
 	if isinstance(value, (bytes, bytearray, memoryview)):
 		return bytes(value).hex().upper()
 	if isinstance(value, str) and value.startswith("\\x"):

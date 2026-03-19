@@ -24,6 +24,8 @@ import urllib.parse
 import os
 import csv
 
+from pyhartig.namespaces import D2RQ_BASE, RML_BASE, SD_BASE
+
 EXT_MAPPING = (".ttl", ".rml")
 EXT_EXPECTED = (".nt", ".ttl", ".nq", ".trig")
 
@@ -156,7 +158,7 @@ def rewrite_mapping_to_local(mapping: Path, case_dir: Path, tmp_root: Path) -> P
 
     Returns path to rewritten mapping, or None if no rewrite was performed.
     """
-    rml_ns = Namespace("http://semweb.mmlab.be/ns/rml#")
+    rml_ns = Namespace(RML_BASE)
     try:
         mg = Graph()
         mg.parse(str(mapping), format="turtle")
@@ -382,9 +384,9 @@ def main():
         # Determine whether the mapping references external (HTTP/DB/SPARQL)
         # sources by parsing the mapping and inspecting rml:source objects.
         from rdflib import URIRef, Namespace
-        rml_ns = Namespace("http://semweb.mmlab.be/ns/rml#")
-        sd_ns = Namespace("http://www.w3.org/ns/sparql-service-description#")
-        d2rq_ns = Namespace("http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#")
+        rml_ns = Namespace(RML_BASE)
+        sd_ns = Namespace(SD_BASE)
+        d2rq_ns = Namespace(D2RQ_BASE)
         skip_case = False
         try:
             mg = Graph()

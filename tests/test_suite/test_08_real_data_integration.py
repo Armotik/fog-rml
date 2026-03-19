@@ -16,6 +16,7 @@ from pyhartig.expressions.Reference import Reference
 from pyhartig.expressions.FunctionCall import FunctionCall
 from pyhartig.functions.builtins import to_iri, to_literal
 from pyhartig.algebra.Terms import IRI, Literal
+from pyhartig.namespaces import FOAF_PERSON, XSD_STRING
 
 
 class TestRealDataIntegration:
@@ -259,7 +260,7 @@ class TestRealDataIntegration:
         pipeline = ExtendOperator(
             pipeline,
             "rdf_type",
-            Constant(IRI("http://xmlns.com/foaf/0.1/Person"))
+            Constant(FOAF_PERSON)
         )
         
         debug_logger("Pipeline Stage 3: Add RDF Type", 
@@ -270,7 +271,7 @@ class TestRealDataIntegration:
             function=to_literal,
             arguments=[
                 Reference("member_name"),
-                Constant("http://www.w3.org/2001/XMLSchema#string")
+                Constant(XSD_STRING.value)
             ]
         )
         pipeline = ExtendOperator(pipeline, "name_literal", name_lit_expr)
@@ -283,7 +284,7 @@ class TestRealDataIntegration:
             function=to_literal,
             arguments=[
                 Reference("role"),
-                Constant("http://www.w3.org/2001/XMLSchema#string")
+                Constant(XSD_STRING.value)
             ]
         )
         pipeline = ExtendOperator(pipeline, "role_literal", role_lit_expr)
@@ -296,7 +297,7 @@ class TestRealDataIntegration:
             function=to_literal,
             arguments=[
                 Reference("skill"),
-                Constant("http://www.w3.org/2001/XMLSchema#string")
+                Constant(XSD_STRING.value)
             ]
         )
         pipeline = ExtendOperator(pipeline, "skill_literal", skill_lit_expr)
@@ -450,4 +451,3 @@ class TestRealDataIntegration:
         debug_logger("Validation", 
                      f"✓ Project metadata extracted\n"
                      f"✓ Project name: {result[0]['project_name']}")
-

@@ -14,7 +14,7 @@ from pyhartig.expressions.Constant import Constant
 from pyhartig.expressions.Reference import Reference
 from pyhartig.expressions.FunctionCall import FunctionCall
 from pyhartig.algebra.Terms import IRI as AlgebraIRI, Literal as AlgebraLiteral
-from pyhartig.namespaces import RR_BASE, RML_BASE, QL_BASE, RDF_BASE, XSD_BASE
+from pyhartig.namespaces import D2RQ_BASE, QL_BASE, RDF_BASE, RML_BASE, RR_BASE, XSD_BASE
 from pyhartig.operators.SourceFactory import SourceFactory
 from pyhartig.functions.builtins import to_iri, to_literal, concat, to_bnode, to_literal_lang, percent_encode_component
 
@@ -57,6 +57,67 @@ class MappingParser:
                 self.base_iri = m.group(1)
         except Exception:
             self.base_iri = None
+
+    @staticmethod
+    def _is_simple_identifier(value: str) -> bool:
+        if not value:
+            return False
+        first_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_"
+        rest_chars = first_chars + "0123456789-"
+        if value[0] not in first_chars:
+            return False
+        return all(ch in rest_chars for ch in value[1:])
+
+    @staticmethod
+    def _iter_template_segments(template_str: str) -> List[tuple[str, str]]:
+        segments: List[tuple[str, str]] = []
+        literal_buffer: List[str] = []
+        i = 0
+
+        while i < len(template_str):
+            current = template_str[i]
+            if current == "{":
+                if i + 1 < len(template_str) and template_str[i + 1] == "{":
+                    literal_buffer.append("{{")
+                    i += 2
+                    continue
+
+                end = template_str.find("}", i + 1)
+                if end == -1:
+                    literal_buffer.append(current)
+                    i += 1
+                    continue
+
+                inner = template_str[i + 1:end]
+                if "{" in inner or (end + 1 < len(template_str) and template_str[end + 1] == "}"):
+                    literal_buffer.append(current)
+                    i += 1
+                    continue
+
+                if literal_buffer:
+                    segments.append(("literal", "".join(literal_buffer)))
+                    literal_buffer = []
+
+                segments.append(("var", inner))
+                i = end + 1
+                continue
+
+            if current == "}" and i + 1 < len(template_str) and template_str[i + 1] == "}":
+                literal_buffer.append("}}")
+                i += 2
+                continue
+
+            literal_buffer.append(current)
+            i += 1
+
+        if literal_buffer:
+            segments.append(("literal", "".join(literal_buffer)))
+
+        return segments
+
+    @classmethod
+    def _extract_single_brace_variables(cls, template_str: str) -> List[str]:
+        return [value for kind, value in cls._iter_template_segments(template_str) if kind == "var"]
 
     def parse(self) -> Operator:
         """
@@ -156,7 +217,7 @@ class MappingParser:
             if not ls_node:
                 logical_table = self.graph.value(tm, RR.logicalTable)
                 if logical_table:
-                    d2rq_database_type = URIRef("http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#Database")
+                    d2rq_database_type = URIRef(f"{D2RQ_BASE}Database")
                     db_source = next(self.graph.subjects(RDF.type, d2rq_database_type), None)
                     table_name = self.graph.value(logical_table, RR.tableName)
                     sql_query = self.graph.value(logical_table, RR.sqlQuery)
@@ -445,7 +506,7 @@ class MappingParser:
                                 del P_child_join[m.group(0)]
                         om_template = self.graph.value(om, RR.template)
                         if om_template:
-                            for var in re.findall(r'(?<!\{)\{([^{}]+)\}(?!\})', str(om_template)):
+                            for var in self._extract_single_brace_variables(str(om_template)):
                                 if var in P_child_join:
                                     del P_child_join[var]
                     for name, q in zip(child_attrs, child_queries):
@@ -747,21 +808,15 @@ class MappingParser:
 
             tmpl = self.graph.value(term_map, RR.template)
             if tmpl:
-                import re
                 # Unescape any escaped braces so variables inside templates are
                 # detected correctly when the Turtle file encoded literal braces
                 # as "\\{" and "\\}".
                 tmpl_str = str(tmpl).replace('\\{', '{').replace('\\}', '}')
-                # Match variables enclosed in single braces that are not part of
-                # double/triple brace literals (avoid capturing outer literal
-                # braces like '{{' or '}}'). Use lookarounds to ensure we only
-                # capture single-brace variables.
-                vars = re.findall(r'(?<!\{)\{([^{}]+)\}(?!\})', tmpl_str)
+                vars = self._extract_single_brace_variables(tmpl_str)
                 for v in vars:
                     # If the variable name is a simple identifier, use dot-notation;
                     # otherwise use bracket-notation to support names with spaces
-                    import re
-                    if re.match(r'^[A-Za-z_][A-Za-z0-9_\-]*$', v):
+                    if self._is_simple_identifier(v):
                         P[v] = f"$.{v}"
                     else:
                         # escape single quotes inside v
@@ -815,12 +870,10 @@ class MappingParser:
                         return _normalize_name(q), q
                     tmpl = self.graph.value(node, RR.template)
                     if tmpl:
-                        import re
-                        vars = re.findall(r'\{([^}]+)\}', str(tmpl))
+                        vars = self._extract_single_brace_variables(str(tmpl))
                         if len(vars) == 1:
                             v = vars[0]
-                            import re
-                            if re.match(r'^[A-Za-z_][A-Za-z0-9_\-]*$', v):
+                            if self._is_simple_identifier(v):
                                 return v, f"$.{v}"
                             else:
                                 safe_v = v.replace("'", "\\'")
@@ -980,26 +1033,22 @@ class MappingParser:
         tmpl = self.graph.value(term_map, RR.template)
         if tmpl:
             template_str = str(tmpl)
-            import re
             # Split by curly braces but keep delimiters to identify vars
             # Unescape any backslash-escaped braces so templates like "\\{\\{ {X} \\}\\}"
             # become "{{ {X} }}" before extracting variables. This matches how the
             # RML test-suite encodes literal brace characters in Turtle files.
             template_str = template_str.replace('\\{', '{').replace('\\}', '}')
-            # Split the template into literal parts and single-brace variable
-            # placeholders. This avoids breaking on double/triple-brace
-            # literal markers by ensuring we only split on single-brace vars.
-            parts = re.split(r'(?<!\{)(\{[^{}]+\})(?!\})', template_str)
+            parts = self._iter_template_segments(template_str)
 
             args = []
-            for part in parts:
-                if part.startswith("{") and part.endswith("}"):
-                    var = part[1:-1]
+            for part_type, part_value in parts:
+                if part_type == "var":
+                    var = part_value
                     # Percent-encode inserted reference components so template
                     # insertion semantics match the RML test-suite expectations
                     args.append(FunctionCall(percent_encode_component, [Reference(var)]))
-                elif part:
-                    args.append(Constant(AlgebraLiteral(part)))
+                elif part_value:
+                    args.append(Constant(AlgebraLiteral(part_value)))
 
             if not args: return Constant(AlgebraLiteral(""))
 

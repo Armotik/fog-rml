@@ -10,6 +10,7 @@ import pytest
 from pyhartig.functions.builtins import to_iri, to_literal, concat
 from pyhartig.algebra.Terms import IRI, Literal
 from pyhartig.algebra.Tuple import EPSILON
+from pyhartig.namespaces import XSD_INTEGER, XSD_STRING
 
 
 class TestBuiltinFunctions:
@@ -88,8 +89,7 @@ class TestBuiltinFunctions:
         debug_logger("Test: to_iri with Literal Input", 
                      "Objective: Extract lexical form from Literal")
         
-        lit = Literal("http://example.org/item", 
-                     "http://www.w3.org/2001/XMLSchema#string")
+        lit = Literal("http://example.org/item", XSD_STRING.value)
         result = to_iri(lit)
         
         debug_logger("Test Case: Literal to IRI", 
@@ -178,7 +178,7 @@ class TestBuiltinFunctions:
                      "Objective: Convert string to typed literal")
         
         result = to_literal("Hello World", 
-                           "http://www.w3.org/2001/XMLSchema#string")
+                           XSD_STRING.value)
         
         debug_logger("Test Case: String to xsd:string", 
                      f"Input: 'Hello World'\n"
@@ -188,7 +188,7 @@ class TestBuiltinFunctions:
         
         assert isinstance(result, Literal)
         assert result.lexical_form == "Hello World"
-        assert result.datatype_iri == "http://www.w3.org/2001/XMLSchema#string"
+        assert result.datatype_iri == XSD_STRING.value
         
         debug_logger("Validation", "✓ String converted to literal")
 
@@ -201,7 +201,7 @@ class TestBuiltinFunctions:
         debug_logger("Test: to_literal with Integer Input", 
                      "Objective: Convert integer to xsd:integer literal")
         
-        result = to_literal(42, "http://www.w3.org/2001/XMLSchema#integer")
+        result = to_literal(42, XSD_INTEGER.value)
         
         debug_logger("Test Case: Integer to xsd:integer", 
                      f"Input: 42\n"
@@ -211,7 +211,7 @@ class TestBuiltinFunctions:
         
         assert isinstance(result, Literal)
         assert result.lexical_form == "42"
-        assert result.datatype_iri == "http://www.w3.org/2001/XMLSchema#integer"
+        assert result.datatype_iri == XSD_INTEGER.value
         
         debug_logger("Validation", "✓ Integer converted to literal")
 
@@ -224,8 +224,8 @@ class TestBuiltinFunctions:
         debug_logger("Test: to_literal with Literal Input", 
                      "Objective: Re-type existing literal")
         
-        original = Literal("123", "http://www.w3.org/2001/XMLSchema#string")
-        result = to_literal(original, "http://www.w3.org/2001/XMLSchema#integer")
+        original = Literal("123", XSD_STRING.value)
+        result = to_literal(original, XSD_INTEGER.value)
         
         debug_logger("Test Case: Literal Re-typing", 
                      f"Input: {original}\n"
@@ -235,7 +235,7 @@ class TestBuiltinFunctions:
         
         assert isinstance(result, Literal)
         assert result.lexical_form == "123"
-        assert result.datatype_iri == "http://www.w3.org/2001/XMLSchema#integer"
+        assert result.datatype_iri == XSD_INTEGER.value
         
         debug_logger("Validation", "✓ Literal successfully re-typed")
 
@@ -248,7 +248,7 @@ class TestBuiltinFunctions:
         debug_logger("Test: to_literal with None Input", 
                      "Objective: Handle None gracefully")
         
-        result = to_literal(None, "http://www.w3.org/2001/XMLSchema#string")
+        result = to_literal(None, XSD_STRING.value)
         
         debug_logger("Test Case: None Input", 
                      f"Input: None\n"
@@ -268,7 +268,7 @@ class TestBuiltinFunctions:
         debug_logger("Test: to_literal with EPSILON Input", 
                      "Objective: Propagate EPSILON")
         
-        result = to_literal(EPSILON, "http://www.w3.org/2001/XMLSchema#string")
+        result = to_literal(EPSILON, XSD_STRING.value)
         
         debug_logger("Test Case: EPSILON Input", 
                      f"Input: {EPSILON}\n"
@@ -302,7 +302,7 @@ class TestBuiltinFunctions:
         
         assert isinstance(result, Literal)
         assert result.lexical_form == "HelloWorld"
-        assert result.datatype_iri == "http://www.w3.org/2001/XMLSchema#string"
+        assert result.datatype_iri == XSD_STRING.value
         
         debug_logger("Validation", "✓ Strings successfully concatenated")
 
@@ -315,8 +315,8 @@ class TestBuiltinFunctions:
         debug_logger("Test: concat with Literal Inputs", 
                      "Objective: Concatenate literal values")
         
-        lit1 = Literal("Alice", "http://www.w3.org/2001/XMLSchema#string")
-        lit2 = Literal(" Smith", "http://www.w3.org/2001/XMLSchema#string")
+        lit1 = Literal("Alice", XSD_STRING.value)
+        lit2 = Literal(" Smith", XSD_STRING.value)
         result = concat(lit1, lit2)
         
         debug_logger("Test Case: Literal Concatenation", 
@@ -434,7 +434,7 @@ class TestBuiltinFunctions:
         
         # Convert to literal with explicit type
         name_literal = to_literal(name, 
-                                  "http://www.w3.org/2001/XMLSchema#string")
+                                  XSD_STRING.value)
         
         # Create IRI from concatenated value
         # Note: to_iri expects string-like input, literal provides lexical_form
@@ -452,4 +452,3 @@ class TestBuiltinFunctions:
         debug_logger("Validation", 
                      "✓ Functions successfully composed\n"
                      f"✓ Final IRI: {iri}")
-

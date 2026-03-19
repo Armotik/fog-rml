@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from typing import Union
 import re
 
+_XSD_STRING_IRI = "http://www.w3.org/2001/XMLSchema#string"  # NOSONAR
+_RDF_LANGSTRING_IRI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"  # NOSONAR
+
 
 class InvalidIRIError(ValueError):
     """Exception raised when an invalid IRI is provided."""
@@ -111,7 +114,7 @@ class Literal:
         ValueError: If both a non-default datatype and a language tag are provided.
     """
     lexical_form: str
-    datatype_iri: str = "http://www.w3.org/2001/XMLSchema#string"
+    datatype_iri: str = _XSD_STRING_IRI
     language: str = None
 
     def __post_init__(self) -> None:
@@ -126,8 +129,8 @@ class Literal:
             # Per RDF 1.1: language-tagged literals have datatype rdf:langString
             # If user specified a different datatype, it's an error
             if self.datatype_iri not in (
-                "http://www.w3.org/2001/XMLSchema#string",
-                "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+                _XSD_STRING_IRI,
+                _RDF_LANGSTRING_IRI
             ):
                 raise ValueError(
                     f"Cannot specify both language tag '{self.language}' and "
@@ -140,7 +143,7 @@ class Literal:
             object.__setattr__(
                 self,
                 'datatype_iri',
-                "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+                _RDF_LANGSTRING_IRI
             )
 
     def __repr__(self) -> str:
@@ -154,7 +157,7 @@ class Literal:
             return f'"{self.lexical_form}"@{self.language}'
 
         # Simple string literal (default datatype): "value"
-        if self.datatype_iri == "http://www.w3.org/2001/XMLSchema#string":
+        if self.datatype_iri == _XSD_STRING_IRI:
             return f'"{self.lexical_form}"'
 
         # Typed literal: "value"^^datatype

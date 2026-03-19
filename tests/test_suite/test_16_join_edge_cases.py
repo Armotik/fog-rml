@@ -3,6 +3,7 @@ import tempfile
 from pathlib import Path
 
 from pyhartig.mapping.MappingParser import MappingParser
+from pyhartig.namespaces import QL_BASE, RML_BASE, RR_BASE
 
 
 def test_multiple_join_conditions():
@@ -28,19 +29,19 @@ def test_multiple_join_conditions():
         with open(child_path, "w", encoding="utf-8") as f:
             json.dump(child, f)
 
-        mapping = """
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+        mapping = f"""
+@prefix rr: <{RR_BASE}> .
+@prefix rml: <{RML_BASE}> .
+@prefix ql: <{QL_BASE}> .
 @prefix ex: <http://example.org/> .
 
 <#parent> a rr:TriplesMap;
-    rml:logicalSource [ rml:source "{parent}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
-    rr:subjectMap [ rr:template "http://example.org/p/{id}/{type}" ] .
+    rml:logicalSource [ rml:source "{parent_path.name}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
+    rr:subjectMap [ rr:template "http://example.org/p/{{id}}/{{type}}" ] .
 
 <#child> a rr:TriplesMap;
-    rml:logicalSource [ rml:source "{child}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
-    rr:subjectMap [ rr:template "http://example.org/c/{cid}" ] ;
+    rml:logicalSource [ rml:source "{child_path.name}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
+    rr:subjectMap [ rr:template "http://example.org/c/{{cid}}" ] ;
     rr:predicateObjectMap [
         rr:predicateMap [ rr:constant ex:rel ] ;
         rr:objectMap [
@@ -49,7 +50,7 @@ def test_multiple_join_conditions():
             rr:joinCondition [ rr:child [ rml:reference "$.ref_type" ] ; rr:parent [ rml:reference "$.type" ] ]
         ]
     ] .
-""".replace("{parent}", parent_path.name).replace("{child}", child_path.name)
+"""
 
         mapping_path = td_path / "mapping.ttl"
         with open(mapping_path, "w", encoding="utf-8") as f:
@@ -89,27 +90,27 @@ def test_template_based_join():
         with open(child_path, "w", encoding="utf-8") as f:
             json.dump(child, f)
 
-        mapping = """
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+        mapping = f"""
+@prefix rr: <{RR_BASE}> .
+@prefix rml: <{RML_BASE}> .
+@prefix ql: <{QL_BASE}> .
 @prefix ex: <http://example.org/> .
 
 <#parent> a rr:TriplesMap;
-    rml:logicalSource [ rml:source "{parent}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
-    rr:subjectMap [ rr:template "http://example.org/user/{user_id}" ] .
+    rml:logicalSource [ rml:source "{parent_path.name}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
+    rr:subjectMap [ rr:template "http://example.org/user/{{user_id}}" ] .
 
 <#child> a rr:TriplesMap;
-    rml:logicalSource [ rml:source "{child}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
-    rr:subjectMap [ rr:template "http://example.org/post/{post_id}" ] ;
+    rml:logicalSource [ rml:source "{child_path.name}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
+    rr:subjectMap [ rr:template "http://example.org/post/{{post_id}}" ] ;
     rr:predicateObjectMap [
         rr:predicateMap [ rr:constant ex:author ] ;
         rr:objectMap [
             rr:parentTriplesMap <#parent> ;
-            rr:joinCondition [ rr:child [ rml:reference "$.author" ] ; rr:parent [ rr:template "{user_id}" ] ]
+            rr:joinCondition [ rr:child [ rml:reference "$.author" ] ; rr:parent [ rr:template "{{user_id}}" ] ]
         ]
     ] .
-""".replace("{parent}", parent_path.name).replace("{child}", child_path.name)
+"""
 
         mapping_path = td_path / "mapping.ttl"
         with open(mapping_path, "w", encoding="utf-8") as f:
@@ -141,19 +142,19 @@ def test_missing_parent_attribute_no_join():
         with open(child_path, "w", encoding="utf-8") as f:
             json.dump(child, f)
 
-        mapping = """
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+        mapping = f"""
+@prefix rr: <{RR_BASE}> .
+@prefix rml: <{RML_BASE}> .
+@prefix ql: <{QL_BASE}> .
 @prefix ex: <http://example.org/> .
 
 <#parent> a rr:TriplesMap;
-    rml:logicalSource [ rml:source "{parent}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
-    rr:subjectMap [ rr:template "http://example.org/user/{user_id}" ] .
+    rml:logicalSource [ rml:source "{parent_path.name}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
+    rr:subjectMap [ rr:template "http://example.org/user/{{user_id}}" ] .
 
 <#child> a rr:TriplesMap;
-    rml:logicalSource [ rml:source "{child}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
-    rr:subjectMap [ rr:template "http://example.org/post/{post_id}" ] ;
+    rml:logicalSource [ rml:source "{child_path.name}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
+    rr:subjectMap [ rr:template "http://example.org/post/{{post_id}}" ] ;
     rr:predicateObjectMap [
         rr:predicateMap [ rr:constant ex:author ] ;
         rr:objectMap [
@@ -161,7 +162,7 @@ def test_missing_parent_attribute_no_join():
             rr:joinCondition [ rr:child [ rml:reference "$.author" ] ; rr:parent [ rml:reference "$.nonexistent" ] ]
         ]
     ] .
-""".replace("{parent}", parent_path.name).replace("{child}", child_path.name)
+"""
 
         mapping_path = td_path / "mapping.ttl"
         with open(mapping_path, "w", encoding="utf-8") as f:
@@ -213,27 +214,27 @@ def test_multi_column_template_join_not_supported():
         with open(child_path, "w", encoding="utf-8") as f:
             json.dump(child, f)
 
-        mapping = """
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+        mapping = f"""
+@prefix rr: <{RR_BASE}> .
+@prefix rml: <{RML_BASE}> .
+@prefix ql: <{QL_BASE}> .
 @prefix ex: <http://example.org/> .
 
 <#parent> a rr:TriplesMap;
-    rml:logicalSource [ rml:source "{parent}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
-    rr:subjectMap [ rr:template "http://example.org/p/{a}-{b}" ] .
+    rml:logicalSource [ rml:source "{parent_path.name}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
+    rr:subjectMap [ rr:template "http://example.org/p/{{a}}-{{b}}" ] .
 
 <#child> a rr:TriplesMap;
-    rml:logicalSource [ rml:source "{child}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
-    rr:subjectMap [ rr:template "http://example.org/c/{cid}" ] ;
+    rml:logicalSource [ rml:source "{child_path.name}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
+    rr:subjectMap [ rr:template "http://example.org/c/{{cid}}" ] ;
     rr:predicateObjectMap [
         rr:predicateMap [ rr:constant ex:rel ] ;
         rr:objectMap [
             rr:parentTriplesMap <#parent> ;
-            rr:joinCondition [ rr:child [ rml:reference "$.part1" ] ; rr:parent [ rr:template "{a}-{b}" ] ]
+            rr:joinCondition [ rr:child [ rml:reference "$.part1" ] ; rr:parent [ rr:template "{{a}}-{{b}}" ] ]
         ]
     ] .
-""".replace("{parent}", parent_path.name).replace("{child}", child_path.name)
+"""
 
         mapping_path = td_path / "mapping.ttl"
         with open(mapping_path, "w", encoding="utf-8") as f:

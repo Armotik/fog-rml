@@ -14,6 +14,7 @@ from pyhartig.expressions.Reference import Reference
 from pyhartig.expressions.FunctionCall import FunctionCall
 from pyhartig.functions.builtins import to_iri
 from pyhartig.algebra.Terms import IRI
+from pyhartig.namespaces import FOAF_PERSON
 
 
 class TestExplainJson:
@@ -93,14 +94,14 @@ class TestExplainJson:
 
     def test_extend_with_iri_constant_explain_json(self, sample_source):
         """Test JSON explanation for Extend with IRI constant."""
-        iri = IRI("http://xmlns.com/foaf/0.1/Person")
+        iri = FOAF_PERSON
         extend = ExtendOperator(sample_source, "rdf_type", Constant(iri))
         explanation = extend.explain_json()
 
         expr = explanation["parameters"]["expression"]
         assert expr["type"] == "Constant"
         assert expr["value_type"] == "IRI"
-        assert expr["value"] == "http://xmlns.com/foaf/0.1/Person"
+        assert expr["value"] == FOAF_PERSON.value
 
     def test_nested_extend_explain_json(self, sample_source):
         """Test JSON explanation for nested Extend operators."""

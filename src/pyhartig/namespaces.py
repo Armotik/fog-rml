@@ -3,13 +3,16 @@ from typing import Any
 from pyhartig.algebra.Terms import IRI
 
 # Base Namespaces (Strings)
-RDF_BASE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-RDFS_BASE = "http://www.w3.org/2000/01/rdf-schema#"
-XSD_BASE = "http://www.w3.org/2001/XMLSchema#"
-FOAF_BASE = "http://xmlns.com/foaf/0.1/"
-RML_BASE = "http://semweb.mmlab.be/ns/rml#"
-RR_BASE = "http://www.w3.org/ns/r2rml#"
-QL_BASE   = "http://semweb.mmlab.be/ns/ql#"
+# These are RDF vocabulary namespace IRIs, not runtime HTTP endpoints. # NOSONAR
+RDF_BASE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"  # NOSONAR
+RDFS_BASE = "http://www.w3.org/2000/01/rdf-schema#"  # NOSONAR
+XSD_BASE = "http://www.w3.org/2001/XMLSchema#"  # NOSONAR
+FOAF_BASE = "http://xmlns.com/foaf/0.1/"  # NOSONAR
+RML_BASE = "http://semweb.mmlab.be/ns/rml#"  # NOSONAR
+RR_BASE = "http://www.w3.org/ns/r2rml#"  # NOSONAR
+QL_BASE   = "http://semweb.mmlab.be/ns/ql#"  # NOSONAR
+SD_BASE = "http://www.w3.org/ns/sparql-service-description#"  # NOSONAR
+D2RQ_BASE = "http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#"  # NOSONAR
 
 # XSD Datatypes (Typed as IRI objects)
 XSD_STRING = IRI(f"{XSD_BASE}string")
@@ -21,10 +24,16 @@ XSD_DATE = IRI(f"{XSD_BASE}date")
 XSD_DATETIME = IRI(f"{XSD_BASE}dateTime")
 
 # RDF Syntax
+RDF_LANGSTRING = IRI(f"{RDF_BASE}langString")
+RDF_TYPE = IRI(f"{RDF_BASE}type")
 RDFS_LABEL = IRI(f"{RDFS_BASE}label")
 RDFS_COMMENT = IRI(f"{RDFS_BASE}comment")
 RDFS_CLASS = IRI(f"{RDFS_BASE}Class")
 RDFS_SUBCLASS = IRI(f"{RDFS_BASE}subClassOf")
+
+# Common FOAF terms
+FOAF_PERSON = IRI(f"{FOAF_BASE}Person")
+FOAF_NAME = IRI(f"{FOAF_BASE}name")
 
 # RML & R2RML
 RML_SOURCE = IRI(f"{RML_BASE}source")
@@ -42,6 +51,7 @@ RR_TERM_TYPE = IRI(f"{RR_BASE}termType")
 RR_IRI = IRI(f"{RR_BASE}IRI")
 RR_LITERAL = IRI(f"{RR_BASE}Literal")
 RR_BLANK_NODE = IRI(f"{RR_BASE}BlankNode")
+RR_DEFAULT_GRAPH = IRI(f"{RR_BASE}defaultGraph")
 
 
 # Utilities

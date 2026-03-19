@@ -13,6 +13,7 @@ from pyhartig.expressions.FunctionCall import FunctionCall
 from pyhartig.algebra.Tuple import MappingTuple, EPSILON
 from pyhartig.algebra.Terms import IRI, Literal
 from pyhartig.functions.builtins import to_iri, to_literal, concat
+from pyhartig.namespaces import FOAF_PERSON, XSD_STRING
 
 
 class TestExpressionSystem:
@@ -84,7 +85,7 @@ class TestExpressionSystem:
         debug_logger("Test: Constant Expression with IRI", 
                      "Objective: Validate RDF term constants")
         
-        iri_value = IRI("http://xmlns.com/foaf/0.1/Person")
+        iri_value = FOAF_PERSON
         const_expr = Constant(iri_value)
         result = const_expr.evaluate(sample_tuple)
         
@@ -375,7 +376,7 @@ class TestExpressionSystem:
             function=to_literal,
             arguments=[
                 inner_expr,
-                Constant("http://www.w3.org/2001/XMLSchema#string")
+                Constant(XSD_STRING.value)
             ]
         )
         
@@ -504,4 +505,3 @@ class TestExpressionSystem:
         assert "concat" in func_repr or "Concat" in func_repr
         
         debug_logger("Validation", "✓ All expressions have meaningful repr")
-

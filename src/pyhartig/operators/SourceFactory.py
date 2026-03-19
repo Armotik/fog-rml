@@ -1,5 +1,4 @@
 import logging
-import json
 import urllib.parse
 from pathlib import Path
 from rdflib import Graph, Namespace, URIRef, Node
@@ -12,15 +11,15 @@ from pyhartig.operators.sources.SparqlSourceOperator import SparqlSourceOperator
 from pyhartig.operators.sources.MysqlSourceOperator import MysqlSourceOperator
 from pyhartig.operators.sources.PostgresqlSourceOperator import PostgresqlSourceOperator
 from pyhartig.operators.sources.SqlserverSourceOperator import SqlserverSourceOperator
-from pyhartig.namespaces import RML_BASE, QL_BASE, RR_BASE
+from pyhartig.namespaces import D2RQ_BASE, QL_BASE, RML_BASE, RR_BASE, SD_BASE
 
 logger = logging.getLogger(__name__)
 
 RML = Namespace(RML_BASE)
 QL = Namespace(QL_BASE)
-SD = Namespace('http://www.w3.org/ns/sparql-service-description#')
 RR = Namespace(RR_BASE)
-D2RQ = Namespace('http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#')
+SD = Namespace(SD_BASE)
+D2RQ = Namespace(D2RQ_BASE)
 
 
 class SourceFactory:
@@ -228,16 +227,17 @@ class SourceFactory:
 
         try:
             logger.debug(f"Loading JSON source file: {path}")
-            with open(path, 'r', encoding='utf-8') as f:
-                raw_data = json.load(f)
+            return JsonSourceOperator.from_json_file(
+                source_path=path,
+                iterator_query=query,
+                attribute_mappings=mappings,
+            )
         except FileNotFoundError:
             logger.error(f"Source file not found at: {path}")
             raise
         except Exception as e:
             logger.error(f"Error loading JSON source {path}: {e}")
             raise
-
-        return JsonSourceOperator(source_data=raw_data, iterator_query=query, attribute_mappings=mappings)
 
     @staticmethod
     def _create_csv_source(path: Path, iterator: Node, mappings: dict) -> CsvSourceOperator:

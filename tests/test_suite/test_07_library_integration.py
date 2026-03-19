@@ -9,6 +9,7 @@ RDF library integration scenarios.
 import pytest
 import json
 from jsonpath_ng import parse
+from pyhartig.namespaces import XSD_INTEGER, XSD_STRING
 from pyhartig.operators.sources.JsonSourceOperator import JsonSourceOperator
 
 class TestLibraryIntegration:
@@ -327,7 +328,7 @@ class TestLibraryIntegration:
         # Create different RDF terms
         iri = IRI("http://example.org/resource")
         literal_plain = Literal("Hello")
-        literal_typed = Literal("42", "http://www.w3.org/2001/XMLSchema#integer")
+        literal_typed = Literal("42", XSD_INTEGER.value)
         blank = BlankNode("b1")
         
         debug_logger("Test Cases", 
@@ -338,7 +339,7 @@ class TestLibraryIntegration:
         
         assert iri.value == "http://example.org/resource"
         assert literal_plain.lexical_form == "Hello"
-        assert literal_typed.datatype_iri == "http://www.w3.org/2001/XMLSchema#integer"
+        assert literal_typed.datatype_iri == XSD_INTEGER.value
         assert blank.identifier == "b1"
         
         debug_logger("Validation", 
@@ -360,9 +361,9 @@ class TestLibraryIntegration:
         iri2 = IRI("http://example.org/test")
         iri3 = IRI("http://example.org/other")
         
-        lit1 = Literal("value", "http://www.w3.org/2001/XMLSchema#string")
-        lit2 = Literal("value", "http://www.w3.org/2001/XMLSchema#string")
-        lit3 = Literal("value", "http://www.w3.org/2001/XMLSchema#integer")
+        lit1 = Literal("value", XSD_STRING.value)
+        lit2 = Literal("value", XSD_STRING.value)
+        lit3 = Literal("value", XSD_INTEGER.value)
         
         debug_logger("Test Cases", 
                      f"IRI equality: {iri1} == {iri2} → {iri1 == iri2}\n"
@@ -392,8 +393,8 @@ class TestLibraryIntegration:
         from pyhartig.algebra.Terms import IRI, Literal, BlankNode
         
         iri = IRI("http://example.org/test")
-        lit_string = Literal("Hello", "http://www.w3.org/2001/XMLSchema#string")
-        lit_int = Literal("42", "http://www.w3.org/2001/XMLSchema#integer")
+        lit_string = Literal("Hello", XSD_STRING.value)
+        lit_int = Literal("42", XSD_INTEGER.value)
         blank = BlankNode("node1")
         
         iri_repr = repr(iri)
@@ -450,4 +451,3 @@ class TestLibraryIntegration:
         except ImportError as e:
             debug_logger("Import Error", str(e))
             pytest.fail(f"Required library not available: {e}")
-

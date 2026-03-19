@@ -3,6 +3,7 @@ import tempfile
 from pathlib import Path
 
 from pyhartig.mapping.MappingParser import MappingParser
+from pyhartig.namespaces import QL_BASE, RDF_BASE, RML_BASE, RR_BASE
 
 
 def test_referencing_object_map_join():
@@ -30,29 +31,29 @@ def test_referencing_object_map_join():
             json.dump(child, f)
 
         # Build an RML mapping that creates triples: subject from child, predicate ex:author, object from parent subject via join
-        mapping_ttl = """
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+        mapping_ttl = f"""
+@prefix rr: <{RR_BASE}> .
+@prefix rml: <{RML_BASE}> .
+@prefix ql: <{QL_BASE}> .
 @prefix ex: <http://example.org/> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdf: <{RDF_BASE}> .
 
 # Child TriplesMap (posts) with inline parent TriplesMap
 <#child> a rr:TriplesMap;
-    rml:logicalSource [ rml:source "{child}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
-    rr:subjectMap [ rr:template "http://example.org/post/{post_id}" ] ;
+    rml:logicalSource [ rml:source "{child_path.name}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
+    rr:subjectMap [ rr:template "http://example.org/post/{{post_id}}" ] ;
     rr:predicateObjectMap [
          rr:predicateMap [ rr:constant ex:author ] ;
          rr:objectMap [
              rr:parentTriplesMap [ a rr:TriplesMap ;
-                 rml:logicalSource [ rml:source "{parent}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
-                 rr:subjectMap [ rr:template "http://example.org/user/{user_id}" ] ;
+                 rml:logicalSource [ rml:source "{parent_path.name}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
+                rr:subjectMap [ rr:template "http://example.org/user/{{user_id}}" ] ;
                  rr:predicateObjectMap [ rr:predicateMap [ rr:constant ex:uid ] ; rr:objectMap [ rml:reference "$.user_id" ] ]
              ] ;
              rr:joinCondition [ rr:child [ rml:reference "$.author" ] ; rr:parent [ rml:reference "$.user_id" ] ]
          ]
     ] .
-""".replace("{parent}", parent_path.name).replace("{child}", child_path.name)
+"""
 
         mapping_path = td_path / "mapping.ttl"
         with open(mapping_path, "w", encoding="utf-8") as f:
@@ -140,20 +141,20 @@ def test_referencing_object_map_join_parent_tm_reference():
         with open(child_path, "w", encoding="utf-8") as f:
             json.dump(child, f)
 
-        mapping_ttl = """
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+        mapping_ttl = f"""
+@prefix rr: <{RR_BASE}> .
+@prefix rml: <{RML_BASE}> .
+@prefix ql: <{QL_BASE}> .
 @prefix ex: <http://example.org/> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdf: <{RDF_BASE}> .
 
 <#parent> a rr:TriplesMap;
-    rml:logicalSource [ rml:source "{parent}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
-    rr:subjectMap [ rr:template "http://example.org/user/{user_id}" ] .
+    rml:logicalSource [ rml:source "{parent_path.name}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
+    rr:subjectMap [ rr:template "http://example.org/user/{{user_id}}" ] .
 
 <#child> a rr:TriplesMap;
-    rml:logicalSource [ rml:source "{child}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
-    rr:subjectMap [ rr:template "http://example.org/post/{post_id}" ] ;
+    rml:logicalSource [ rml:source "{child_path.name}" ; rml:referenceFormulation ql:JSONPath ; rml:iterator "$" ] ;
+    rr:subjectMap [ rr:template "http://example.org/post/{{post_id}}" ] ;
     rr:predicateObjectMap [
          rr:predicateMap [ rr:constant ex:author ] ;
          rr:objectMap [
@@ -161,7 +162,7 @@ def test_referencing_object_map_join_parent_tm_reference():
              rr:joinCondition [ rr:child [ rml:reference "$.author" ] ; rr:parent [ rml:reference "$.user_id" ] ]
          ]
     ] .
-""".replace("{parent}", parent_path.name).replace("{child}", child_path.name)
+"""
 
         mapping_path = td_path / "mapping2.ttl"
         with open(mapping_path, "w", encoding="utf-8") as f:
