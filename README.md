@@ -228,7 +228,7 @@ What it does
 - Resolves and invokes registered callables at evaluation time, supporting nested function values and
     reference/constant arguments.
 
-How it works (high level)
+How it works
 - Register: call `FunctionRegistry.register(uri, callable)` from your application or a plugin module.
 - Parse: `MappingParser` converts `fnml:functionValue` declarations into `FunctionCall(func_iri, args...)`.
 - Resolve: when `FunctionCall.evaluate()` runs, if its `function` is a string IRI the registry is queried
@@ -247,14 +247,6 @@ Inputs and outputs
 Error semantics
 - If an argument evaluates to `EPSILON`, or if the function lookup fails, or the callable raises an exception,
     the `FunctionCall` returns `EPSILON` to preserve strict error propagation across the algebra.
-
-Why this is beneficial
-- Extensibility: add custom transformations without modifying `pyhartig` core sources; register functions from
-    application code or plugin modules.
-- Decoupling: mappings remain declarative (use FnO URIs); implementations live in Python and can be tested
-    independently and shared across projects.
-- Interoperability: supports FnML/FnO standard patterns so mappings authored for other engines can reference
-    the same URIs.
 
 Security and best practices
 - Registered callables execute arbitrary Python code — only register trusted code in production.
