@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### TODO
 
 #### Demo & Use Cases
+- Exemple avec structure JSON bien plus complexe (niveaux imbriqués, tableaux dans tableaux)
+- Exemple avec des règles plus compliquées et utiliser chaque Operator (Project, Join, Union, Extend)
+- Faire une commande exemple cli source + mapping -> output (pas le use case)
 - **Implement "Multi-Repo Issues" Demo Scenario**:
   - **Goal**: Aggregate issues from multiple heterogeneous sources (GitHub & GitLab) into a single Knowledge Graph.
   - **CLI Tool**: Create a specific command `listissues` (just an example name might be better) :
@@ -82,6 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - [PyRML Test Suite](https://github.com/anuzzolese/pyrml)
   - [RMLMapper-Java Test Suite](https://github.com/RMLio/rmlmapper-java)
   - [Morph-KGC Test Suite](https://github.com/morph-kgc/morph-kgc)
+  - (test cases)
 
 #### General Improvements
 
