@@ -5,6 +5,7 @@ import re
 
 from pyhartig.algebra.Tuple import EPSILON, _Epsilon, AlgebraicValue
 from pyhartig.algebra.Terms import IRI, Literal, BlankNode
+from pyhartig.functions.registry import FunctionRegistry
 
 
 def _to_string(value: AlgebraicValue) -> Union[str, None]:
@@ -215,3 +216,16 @@ def concat(*args: AlgebraicValue) -> Union[Literal, _Epsilon]:
             return EPSILON
         result += s
     return Literal(result, "http://www.w3.org/2001/XMLSchema#string")
+
+
+# Register built-in functions in the FunctionRegistry under pyhartig namespace
+try:
+    FunctionRegistry.register("http://pyhartig.org/functions#to_iri", to_iri)
+    FunctionRegistry.register("http://pyhartig.org/functions#to_literal", to_literal)
+    FunctionRegistry.register("http://pyhartig.org/functions#concat", concat)
+    FunctionRegistry.register("http://pyhartig.org/functions#to_bnode", to_bnode)
+    FunctionRegistry.register("http://pyhartig.org/functions#to_literal_lang", to_literal_lang)
+    FunctionRegistry.register("http://pyhartig.org/functions#percent_encode_component", percent_encode_component)
+except Exception:
+    # Best-effort registration; failures here should not break import.
+    pass

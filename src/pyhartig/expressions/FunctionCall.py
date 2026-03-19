@@ -1,6 +1,7 @@
 from typing import Any, List, Callable
 from pyhartig.expressions.Expression import Expression
 from pyhartig.algebra.Tuple import MappingTuple, EPSILON
+from pyhartig.functions.registry import FunctionRegistry
 
 class FunctionCall(Expression):
     """
@@ -10,7 +11,8 @@ class FunctionCall(Expression):
     def __init__(self, function: Callable, arguments: List[Expression]):
         """
         Initializes a FunctionCall expression.
-        :param function: Python callable representing the function to be applied (e.g., built-in or user-defined).
+        :param function: Python callable or function IRI (str/URIRef). If a string/IRI is provided,
+        it will be resolved via `FunctionRegistry.get` at evaluation time.
         :param arguments: List of sub-expressions (Expression) that will provide the arguments
         """
         self.function = function
@@ -33,12 +35,18 @@ class FunctionCall(Expression):
 
         # Apply the function safely to ensure total functionality
         try:
-            result = self.function(*evaluated_args)
-            # Ensure the function itself didn't return None or an error state 
+            func = self.function
+            # resolve registry-based function identifiers lazily
+            if isinstance(func, str):
+                func = FunctionRegistry.get(func)
+                if func is None:
+                    return EPSILON
+            result = func(*evaluated_args)
+            # Ensure the function itself didn't return None or an error state
             # that should be represented as EPSILON in this algebra.
             return result if result is not None else EPSILON
         except (TypeError, ValueError, ArithmeticError, Exception):
-            # Capture potential domain errors (e.g., division by zero, 
+            # Capture potential domain errors (e.g., division by zero,
             # incompatible types) and return the algebraic error constant.
             return EPSILON
 

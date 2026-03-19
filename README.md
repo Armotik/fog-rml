@@ -216,6 +216,127 @@ for row in pipeline.execute():
     print(row)
 ```
 
+### 4.3. Registering FnO functions (FunctionRegistry)
+
+This project supports FnML/FnO style extension functions by exposing a small plugin registry and
+runtime resolution mechanism. The goal is to let mapping authors refer to functions by standard FnO URIs
+while implementers supply Python callables that perform the actual work — without editing core code.
+
+What it does
+- Provides a global `FunctionRegistry` to bind FnO URI strings to Python callables.
+- Parses `fnml:functionValue` / `fno:executes` mapping constructs into `FunctionCall` expression nodes.
+- Resolves and invokes registered callables at evaluation time, supporting nested function values and
+    reference/constant arguments.
+
+How it works (high level)
+- Register: call `FunctionRegistry.register(uri, callable)` from your application or a plugin module.
+- Parse: `MappingParser` converts `fnml:functionValue` declarations into `FunctionCall(func_iri, args...)`.
+- Resolve: when `FunctionCall.evaluate()` runs, if its `function` is a string IRI the registry is queried
+    for the corresponding callable; resolution is lazy so registration may occur before or after parsing.
+- Execute: the callable is invoked with evaluated positional arguments; its return value is inserted into the
+    algebraic pipeline (preferably as a `pyhartig` RDF term).
+
+Inputs and outputs
+- Mapping-time input: a term map node using `fnml:functionValue` and an `fno:executes` URI, plus any
+    predicateObjectMap parameters (constants, `rml:reference`, nested functionValues).
+- Runtime input to the Python callable: evaluated argument values (often `pyhartig.algebra.Terms.Literal`,
+    `IRI`, or `BlankNode` objects). Callables should unwrap `.lexical_form` / `.value` as needed.
+- Output from the callable: ideally a `pyhartig` RDF term (`IRI`, `Literal`, `BlankNode`) so the pipeline can
+    use it directly. Returning raw Python primitives is tolerated but may require normalization.
+
+Error semantics
+- If an argument evaluates to `EPSILON`, or if the function lookup fails, or the callable raises an exception,
+    the `FunctionCall` returns `EPSILON` to preserve strict error propagation across the algebra.
+
+Why this is beneficial
+- Extensibility: add custom transformations without modifying `pyhartig` core sources; register functions from
+    application code or plugin modules.
+- Decoupling: mappings remain declarative (use FnO URIs); implementations live in Python and can be tested
+    independently and shared across projects.
+- Interoperability: supports FnML/FnO standard patterns so mappings authored for other engines can reference
+    the same URIs.
+
+Security and best practices
+- Registered callables execute arbitrary Python code — only register trusted code in production.
+- Validate and coerce inputs inside the callable; prefer returning `pyhartig` RDF term objects.
+- Catch exceptions and return `EPSILON` or a controlled default to avoid crashing the pipeline.
+
+Example
+```python
+from pyhartig.functions.registry import FunctionRegistry
+
+def my_upper(arg):
+        val = getattr(arg, 'lexical_form', None) or getattr(arg, 'value', None) or arg
+        return str(val).upper()
+
+FunctionRegistry.register("http://example.com/fn/upper", my_upper)
+```
+
+References / where to look in the codebase
+- `pyhartig/functions/registry.py` — registry API and storage
+- `pyhartig/expressions/FunctionCall.py` — evaluation and EPSILON semantics
+- `pyhartig/mapping/MappingParser.py` — FnML parsing and `FunctionCall` construction
+- `tests/test_suite/test_18_fnml_plugins.py` and `tests/test_suite/test_19_fno.py` — concrete examples and tests
+
+Notes
+- Registration is lazy — functions can be registered at any time before evaluation.
+- Prefer returning RDF term objects from callables to avoid ambiguity and preserve typing.
+
+## 5.4. SPARQL SERVICE-CALL Example
+
+This project includes a pragmatic SPARQL integration that demonstrates running RML mappings per-repository
+and querying the materialized named graphs via a `SERVICE-CALL`-style pattern.
+
+Quick run (from project root):
+
+```bash
+# activate your virtualenv
+source .venv/bin/activate          # Unix/macOS
+.venv\Scripts\Activate.ps1       # PowerShell on Windows
+
+# ensure rdflib is installed
+pip install rdflib
+
+# run the example demo (prints resulting quads)
+python pyhartig/examples/multi_repo_service_demo.py
+```
+
+What the demo does
+- Locates example mapping files under `pyhartig/examples/data/` for repositories (r1, r2, r3).
+- For each `?repo` token it runs the corresponding mapping (via `MappingParser`) and materializes output into
+    a named graph (IRI derived from the repo token).
+- Executes a SPARQL query using `BIND SERVICE-CALL(?repo, "mapping.ttl") AS ?g` plus `GRAPH ?g { ... }`
+    to read data from the materialized graphs; the demo prints materialized quads in a readable format.
+
+Using the handler from Python code
+
+```python
+from rdflib import Dataset
+from pathlib import Path
+from pyhartig.sparql.service_call import execute_query_with_service_call
+
+ds = Dataset()
+query = '''
+PREFIX ex: <http://example.org/>
+SELECT ?repo ?x ?y ?title WHERE {
+    VALUES ?repo { <http://example.org/r1> <http://example.org/r2> <http://example.org/r3> }
+    BIND SERVICE-CALL(?repo, "mapping.ttl") AS ?g
+    GRAPH ?g { ?x ex:issue ?y . ?y ex:title ?title }
+}
+'''
+
+res = execute_query_with_service_call(ds, query, Path('pyhartig/examples/data'))
+for row in res:
+        print(row)
+```
+
+Notes and recommendations
+- The handler runs mappings and injects `VALUES ?g` clauses; when rewritten queries return no rows it falls back to
+    a per-graph evaluation to guarantee results across different SPARQL engine behaviors.
+- Ensure the mapping files referenced by `SERVICE-CALL` exist in the `mapping_dir` you pass to the handler.
+- The demo is an example and can be adapted for production: replace ad-hoc file resolution with repository
+    metadata and register any FnO functions your mappings require.
+
 ## 6. Project Structure
 
 ```text

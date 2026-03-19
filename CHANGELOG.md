@@ -32,7 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ```
 (Possible Request but not the best, might find a better one)
 - Add 2-3 standalone example programs: Create ready-to-run scripts in `examples/` demonstrating specific features (e.g., CSV+JSON join, complex transformations).
-
 #### Documentation & Onboarding
 - Move detailed sections to separate `docs/` files
 
@@ -130,15 +129,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   absolute or relative paths (relative to the mapping file) without requiring `os.chdir()`. **Suggested fix**: Use
   `pathlib.Path` everywhere for robust path resolution.
 
-##### Function Ontology (FnO) Extension (Feature)
-
-- Implement dynamic function registry: Currently, functions (`concat`, `to_iri`) are hardcoded in `builtins.py`. RML
-  normally allows calling any custom function via FnO (Function Ontology). If a user wants `to_uppercase` or
-  `convert_currency`, they cannot add it without modifying pyhartig source code. **Suggested fix**: Implement a plugin
-  mechanism to dynamically register external functions:
-  ```python
-  FunctionRegistry.register("http://ex.org/functions#toUpper", my_python_func)
-  ```
 
 ##### Technical Documentation (Enhancement)
 
@@ -162,6 +152,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   will likely consume 2-3 GB of RAM and crash Python. This is the most important architectural improvement for project
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
+
+  ## [0.3.2] - 2026-03-13
+
+  ### Added
+  - **Dynamic Function Registry**: Implemented a runtime `FunctionRegistry` allowing external and user-defined
+    Python callables to be registered and referenced from mappings using FnO URIs. API:
+    ```py
+    from pyhartig.functions.registry import FunctionRegistry
+    FunctionRegistry.register("http://ex.org/functions#toUpper", my_python_func)
+    ```
+    Registration is lazy (lookup happens at evaluation time) so functions may be registered after parsing.
+  - **SPARQL SERVICE-CALL integration**: Implemented a pragmatic SERVICE-CALL preprocessor handler that detects
+    `BIND SERVICE-CALL(?repo, "mapping.ttl") AS ?g`, enumerates `VALUES` tokens for the input var, runs the
+    project's `MappingParser` to materialize mapping output into per-repo named graphs, injects `VALUES ?g` clauses
+    into queries and (when appropriate) rewrites `GRAPH ?g` patterns. The handler is exposed as
+    `pyhartig.sparql.service_call.execute_query_with_service_call(dataset, query, mapping_dir)`.
+  - **End-to-end demo**: Added an examples/demo script that shows materializing per-repo named graphs and executing
+    SERVICE-CALL-aware SPARQL queries; the demo prints the resulting quads for inspection: `pyhartig/examples/multi_repo_service_demo.py`.
+  - **rdflib.Dataset usage**: The SPARQL integration uses `rdflib.Dataset` for correct GRAPH semantics when materializing
+    and querying named graphs.
+  - **FnML / FnO parsing support**: `MappingParser` now recognizes `fnml:functionValue` term maps and `fno:executes`
+    declarations. It constructs `FunctionCall` expression nodes that carry the function IRI and evaluated
+    parameter expressions. Nested `fnml:functionValue` nodes (function values used as args) are parsed recursively.
+  - **Function plugin example module**: Added `pyhartig/functions/idlab_plugins.py` with sample implementations
+    (e.g., `trueCondition`, `equal`, `notEqual`, `getMIMEType`) and registration calls for URIs referenced in
+    external test fixtures. This demonstrates how to bundle and auto-register plugin functions on import.
+  - **Unit tests for FnML/FnO**: Added extensive tests exercising registration, runtime resolution, mapping
+    parser integration, nested function values, reference arguments, failure modes, and template percent-encoding:
+    - `tests/test_suite/test_18_fnml_plugins.py` (comprehensive FnML features)
+    - `tests/test_suite/test_19_fno.py` (direct FnO `fno:executes` as blank node and URIRef)
+
+  ### Changed
+  - **FunctionCall evaluation**: `FunctionCall` now accepts either a Python callable or a function IRI string. When
+    a string IRI is provided, the callable is resolved via `FunctionRegistry.get()` at evaluation time. Errors or
+    missing registrations result in `EPSILON` (preserved error semantics).
+  - **MappingParser enhancements**: `MappingParser._create_ext_expr` now supports direct `fno:executes` triples on the
+    function description node (in addition to the predicate-object-map style). Parameter ordering is preserved and
+    numeric-suffixed parameter names are used to order positional args when available.
+  - **SERVICE-CALL query-rewrite strategies**: Iterated several pragmatic rewrite strategies (VALUES injection, UNION
+    expansion of `GRAPH ?g` into per-graph branches) to work around SPARQL engine semantics. The implementation now
+    injects `VALUES ?g` and relies on a robust per-graph fallback evaluation when rewritten queries return no rows.
+- **Clean-up**: Removed development-only temporary scripts and debug prints after stabilization of the handler and demo.
+
+  ### Fixed
+  - **FnML nested construction and percent-encoding**: Resolved earlier parsing edge cases for nested `functionValue`
+    object maps and template percent-encoding; tests validate expected URI encoding behavior in templates.
+  - **Example mappings and typing**: Adjusted example mapping files used by the demo so `ex:title` is produced as a
+    typed literal on node subjects and `rr:graphMap` values generate correct named graph IRIs matching query patterns.
+  - **Demo output**: Demo now formats quads readably (graph + N3-formatted subject/predicate/object) and avoids polluting
+    stdout with debug traces.
+
+  ### Notes & Rationale
+  - The registry approach preserves backwards compatibility: existing builtins remain registered by default and
+    user plugins can be registered without modifying core code. Lazy resolution enables dynamic plugin loading and
+    makes it safe for mappings that reference functions defined in third-party packages.
+  - Error behavior intentionally returns `EPSILON` for missing functions or runtime exceptions to keep expression
+    evaluation semantics strict and predictable across pipeline stages.
 
 ## [0.3.1] - 2026-03-19
 

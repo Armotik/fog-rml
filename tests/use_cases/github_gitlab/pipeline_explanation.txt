@@ -10,11 +10,11 @@ Union(
           parent:
             └─ Extend(
               attribute: object
-              expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#dateTime'))
+              expression: to_literal(Ref(author.username), Const('http://www.w3.org/2001/XMLSchema#string'))
               parent:
                 └─ Extend(
                   attribute: predicate
-                  expression: Const(<http://schema.org/dateCreated>)
+                  expression: Const(<http://schema.org/creator>)
                   parent:
                     └─ Extend(
                       attribute: subject
@@ -22,7 +22,7 @@ Union(
                       parent:
                         └─ Source(
                           iterator: $[*]
-                          mappings: ['iid', 'created_at']
+                          mappings: ['iid', 'author.username']
                         )
                     )
                 )
@@ -30,93 +30,6 @@ Union(
         )
     )
   ├─ [1]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/description>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid', 'description']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [2]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/name>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['number', 'title']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [3]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#dateTime'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/dateCreated>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid', 'created_at']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [4]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -145,181 +58,7 @@ Union(
             )
         )
     )
-  ├─ [5]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/description>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid', 'description']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [6]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/description>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['number', 'body']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [7]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#dateTime'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/dateCreated>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid', 'created_at']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [8]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/description>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['number', 'body']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [9]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: Const(<http://schema.org/Issue>)
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['number']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [10]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: Const(<http://schema.org/Issue>)
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [11]:
+  ├─ [2]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -348,7 +87,7 @@ Union(
             )
         )
     )
-  ├─ [12]:
+  ├─ [3]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -358,11 +97,11 @@ Union(
           parent:
             └─ Extend(
               attribute: object
-              expression: Const(<http://schema.org/Issue>)
+              expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
               parent:
                 └─ Extend(
                   attribute: predicate
-                  expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+                  expression: Const(<http://schema.org/name>)
                   parent:
                     └─ Extend(
                       attribute: subject
@@ -370,14 +109,14 @@ Union(
                       parent:
                         └─ Source(
                           iterator: $[*]
-                          mappings: ['number']
+                          mappings: ['number', 'title']
                         )
                     )
                 )
             )
         )
     )
-  ├─ [13]:
+  ├─ [4]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -387,11 +126,11 @@ Union(
           parent:
             └─ Extend(
               attribute: object
-              expression: Const("GitLab")
+              expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
               parent:
                 └─ Extend(
                   attribute: predicate
-                  expression: Const(<http://example.org/source>)
+                  expression: Const(<http://schema.org/description>)
                   parent:
                     └─ Extend(
                       attribute: subject
@@ -399,43 +138,14 @@ Union(
                       parent:
                         └─ Source(
                           iterator: $[*]
-                          mappings: ['iid']
+                          mappings: ['iid', 'description']
                         )
                     )
                 )
             )
         )
     )
-  ├─ [14]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: Const("GitLab")
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://example.org/source>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [15]:
+  ├─ [5]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -464,7 +174,7 @@ Union(
             )
         )
     )
-  ├─ [16]:
+  ├─ [6]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -474,26 +184,26 @@ Union(
           parent:
             └─ Extend(
               attribute: object
-              expression: Const(<http://schema.org/Issue>)
+              expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
               parent:
                 └─ Extend(
                   attribute: predicate
-                  expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+                  expression: Const(<http://schema.org/description>)
                   parent:
                     └─ Extend(
                       attribute: subject
-                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
                       parent:
                         └─ Source(
                           iterator: $[*]
-                          mappings: ['number']
+                          mappings: ['iid', 'description']
                         )
                     )
                 )
             )
         )
     )
-  ├─ [17]:
+  ├─ [7]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -516,6 +226,296 @@ Union(
                         └─ Source(
                           iterator: $[*]
                           mappings: ['number', 'title']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [8]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#dateTime'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/dateCreated>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid', 'created_at']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [9]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/name>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid', 'title']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [10]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: Const("GitLab")
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://example.org/source>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [11]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: Const("GitLab")
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://example.org/source>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [12]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#dateTime'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/dateCreated>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid', 'created_at']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [13]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(author.username), Const('http://www.w3.org/2001/XMLSchema#string'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/creator>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid', 'author.username']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [14]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/name>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid', 'title']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [15]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/name>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid', 'title']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [16]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: Const("GitLab")
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://example.org/source>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [17]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/description>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['number', 'body']
                         )
                     )
                 )
@@ -561,19 +561,19 @@ Union(
           parent:
             └─ Extend(
               attribute: object
-              expression: to_literal(Ref(author.username), Const('http://www.w3.org/2001/XMLSchema#string'))
+              expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#dateTime'))
               parent:
                 └─ Extend(
                   attribute: predicate
-                  expression: Const(<http://schema.org/creator>)
+                  expression: Const(<http://schema.org/dateCreated>)
                   parent:
                     └─ Extend(
                       attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
                       parent:
                         └─ Source(
                           iterator: $[*]
-                          mappings: ['iid', 'author.username']
+                          mappings: ['number', 'created_at']
                         )
                     )
                 )
@@ -590,11 +590,11 @@ Union(
           parent:
             └─ Extend(
               attribute: object
-              expression: to_literal(Ref(user.login), Const('http://www.w3.org/2001/XMLSchema#string'))
+              expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
               parent:
                 └─ Extend(
                   attribute: predicate
-                  expression: Const(<http://schema.org/creator>)
+                  expression: Const(<http://schema.org/name>)
                   parent:
                     └─ Extend(
                       attribute: subject
@@ -602,7 +602,7 @@ Union(
                       parent:
                         └─ Source(
                           iterator: $[*]
-                          mappings: ['number', 'user.login']
+                          mappings: ['number', 'title']
                         )
                     )
                 )
@@ -610,6 +610,35 @@ Union(
         )
     )
   ├─ [21]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/description>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['number', 'body']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [22]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -638,35 +667,6 @@ Union(
             )
         )
     )
-  ├─ [22]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#dateTime'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/dateCreated>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid', 'created_at']
-                        )
-                    )
-                )
-            )
-        )
-    )
   ├─ [23]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
@@ -677,11 +677,11 @@ Union(
           parent:
             └─ Extend(
               attribute: object
-              expression: to_literal(Ref(author.username), Const('http://www.w3.org/2001/XMLSchema#string'))
+              expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
               parent:
                 └─ Extend(
                   attribute: predicate
-                  expression: Const(<http://schema.org/creator>)
+                  expression: Const(<http://schema.org/description>)
                   parent:
                     └─ Extend(
                       attribute: subject
@@ -689,7 +689,7 @@ Union(
                       parent:
                         └─ Source(
                           iterator: $[*]
-                          mappings: ['iid', 'author.username']
+                          mappings: ['iid', 'description']
                         )
                     )
                 )
@@ -735,64 +735,6 @@ Union(
           parent:
             └─ Extend(
               attribute: object
-              expression: Const("GitHub")
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://example.org/source>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['number']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [26]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/name>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid', 'title']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [27]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
               expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#dateTime'))
               parent:
                 └─ Extend(
@@ -812,7 +754,36 @@ Union(
             )
         )
     )
-  ├─ [28]:
+  ├─ [26]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: Const(<http://schema.org/Issue>)
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [27]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -841,65 +812,7 @@ Union(
             )
         )
     )
-  ├─ [29]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/name>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid', 'title']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [30]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#dateTime'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/dateCreated>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['number', 'created_at']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [31]:
+  ├─ [28]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -928,123 +841,7 @@ Union(
             )
         )
     )
-  ├─ [32]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(author.username), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/creator>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid', 'author.username']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [33]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/name>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid', 'title']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [34]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(title), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/name>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid', 'title']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [35]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(user.login), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/creator>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['number', 'user.login']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [36]:
+  ├─ [29]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -1073,36 +870,7 @@ Union(
             )
         )
     )
-  ├─ [37]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: Const(<http://schema.org/Issue>)
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [38]:
+  ├─ [30]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -1131,7 +899,36 @@ Union(
             )
         )
     )
-  ├─ [39]:
+  ├─ [31]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/description>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['number', 'body']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [32]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
       parent:
@@ -1149,11 +946,214 @@ Union(
                   parent:
                     └─ Extend(
                       attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid', 'title']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [33]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(author.username), Const('http://www.w3.org/2001/XMLSchema#string'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/creator>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid', 'author.username']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [34]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: Const(<http://schema.org/Issue>)
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
                       expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
                       parent:
                         └─ Source(
                           iterator: $[*]
-                          mappings: ['number', 'title']
+                          mappings: ['number']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [35]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#dateTime'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/dateCreated>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid', 'created_at']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [36]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(author.username), Const('http://www.w3.org/2001/XMLSchema#string'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/creator>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid', 'author.username']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [37]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: to_literal(Ref(user.login), Const('http://www.w3.org/2001/XMLSchema#string'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/creator>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['number', 'user.login']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [38]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: Const(<http://schema.org/Issue>)
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [39]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: Const(<http://schema.org/Issue>)
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['number']
                         )
                     )
                 )
@@ -1178,11 +1178,11 @@ Union(
                   parent:
                     └─ Extend(
                       attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
                       parent:
                         └─ Source(
                           iterator: $[*]
-                          mappings: ['iid']
+                          mappings: ['number']
                         )
                     )
                 )
@@ -1228,6 +1228,64 @@ Union(
           parent:
             └─ Extend(
               attribute: object
+              expression: to_literal(Ref(created_at), Const('http://www.w3.org/2001/XMLSchema#dateTime'))
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://schema.org/dateCreated>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['iid', 'created_at']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [43]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
+              expression: Const("GitHub")
+              parent:
+                └─ Extend(
+                  attribute: predicate
+                  expression: Const(<http://example.org/source>)
+                  parent:
+                    └─ Extend(
+                      attribute: subject
+                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
+                      parent:
+                        └─ Source(
+                          iterator: $[*]
+                          mappings: ['number']
+                        )
+                    )
+                )
+            )
+        )
+    )
+  ├─ [44]:
+    Project(
+      attributes: ['graph', 'object', 'predicate', 'subject']
+      parent:
+        └─ Extend(
+          attribute: graph
+          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
+          parent:
+            └─ Extend(
+              attribute: object
               expression: Const(<http://schema.org/Issue>)
               parent:
                 └─ Extend(
@@ -1247,64 +1305,6 @@ Union(
             )
         )
     )
-  ├─ [43]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(description), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/description>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['iid', 'description']
-                        )
-                    )
-                )
-            )
-        )
-    )
-  ├─ [44]:
-    Project(
-      attributes: ['graph', 'object', 'predicate', 'subject']
-      parent:
-        └─ Extend(
-          attribute: graph
-          expression: Const(<http://www.w3.org/ns/r2rml#defaultGraph>)
-          parent:
-            └─ Extend(
-              attribute: object
-              expression: to_literal(Ref(body), Const('http://www.w3.org/2001/XMLSchema#string'))
-              parent:
-                └─ Extend(
-                  attribute: predicate
-                  expression: Const(<http://schema.org/description>)
-                  parent:
-                    └─ Extend(
-                      attribute: subject
-                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
-                      parent:
-                        └─ Source(
-                          iterator: $[*]
-                          mappings: ['number', 'body']
-                        )
-                    )
-                )
-            )
-        )
-    )
   ├─ [45]:
     Project(
       attributes: ['graph', 'object', 'predicate', 'subject']
@@ -1315,11 +1315,11 @@ Union(
           parent:
             └─ Extend(
               attribute: object
-              expression: to_literal(Ref(author.username), Const('http://www.w3.org/2001/XMLSchema#string'))
+              expression: Const(<http://schema.org/Issue>)
               parent:
                 └─ Extend(
                   attribute: predicate
-                  expression: Const(<http://schema.org/creator>)
+                  expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
                   parent:
                     └─ Extend(
                       attribute: subject
@@ -1327,7 +1327,7 @@ Union(
                       parent:
                         └─ Source(
                           iterator: $[*]
-                          mappings: ['iid', 'author.username']
+                          mappings: ['iid']
                         )
                     )
                 )
@@ -1373,19 +1373,19 @@ Union(
           parent:
             └─ Extend(
               attribute: object
-              expression: Const("GitLab")
+              expression: to_literal(Ref(user.login), Const('http://www.w3.org/2001/XMLSchema#string'))
               parent:
                 └─ Extend(
                   attribute: predicate
-                  expression: Const(<http://example.org/source>)
+                  expression: Const(<http://schema.org/creator>)
                   parent:
                     └─ Extend(
                       attribute: subject
-                      expression: to_iri(concat(Const("http://gitlab.com/issue/"), percent_encode_component(Ref(iid))))
+                      expression: to_iri(concat(Const("http://github.com/issue/"), percent_encode_component(Ref(number))))
                       parent:
                         └─ Source(
                           iterator: $[*]
-                          mappings: ['iid']
+                          mappings: ['number', 'user.login']
                         )
                     )
                 )

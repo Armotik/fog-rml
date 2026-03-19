@@ -1,0 +1,4 @@
+@prefix ex: <http://example.org/> .
+
+ex:issue_r3_1 ex:issue ex:node_r3_1 .
+ex:node_r3_1 ex:title "R3: Add feature" .

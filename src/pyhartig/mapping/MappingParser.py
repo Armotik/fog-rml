@@ -23,6 +23,8 @@ RML = Namespace(RML_BASE)
 QL = Namespace(QL_BASE)
 RDF = Namespace(RDF_BASE)
 XSD = Namespace(XSD_BASE)
+FNML = Namespace("http://semweb.mmlab.be/ns/fnml#")
+FNO = Namespace("https://w3id.org/function/ontology#")
 
 logger = logging.getLogger(__name__)
 
@@ -846,6 +848,64 @@ class MappingParser:
         :param default_term_type: The default term type if none is specified.
         :return: An Expression representing the term map.
         """
+        # FnML function term maps (fnml:functionValue)
+        try:
+            fn_node = self.graph.value(term_map, FNML.functionValue)
+        except Exception:
+            fn_node = None
+
+        if fn_node is not None:
+            # fn_node is a node describing the function call; it contains
+            # predicateObjectMap entries where one POM uses fno:executes
+            # to specify the function IRI and others specify parameters.
+            func_uri = None
+            params = []
+
+            # Support direct FnO declaration patterns where the function node
+            # carries an `fno:executes` triple itself (not wrapped in a POM).
+            try:
+                fno_exec_direct = self.graph.value(fn_node, FNO.executes)
+                if fno_exec_direct is not None:
+                    func_uri = str(fno_exec_direct)
+            except Exception:
+                pass
+
+            for pom in self.graph.objects(fn_node, RR.predicateObjectMap):
+                pm = self.graph.value(pom, RR.predicateMap)
+                om = self.graph.value(pom, RR.objectMap)
+                if pm is None or om is None:
+                    continue
+                pm_const = self.graph.value(pm, RR.constant)
+                # detect the function identifier
+                if pm_const == FNO.executes or (isinstance(pm_const, URIRef) and str(pm_const).endswith('#executes')):
+                    # object map should contain a constant with the function IRI
+                    f_const = self.graph.value(om, RR.constant)
+                    if f_const is not None:
+                        func_uri = str(f_const)
+                    continue
+                # treat other object maps as positional parameters; allow nested function term maps
+                try:
+                    arg_expr = self._create_ext_expr(om, default_term_type="Literal")
+                except Exception:
+                    arg_expr = Constant(AlgebraLiteral(""))
+                params.append((pm_const, arg_expr))
+
+            # Order params by numeric suffix if present, otherwise preserve graph order
+            def _param_key(item):
+                key, _ = item
+                if key is None:
+                    return 0
+                s = str(key)
+                import re
+                m = re.search(r"(\d+)$", s)
+                if m:
+                    return int(m.group(1))
+                return 0
+
+            params_sorted = [p for _, p in sorted(params, key=_param_key)]
+            if func_uri:
+                return FunctionCall(func_uri, params_sorted)
+
         # Line 1: Constant
         const = self.graph.value(term_map, RR.constant)
         if const:
