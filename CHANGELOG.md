@@ -163,6 +163,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
 
+## [0.3.1] - 2026-03-19
+
+### Added
+- **SonarQube code quality analysis**: Added SonarQube Cloud integration through CI to analyze the `src/pyhartig` codebase automatically on pushes and pull requests.
+
+### Changed
+- **Coverage reporting pipeline**: Added automated `pytest` coverage export (`coverage.xml`) for SonarQube analysis.
+- **Coverage scope refinement**: Updated coverage reporting so RML test files are excluded from the reported test coverage metrics.
+
 ## [0.3.0] - 2026-03-02
 
 ### Added

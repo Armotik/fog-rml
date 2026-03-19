@@ -63,3 +63,8 @@ testpaths = [
 pythonpath = [
     "src"
 ]
+
+[tool.coverage.run]
+relative_files = true
+source = ["src/pyhartig"]
+branch = true
