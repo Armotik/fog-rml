@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 # 2. Project Metadata
 [project]
 name = "pyhartig"
-version = "0.3.4"
+version = "0.3.5"
 description = "A Python implementation of Olaf Hartig's algebra for Knowledge Graph Construction. Developed for the 'Engineering For Research I' course (M1 SMART Computing) at Nantes Université (LS2N - GDD Team)."
 readme = "README.md"
 
@@ -61,6 +61,13 @@ testpaths = [
 ]
 pythonpath = [
     "src"
+]
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "coverage_suite: tests included in the SonarQube coverage suite",
+    "edge_case: tests focused on robustness and unusual inputs",
 ]
 
 # 7. Tool Configuration for coverage

@@ -33,30 +33,84 @@ class SourceFactory:
                                attribute_mappings: dict) -> Operator:
         """
         Analyzes the Logical Source node and returns the correct SourceOperator.
-        :param graph: RDFLib Graph containing the mapping
-        :param logical_source_node: Node representing the Logical Source
-        :param mapping_dir: Directory path of the mapping file for resolving relative paths
-        :param attribute_mappings: Dictionary of attribute mappings for the source
-        :return: An instance of the appropriate SourceOperator
-        :raises ValueError: If the reference formulation is unsupported
+        :param graph: RDFLib Graph containing the mapping.
+        :param logical_source_node: Node representing the Logical Source.
+        :param mapping_dir: Directory path of the mapping file for resolving relative paths.
+        :param attribute_mappings: Dictionary of attribute mappings for the source.
+        :return: An instance of the appropriate SourceOperator.
+        :raises ValueError: If the reference formulation is unsupported.
         """
+        source_file, iterator, ref_formulation = SourceFactory._extract_source_metadata(graph, logical_source_node)
+        _, src_path, is_uri_like_source = SourceFactory._resolve_source_path(source_file, mapping_dir)
+        SourceFactory._log_source_resolution(mapping_dir, source_file, src_path)
+        src_path = SourceFactory._resolve_missing_source_path(
+            source_file,
+            mapping_dir,
+            src_path,
+            is_uri_like_source,
+        )
 
-        # 1. Extract Metadata
-        # Prefer rml:source but allow rml:reference (common in some RML variants/tests)
+        sparql_source = SourceFactory._create_sparql_source_if_applicable(
+            graph,
+            logical_source_node,
+            source_file,
+            iterator,
+            attribute_mappings,
+            mapping_dir,
+        )
+        if sparql_source is not None:
+            return sparql_source
+
+        database_source = SourceFactory._create_database_source_if_applicable(
+            graph,
+            logical_source_node,
+            source_file,
+            iterator,
+            attribute_mappings,
+            mapping_dir,
+        )
+        if database_source is not None:
+            return database_source
+
+        factory = SourceFactory._get_reference_formulation_factory(ref_formulation)
+        return factory(src_path, iterator, attribute_mappings)
+
+    @staticmethod
+    def _extract_source_metadata(graph: Graph, logical_source_node: Node):
+        """
+        Extracts the logical-source metadata needed to create a source operator.
+        :param graph: RDFLib Graph containing the mapping.
+        :param logical_source_node: Node representing the Logical Source.
+        :return: Tuple of source node, iterator node, and normalized reference formulation.
+        """
         source_file = graph.value(logical_source_node, RML.source) or graph.value(logical_source_node, RML.reference)
         iterator = graph.value(logical_source_node, RML.iterator)
         ref_formulation = graph.value(logical_source_node, RML.referenceFormulation)
-        # Normalize reference formulation: mapping files sometimes use string literals
-        # for the referenceFormulation (e.g. "http://semweb.mmlab.be/ns/ql#JSONPath").
-        # Convert those to URIRef so they match the registry keys below.
+        return source_file, iterator, SourceFactory._normalize_ref_formulation(ref_formulation)
+
+    @staticmethod
+    def _normalize_ref_formulation(ref_formulation):
+        """
+        Normalizes a reference formulation literal to a URIRef when needed.
+        :param ref_formulation: Raw reference formulation node.
+        :return: Normalized reference formulation node.
+        """
         try:
             from rdflib import URIRef as _URIRef
             if ref_formulation is not None and not isinstance(ref_formulation, _URIRef):
-                ref_formulation = _URIRef(str(ref_formulation))
+                return _URIRef(str(ref_formulation))
         except Exception:
             pass
+        return ref_formulation
 
-        # 2. Resolve File Path
+    @staticmethod
+    def _resolve_source_path(source_file, mapping_dir: Path):
+        """
+        Resolves a source literal to a candidate local path and URI-like status.
+        :param source_file: Source node extracted from the mapping.
+        :param mapping_dir: Directory path of the mapping file.
+        :return: Tuple of source literal string, candidate path, and URI-like flag.
+        """
         source_str = str(source_file) if source_file is not None else ""
         parsed_source = urllib.parse.urlparse(source_str)
         is_uri_like_source = bool(parsed_source.scheme in ("http", "https", "jdbc", "mysql", "postgres"))
@@ -64,164 +118,247 @@ class SourceFactory:
         src_path = Path(source_str) if source_str else mapping_dir
         if not src_path.is_absolute() and source_str:
             src_path = mapping_dir / src_path
+        return source_str, src_path, is_uri_like_source
 
-        # Log resolution info to aid debugging of incorrect parent/child source resolution
+    @staticmethod
+    def _log_source_resolution(mapping_dir: Path, source_file, src_path: Path) -> None:
+        """
+        Logs the resolved source path for debugging purposes.
+        :param mapping_dir: Directory path of the mapping file.
+        :param source_file: Source node extracted from the mapping.
+        :param src_path: Candidate resolved path.
+        :return: None
+        """
         try:
-            logger.debug(f"SourceFactory: mapping_dir={mapping_dir}, source_literal={source_file}, resolved_path={src_path}")
+            logger.debug(
+                "SourceFactory: mapping_dir=%s, source_literal=%s, resolved_path=%s",
+                mapping_dir,
+                source_file,
+                src_path,
+            )
         except Exception:
             pass
 
-        # If the resolved path does not exist, try fallbacks to improve
-        # robustness when mappings reference different CWDs or were rewritten.
-        if (not is_uri_like_source) and (not src_path.exists()):
-            # 1) Try interpreting the literal relative to current working directory
-            alt = Path(str(source_file))
-            if alt.exists():
-                logger.debug(f"Found source file in CWD fallback: {alt}")
-                src_path = alt
-            else:
-                # 2) Try searching under the mapping directory and its parents for a matching filename
-                try:
-                    found = None
-                    # search mapping_dir and upward parents
-                    search_dirs = [mapping_dir] + list(mapping_dir.parents)
-                    for sd in search_dirs:
-                        for p in sd.rglob(src_path.name):
-                            logger.debug(f"Located source file by search in {sd}: {p}")
-                            found = p
-                            break
-                        if found:
-                            break
-                    if found:
-                        src_path = found
-                except Exception:
-                    pass
+    @staticmethod
+    def _resolve_missing_source_path(source_file, mapping_dir: Path, src_path: Path, is_uri_like_source: bool) -> Path:
+        """
+        Applies fallback path resolution when the initial source path does not exist.
+        :param source_file: Source node extracted from the mapping.
+        :param mapping_dir: Directory path of the mapping file.
+        :param src_path: Candidate resolved path.
+        :param is_uri_like_source: Whether the source should be treated as a URI-like source.
+        :return: Best-effort resolved path.
+        """
+        if is_uri_like_source or src_path.exists():
+            return src_path
 
-        # Special-case: SPARQL service logical source (rml:query + sd:endpoint)
-        sparql_detected = False
+        cwd_candidate = Path(str(source_file))
+        if cwd_candidate.exists():
+            logger.debug("Found source file in CWD fallback: %s", cwd_candidate)
+            return cwd_candidate
+
         try:
-            if graph is not None:
-                svc = graph.value(source_file, SD.endpoint)
-                if svc is None:
-                    try:
-                        from rdflib import URIRef
-                        svc = graph.value(URIRef(str(source_file)), SD.endpoint)
-                    except Exception:
-                        svc = None
-
-                query_literal = graph.value(logical_source_node, RML.query)
-                if svc and query_literal:
-                    sparql_detected = True
-                    logger.debug(f"SPARQL logical source detected: endpoint={svc}")
-                    query = str(iterator) if iterator else "$.results.bindings[*]"
-                    return SparqlSourceOperator(
-                        endpoint=str(svc),
-                        sparql_query=str(query_literal),
-                        iterator_query=query,
-                        attribute_mappings=attribute_mappings,
-                        mapping_dir=mapping_dir,
-                        source_node=str(source_file) if source_file is not None else None,
-                    )
+            return SourceFactory._search_source_path(mapping_dir, src_path.name) or src_path
         except Exception:
-            if sparql_detected:
-                raise
+            return src_path
 
-        # Special-case: relational database logical source
+    @staticmethod
+    def _search_source_path(mapping_dir: Path, filename: str) -> Path | None:
+        """
+        Searches the mapping directory and its parents for a matching source filename.
+        :param mapping_dir: Directory path of the mapping file.
+        :param filename: Filename to search for.
+        :return: Located path, or None.
+        """
+        search_dirs = [mapping_dir] + list(mapping_dir.parents)
+        for search_dir in search_dirs:
+            for path in search_dir.rglob(filename):
+                logger.debug("Located source file by search in %s: %s", search_dir, path)
+                return path
+        return None
+
+    @staticmethod
+    def _create_sparql_source_if_applicable(
+            graph: Graph,
+            logical_source_node: Node,
+            source_file,
+            iterator,
+            attribute_mappings: dict,
+            mapping_dir: Path,
+    ) -> Operator | None:
+        """
+        Creates a SPARQL source operator when the logical source is backed by an endpoint.
+        :param graph: RDFLib Graph containing the mapping.
+        :param logical_source_node: Node representing the Logical Source.
+        :param source_file: Source node extracted from the mapping.
+        :param iterator: Iterator node extracted from the mapping.
+        :param attribute_mappings: Dictionary of attribute mappings for the source.
+        :param mapping_dir: Directory path of the mapping file.
+        :return: SparqlSourceOperator instance, or None.
+        """
+        if graph is None:
+            return None
+
+        endpoint = graph.value(source_file, SD.endpoint)
+        if endpoint is None:
+            endpoint = SourceFactory._lookup_endpoint_by_uri(graph, source_file)
+
+        query_literal = graph.value(logical_source_node, RML.query)
+        if not endpoint or not query_literal:
+            return None
+
+        logger.debug("SPARQL logical source detected: endpoint=%s", endpoint)
+        query = str(iterator) if iterator else "$.results.bindings[*]"
+        return SparqlSourceOperator(
+            endpoint=str(endpoint),
+            sparql_query=str(query_literal),
+            iterator_query=query,
+            attribute_mappings=attribute_mappings,
+            mapping_dir=mapping_dir,
+            source_node=str(source_file) if source_file is not None else None,
+        )
+
+    @staticmethod
+    def _lookup_endpoint_by_uri(graph: Graph, source_file):
+        """
+        Resolves an endpoint when the source node needs to be coerced to a URIRef.
+        :param graph: RDFLib Graph containing the mapping.
+        :param source_file: Source node extracted from the mapping.
+        :return: Endpoint node, or None.
+        """
         try:
-            db_node = source_file
-            jdbc_driver = graph.value(db_node, D2RQ.jdbcDriver)
-            jdbc_dsn = graph.value(db_node, D2RQ.jdbcDSN)
-            username = graph.value(db_node, D2RQ.username)
-            password = graph.value(db_node, D2RQ.password)
-
-            query_literal = graph.value(logical_source_node, RML.query)
-            table_name = graph.value(logical_source_node, RR.tableName)
-
-            driver_str = str(jdbc_driver).lower() if jdbc_driver is not None else ""
-            dsn_str = str(jdbc_dsn) if jdbc_dsn is not None else ""
-            is_mysql = (
-                "mysql" in driver_str
-                or dsn_str.startswith("mysql://")
-                or dsn_str.startswith("jdbc:mysql://")
-                or (jdbc_driver is not None and "com.mysql" in str(jdbc_driver))
-            )
-            is_postgresql = (
-                "postgresql" in driver_str
-                or dsn_str.startswith("postgresql://")
-                or dsn_str.startswith("jdbc:postgresql://")
-                or (jdbc_driver is not None and "org.postgresql" in str(jdbc_driver))
-            )
-            is_sqlserver = (
-                "sqlserver" in driver_str
-                or "microsoft" in driver_str
-                or dsn_str.startswith("sqlserver://")
-                or dsn_str.startswith("jdbc:sqlserver://")
-                or (jdbc_driver is not None and "com.microsoft.sqlserver" in str(jdbc_driver))
-            )
-
-            if is_mysql:
-                return MysqlSourceOperator(
-                    dsn=dsn_str,
-                    iterator_query=str(iterator) if iterator else "$",
-                    attribute_mappings=attribute_mappings,
-                    query=str(query_literal) if query_literal is not None else None,
-                    table_name=str(table_name) if table_name is not None else None,
-                    username=str(username) if username is not None else None,
-                    password=str(password) if password is not None else None,
-                    mapping_dir=mapping_dir,
-                )
-            if is_postgresql:
-                return PostgresqlSourceOperator(
-                    dsn=dsn_str,
-                    iterator_query=str(iterator) if iterator else "$",
-                    attribute_mappings=attribute_mappings,
-                    query=str(query_literal) if query_literal is not None else None,
-                    table_name=str(table_name) if table_name is not None else None,
-                    username=str(username) if username is not None else None,
-                    password=str(password) if password is not None else None,
-                    mapping_dir=mapping_dir,
-                )
-            if is_sqlserver:
-                return SqlserverSourceOperator(
-                    dsn=dsn_str,
-                    iterator_query=str(iterator) if iterator else "$",
-                    attribute_mappings=attribute_mappings,
-                    query=str(query_literal) if query_literal is not None else None,
-                    table_name=str(table_name) if table_name is not None else None,
-                    username=str(username) if username is not None else None,
-                    password=str(password) if password is not None else None,
-                    mapping_dir=mapping_dir,
-                )
+            from rdflib import URIRef
+            return graph.value(URIRef(str(source_file)), SD.endpoint)
         except Exception:
-            raise
+            return None
 
-        # 3. Dispatch based on Reference Formulation using registry
+    @staticmethod
+    def _create_database_source_if_applicable(
+            graph: Graph,
+            logical_source_node: Node,
+            source_file,
+            iterator,
+            attribute_mappings: dict,
+            mapping_dir: Path,
+    ) -> Operator | None:
+        """
+        Creates a relational database source operator when the logical source describes one.
+        :param graph: RDFLib Graph containing the mapping.
+        :param logical_source_node: Node representing the Logical Source.
+        :param source_file: Source node extracted from the mapping.
+        :param iterator: Iterator node extracted from the mapping.
+        :param attribute_mappings: Dictionary of attribute mappings for the source.
+        :param mapping_dir: Directory path of the mapping file.
+        :return: Database source operator, or None.
+        """
+        db_metadata = SourceFactory._extract_database_metadata(graph, logical_source_node, source_file)
+        if db_metadata is None:
+            return None
+
+        source_class = SourceFactory._detect_database_source_class(
+            db_metadata["jdbc_driver"],
+            db_metadata["dsn"],
+        )
+        if source_class is None:
+            return None
+
+        return source_class(
+            dsn=db_metadata["dsn"],
+            iterator_query=str(iterator) if iterator else "$",
+            attribute_mappings=attribute_mappings,
+            query=db_metadata["query"],
+            table_name=db_metadata["table_name"],
+            username=db_metadata["username"],
+            password=db_metadata["password"],
+            mapping_dir=mapping_dir,
+        )
+
+    @staticmethod
+    def _extract_database_metadata(graph: Graph, logical_source_node: Node, source_file):
+        """
+        Extracts JDBC-style metadata for relational logical sources.
+        :param graph: RDFLib Graph containing the mapping.
+        :param logical_source_node: Node representing the Logical Source.
+        :param source_file: Source node extracted from the mapping.
+        :return: Dictionary of database metadata.
+        """
+        db_node = source_file
+        jdbc_driver = graph.value(db_node, D2RQ.jdbcDriver)
+        jdbc_dsn = graph.value(db_node, D2RQ.jdbcDSN)
+        username = graph.value(db_node, D2RQ.username)
+        password = graph.value(db_node, D2RQ.password)
+
+        return {
+            "jdbc_driver": jdbc_driver,
+            "dsn": str(jdbc_dsn) if jdbc_dsn is not None else "",
+            "username": str(username) if username is not None else None,
+            "password": str(password) if password is not None else None,
+            "query": str(graph.value(logical_source_node, RML.query)) if graph.value(logical_source_node, RML.query) is not None else None,
+            "table_name": str(graph.value(logical_source_node, RR.tableName)) if graph.value(logical_source_node, RR.tableName) is not None else None,
+        }
+
+    @staticmethod
+    def _detect_database_source_class(jdbc_driver, dsn_str: str):
+        """
+        Detects the database source operator class matching a JDBC driver or DSN.
+        :param jdbc_driver: JDBC driver node.
+        :param dsn_str: JDBC DSN string.
+        :return: Database source operator class, or None.
+        """
+        driver_str = str(jdbc_driver).lower() if jdbc_driver is not None else ""
+        if (
+            "mysql" in driver_str
+            or dsn_str.startswith("mysql://")
+            or dsn_str.startswith("jdbc:mysql://")
+            or (jdbc_driver is not None and "com.mysql" in str(jdbc_driver))
+        ):
+            return MysqlSourceOperator
+        if (
+            "postgresql" in driver_str
+            or dsn_str.startswith("postgresql://")
+            or dsn_str.startswith("jdbc:postgresql://")
+            or (jdbc_driver is not None and "org.postgresql" in str(jdbc_driver))
+        ):
+            return PostgresqlSourceOperator
+        if (
+            "sqlserver" in driver_str
+            or "microsoft" in driver_str
+            or dsn_str.startswith("sqlserver://")
+            or dsn_str.startswith("jdbc:sqlserver://")
+            or (jdbc_driver is not None and "com.microsoft.sqlserver" in str(jdbc_driver))
+        ):
+            return SqlserverSourceOperator
+        return None
+
+    @staticmethod
+    def _get_reference_formulation_factory(ref_formulation):
+        """
+        Returns the source factory method matching a reference formulation.
+        :param ref_formulation: Normalized reference formulation node.
+        :return: Factory function creating the source operator.
+        :raises ValueError: If the reference formulation is unsupported.
+        """
         registry = {
             QL.JSONPath: SourceFactory._create_json_source,
             QL.CSV: SourceFactory._create_csv_source,
             QL.XPath: SourceFactory._create_xml_source,
         }
-
-        # Default to JSON when not specified
-        factory = None
         if ref_formulation is None:
-            factory = SourceFactory._create_json_source
-        else:
-            factory = registry.get(ref_formulation)
+            return SourceFactory._create_json_source
 
+        factory = registry.get(ref_formulation)
         if factory is None:
             raise ValueError(f"Unsupported reference formulation: {ref_formulation}")
-
-        return factory(src_path, iterator, attribute_mappings)
+        return factory
 
     @staticmethod
     def _create_json_source(path: Path, iterator: Node, mappings: dict) -> JsonSourceOperator:
         """
         Creates a JsonSourceOperator for the given JSON file path and iterator.
-        :param path: Path to the JSON source file
-        :param iterator: RDFLib Node representing the JSONPath iterator
-        :param mappings: Attribute mappings for the source
-        :return: An instance of JsonSourceOperator
+        :param path: Path to the JSON source file.
+        :param iterator: RDFLib Node representing the JSONPath iterator.
+        :param mappings: Attribute mappings for the source.
+        :return: An instance of JsonSourceOperator.
         """
         query = str(iterator) if iterator else "$"
 
@@ -241,7 +378,13 @@ class SourceFactory:
 
     @staticmethod
     def _create_csv_source(path: Path, iterator: Node, mappings: dict) -> CsvSourceOperator:
-        # For CSV, iterator is ignored (we iterate rows). Extraction queries are column names
+        """
+        Creates a CsvSourceOperator for the given CSV file path and iterator.
+        :param path: Path to the CSV source file.
+        :param iterator: RDFLib Node representing the iterator.
+        :param mappings: Attribute mappings for the source.
+        :return: An instance of CsvSourceOperator.
+        """
         query = str(iterator) if iterator else "$"
 
         try:
@@ -261,7 +404,13 @@ class SourceFactory:
 
     @staticmethod
     def _create_xml_source(path: Path, iterator: Node, mappings: dict) -> XmlSourceOperator:
-        # For XML, iterator is an XPath expression; extraction queries are relative XPaths
+        """
+        Creates an XmlSourceOperator for the given XML file path and iterator.
+        :param path: Path to the XML source file.
+        :param iterator: RDFLib Node representing the XPath iterator.
+        :param mappings: Attribute mappings for the source.
+        :return: An instance of XmlSourceOperator.
+        """
         query = str(iterator) if iterator else "."
 
         try:

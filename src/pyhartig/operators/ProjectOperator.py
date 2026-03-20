@@ -1,4 +1,4 @@
-from typing import Iterator, Dict, Any, Set
+from typing import Iterable, Dict, Any, Set
 
 from pyhartig.algebra.Tuple import MappingTuple
 from pyhartig.operators.Operator import Operator
@@ -29,7 +29,7 @@ class ProjectOperator(Operator):
         self.operator = operator
         self.attributes = set(attributes)
 
-    def execute(self) -> Iterator[MappingTuple]:
+    def execute(self) -> Iterable[MappingTuple]:
         """
         Executes the Project logic.
 
@@ -41,7 +41,7 @@ class ProjectOperator(Operator):
         Strict mode: Raises an exception if any attribute in P is not present in a tuple.
         This ensures conformance with classical relational algebra where P ⊆ A.
 
-        :return: A list of MappingTuples with only the specified attributes P.
+        :return: Iterable of MappingTuples with only the specified attributes P.
         :raises KeyError: If an attribute in P is not found in a tuple (strict mode).
         """
         from pyhartig.operators.Operator import StreamRows

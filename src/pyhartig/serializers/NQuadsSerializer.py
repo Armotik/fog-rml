@@ -1,9 +1,11 @@
-from typing import Optional
+from typing import Optional, TypeAlias
 
 from pyhartig.algebra.Tuple import MappingTuple, EPSILON
 from pyhartig.algebra.Terms import IRI, Literal, BlankNode
 from pyhartig.namespaces import RR_DEFAULT_GRAPH, XSD_STRING
 from urllib.parse import urlsplit, urlunsplit, quote
+
+SerializedNQuad: TypeAlias = tuple[str, tuple[str, str, str], bool]
 
 
 class NQuadsSerializer:
@@ -12,7 +14,7 @@ class NQuadsSerializer:
     Emits a quad if `graph` is present in the tuple, otherwise emits a triple line.
     """
 
-    def serialize(self, row: MappingTuple) -> Optional[str]:
+    def serialize(self, row: MappingTuple) -> Optional[SerializedNQuad]:
         subject = row.get("subject")
         predicate = row.get("predicate")
         obj = row.get("object")

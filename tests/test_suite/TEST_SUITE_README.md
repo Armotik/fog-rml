@@ -1,242 +1,75 @@
-# PyHartig Comprehensive Test Suite
+# PyHartig Test Suite
 
 ## Overview
 
-This test suite provides comprehensive validation of the PyHartig. The tests are organized into eleven categories, each focusing on specific aspects of the system's functionality.
+The test suite is now organized as a mirror of `src/pyhartig/`.
 
-## Test Organization
+For each source file in `src/pyhartig/**`, there is a corresponding test module in
+`tests/test_suite/pyhartig/**`. Each mirrored test module contains:
 
-### 1. Source Operator Tests (`test_01_source_operators.py`)
+- at least one `coverage_suite` test used by SonarQube coverage runs
+- at least one `edge_case` test used to exercise robustness paths
 
-**Objective**: Validate JSON source operators with iteration and extraction mechanisms.
+This structure makes it easier to see which source module is covered and where
+edge-case validation lives.
 
-**Test Coverage**:
-- Simple iterator and extraction queries
-- Array-valued attribute extraction with Cartesian products
-- Nested JSON structure traversal
-- Empty result handling
-- Missing attribute graceful degradation
-- Multi-dimensional Cartesian products
+## Execution Categories
 
-**Key Features**:
-- Tests the fundamental `JsonSourceOperator` implementation
-- Validates JSONPath query execution
-- Ensures correct Cartesian product generation
+Two logical categories are available through `pytest --suite`:
 
-### 2. Extend Operator Tests (`test_02_extend_operators.py`)
+- `coverage`: the coverage-oriented suite used in CI and SonarQube
+- `edge_case`: the robustness-oriented suite focused on invalid, empty, or unusual inputs
 
-**Objective**: Validate attribute augmentation through algebraic expressions.
+Commands:
 
-**Test Coverage**:
-- Extension with constant expressions
-- Extension with reference expressions
-- Extension with function call expressions
-- Operator chaining
-- EPSILON handling
-- Fluent interface patterns
-- Complex nested expressions
-
-**Key Features**:
-- Tests the `ExtendOperator` core functionality
-- Validates expression evaluation in tuple context
-- Ensures proper attribute addition and propagation
-
-### 3. Operator Composition Tests (`test_03_operator_composition.py`)
-
-**Objective**: Validate operator fusion and pipeline construction.
-
-**Test Coverage**:
-- Basic Source-Extend fusion
-- Multi-stage extension pipelines
-- Extend on Cartesian product results
-- Dependent computed attributes
-- Empty result propagation
-- Parallel extension branches
-- Union with Extend composition
-- Extend after Union
-- Union of complex pipelines
-- Nested Union composition
-
-**Key Features**:
-- Tests operator interoperability
-- Validates complex pipeline construction
-- Ensures data flow integrity
-- **Union operator integration with other operators**
-
-### 4. Complete Pipeline Tests (`test_04_complete_pipelines.py`)
-
-**Objective**: End-to-end transformation scenarios.
-
-**Test Coverage**:
-- RDF triple generation pipeline
-- Person profile generation
-- Hierarchical data processing
-- Error-resilient pipelines
-- Multi-source Union pipeline
-- Union with post-processing
-- Complex RDF generation with Union
-
-**Key Features**:
-- Realistic use case demonstrations
-- Full transformation workflows
-- Production-like scenarios
-- Multi-source data integration scenarios
-
-### 5. Built-in Function Tests (`test_05_builtin_functions.py`)
-
-**Objective**: Validate RDF term construction and transformation functions.
-
-**Test Coverage**:
-- `to_iri()`: String to IRI conversion, base resolution, type handling
-- `to_literal()`: Literal construction with datatype specification
-- `concat()`: String concatenation with various input types
-- Function composition patterns
-- EPSILON propagation
-
-**Key Features**:
-- Comprehensive function testing
-- Edge case validation
-- Type conversion verification
-
-### 6. Expression System Tests (`test_06_expression_system.py`)
-
-**Objective**: Validate the algebraic expression evaluation system.
-
-**Test Coverage**:
-- Constant expressions
-- Reference expressions
-- Function call expressions
-- Nested function composition
-- EPSILON handling in expressions
-- Expression string representations
-
-**Key Features**:
-- Expression abstraction validation
-- Evaluation mechanism testing
-- Composition pattern verification
-
-### 7. Library Integration Tests (`test_07_library_integration.py`)
-
-**Objective**: Validate integration with external libraries.
-
-**Test Coverage**:
-- JSONPath-ng library queries (basic and complex)
-- JSONPath edge cases
-- Operator-library integration
-- Python JSON library features
-- Unicode handling
-- RDF term construction patterns
-- Library version compatibility
-
-**Key Features**:
-- External dependency validation
-- Library feature coverage
-- Integration point testing
-
-### 8. Real Data Integration Tests (`test_08_real_data_integration.py`)
-
-**Objective**: Validate functionality with actual project data files.
-
-**Test Coverage**:
-- Loading `test_data.json`
-- Team member extraction
-- Cartesian product with real data
-- Complete RDF generation pipeline
-- Mapping file validation
-- Project metadata extraction
-
-**Key Features**:
-- Uses actual project data files
-- Validates realistic scenarios
-- Tests with `data/test_data.json` and `data/mappings/test_mapping.yaml`
-
-### 9. Union Operator Tests (`test_09_union_operator.py`)
-
-**Objective**: Validate the Union operator for merging multiple data sources.
-
-**Test Coverage**:
-- Union of two and three sources
-- Union with extended sources (Extend before Union)
-- Union with empty sources
-- Union preserving tuple order
-- Union with different attribute schemas
-- Union duplicate handling (bag semantics)
-- Union single operator edge case
-
-**Key Features**:
-- Tests the `UnionOperator` core functionality
-- Validates multi-source data merging
-- Ensures proper tuple preservation and ordering
-- Tests integration with other operators (Source, Extend)
-- Validates edge cases (empty sources, single operator, duplicates)
-
-**Additional Integration Tests**:
-- Union with Extend composition (in `test_03_operator_composition.py`)
-- Extend after Union (in `test_03_operator_composition.py`)
-- Union of complex pipelines (in `test_03_operator_composition.py`)
-- Nested Union composition (in `test_03_operator_composition.py`)
-- Multi-source Union pipeline (in `test_04_complete_pipelines.py`)
-- Union with post-processing (in `test_04_complete_pipelines.py`)
-- Complex RDF generation with Union (in `test_04_complete_pipelines.py`)
-
-### 10. Explain Tests (`test_10_explain.py`)
-
-**Objective**: Validate human-readable pipeline visualization with the `explain()` method.
-
-**Test Coverage**:
-- Simple source operator explanation
-- Extend operator with expression visualization
-- Union operator with multiple children
-- Nested operator hierarchies
-- Complex expression trees display
-
-**Key Features**:
-- Tests the `explain()` method for all operator types
-- Validates tree-like structure generation
-- Ensures proper indentation and formatting
-- Displays expression details (Constants, References, FunctionCalls)
-
-**Example Output**:
-```text
-Union(
-  operators: 48
-  ├─ [0]:
-    Extend(
-      attribute: object
-      expression: Const(<http://schema.org/Issue>)
-      parent:
-        └─ Extend(
-          attribute: predicate
-          expression: Const(<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
-          parent:
-            └─ Extend(
-              attribute: subject
-              expression: to_iri(concat(Const('http://gitlab.com/issue/'), Ref(iid)))
-              parent:
-                └─ Source(
-                  iterator: $[*]
-                  mappings: ['iid']
-                )
-            )
-        )
-    )
-  ...
-)
+```bash
+.venv/bin/python -m pytest tests/test_suite --suite coverage -q
+.venv/bin/python -m pytest tests/test_suite --suite edge_case -q
+.venv/bin/python -m pytest tests/test_suite -q
 ```
 
-### 11. Explain JSON Tests (`test_11_explain_json.py`)
+Equivalent marker-based commands are also available:
 
-**Objective**: Validate JSON-based pipeline representation with the `explain_json()` method.
+```bash
+.venv/bin/python -m pytest tests/test_suite -m coverage_suite -q
+.venv/bin/python -m pytest tests/test_suite -m edge_case -q
+```
 
-**Test Coverage**:
-- Source operator with all parameters
-- Extend with Constant expressions
-- Extend with Reference expressions
-- Extend with FunctionCall expressions (to_iri, to_literal, concat)
-- Extend with IRI constant values
-- Nested Extend operators
-- Union operator with children array
-- Union with extended sources
+## Layout
+
+The main mirrored directories are:
+
+- `tests/test_suite/pyhartig/`
+- `tests/test_suite/pyhartig/algebra/`
+- `tests/test_suite/pyhartig/commands/`
+- `tests/test_suite/pyhartig/expressions/`
+- `tests/test_suite/pyhartig/functions/`
+- `tests/test_suite/pyhartig/mapping/`
+- `tests/test_suite/pyhartig/operators/`
+- `tests/test_suite/pyhartig/operators/sources/`
+- `tests/test_suite/pyhartig/serializers/`
+- `tests/test_suite/pyhartig/sparql/`
+- `tests/test_suite/pyhartig/utils/`
+
+Examples:
+
+- `src/pyhartig/commands/run.py` -> `tests/test_suite/pyhartig/commands/test_run.py`
+- `src/pyhartig/operators/SourceFactory.py` -> `tests/test_suite/pyhartig/operators/test_SourceFactory.py`
+- `src/pyhartig/operators/sources/JsonSourceOperator.py` -> `tests/test_suite/pyhartig/operators/sources/test_JsonSourceOperator.py`
+- `src/pyhartig/sparql/service_call.py` -> `tests/test_suite/pyhartig/sparql/test_service_call.py`
+
+## Fixtures
+
+Shared fixtures live in `tests/test_suite/conftest.py`:
+
+- `project_root`
+- `data_dir`
+- `dataset`
+- `write_mapping_files`
+- `stream_to_list`
+
+They are intended to support lightweight module-level tests without coupling the
+suite to large integration fixtures or numbered scenario files.
 - Complex nested pipeline structures
 - Valid JSON serialization verification
 
@@ -524,4 +357,3 @@ This test suite is part of the PyHartig project and follows the same license.
 
 **Last Updated**: 2025-12-09
 **Test Suite Version**: 2.1.0
-

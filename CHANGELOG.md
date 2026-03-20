@@ -163,6 +163,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
 
+## [0.3.5] - 2026-03-20
+
+### Changed
+- Reorganized the test suite into explicit `coverage` and `edge_case` categories, added runner support for `--suite`, and aligned the SonarCloud workflow with the coverage category.
+- Rebuilt `tests/test_suite` as a mirrored `src/pyhartig` test tree, with one dedicated test module per source file and separate `coverage_suite` / `edge_case` checks in each mirrored area.
+- Expanded the mirrored test suite with targeted branch coverage on factories, source operators, serializers, joins, and builtins to raise local source coverage above 90%.
+- Fixed invalid helper calls in `ExtendOperator.explain()` / `_explain_expression()` to match the actual helper signature.
+- Refactored CSV, JSON, SQL fixture, SQL Server, source factory, source, union, and equi-join operators into smaller helpers; standardized iterable return types where operators materialize `StreamRows`.
+- Aligned operator and serializer type hints with actual returned values, including `NQuadsSerializer.serialize()` and iterable-producing operator `execute()` methods.
+- Renamed EquiJoin constructor join-attribute parameters to comply with naming conventions and split join execution into focused indexing/probing helpers.
+- Simplified or replaced regex patterns flagged in SQL fixture helpers and pinned external GitHub Actions in `sonarcloud.yml` to commit references.
+
 ## [0.3.4] - 2026-03-20
 
 ### Changed

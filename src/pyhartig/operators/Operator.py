@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Any, TYPE_CHECKING, Dict, Iterable, Iterator
+from typing import Any, TYPE_CHECKING, Dict, Iterable
 from pyhartig.algebra.Tuple import MappingTuple
 class StreamRows:
     """A lazy iterable wrapper around an iterator/generator that supports
@@ -63,11 +63,11 @@ class Operator(ABC):
     """
 
     @abstractmethod
-    def execute(self) -> Iterator[MappingTuple]:
+    def execute(self) -> Iterable[MappingTuple]:
         """
-        Execute the operator and return an iterator of MappingTuple results.
+        Execute the operator and return an iterable of MappingTuple results.
         Implementations should use generators (yield) to stream results.
-        :return: Iterator[MappingTuple]
+        :return: Iterable[MappingTuple]
         """
         pass
 
@@ -109,4 +109,3 @@ class Operator(ABC):
             new_attribute=var_name,
             expression=expression
         )
-

@@ -1,4 +1,4 @@
-from typing import Iterator, Dict, Any
+from typing import Iterable, Dict, Any
 from pyhartig.operators.Operator import Operator
 from pyhartig.algebra.Tuple import MappingTuple
 from pyhartig.expressions.Expression import Expression
@@ -23,11 +23,11 @@ class ExtendOperator(Operator):
         self.new_attribute = new_attribute
         self.expression = expression
 
-    def execute(self) -> Iterator[MappingTuple]:
+    def execute(self) -> Iterable[MappingTuple]:
         """
         Executes the Extend logic.
         r' = { t U {a -> eval(phi, t)} | t in r }
-        :return: A list of extended MappingTuples.
+        :return: Iterable of extended MappingTuples.
         """
 
         # Stream and extend tuples from parent operator
@@ -55,7 +55,7 @@ class ExtendOperator(Operator):
         """
         indent_str = "  " * indent
         lines = [f"{indent_str}{prefix}Extend(", f"{indent_str}  attribute: {self.new_attribute}",
-                 f"{indent_str}  expression: {self._explain_expression(self.expression, indent + 2)}",
+                 f"{indent_str}  expression: {self._explain_expression(self.expression)}",
                  f"{indent_str}  parent:"]
 
         # Current operator
@@ -82,11 +82,10 @@ class ExtendOperator(Operator):
             "parent": self.parent_operator.explain_json()
         }
 
-    def _explain_expression(self, expr, indent: int) -> str:
+    def _explain_expression(self, expr) -> str:
         """
         Helper to explain expressions recursively.
         :param expr: The expression to explain
-        :param indent: Current indentation level
         :return: String representation of the expression
         """
         from pyhartig.expressions.Constant import Constant
@@ -101,7 +100,7 @@ class ExtendOperator(Operator):
 
         elif isinstance(expr, FunctionCall):
             func_name = getattr(expr.function, "__name__", str(expr.function))
-            args = [self._explain_expression(arg, 0) for arg in expr.arguments]
+            args = [self._explain_expression(arg) for arg in expr.arguments]
             args_str = ", ".join(args)
             return f"{func_name}({args_str})"
 

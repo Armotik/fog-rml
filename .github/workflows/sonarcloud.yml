@@ -14,12 +14,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd719
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69
         with:
           python-version: '3.10'
 
@@ -32,10 +32,10 @@ jobs:
       - name: Run tests and generate coverage report
         run: |
           # Exécute la suite de tests et génère coverage.xml
-          pytest --cov=src/pyhartig --cov-report=xml
+          pytest --suite coverage --cov=src/pyhartig --cov-report=xml
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarcloud-github-action@ffc3010
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

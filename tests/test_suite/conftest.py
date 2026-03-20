@@ -1,132 +1,53 @@
-"""
-PyTest Configuration for PyHartig Test Suite
+"""Shared pytest configuration for the rebuilt module-aligned test suite."""
 
-This configuration module provides global fixtures and settings
-for the comprehensive test suite, enabling detailed debug output
-and trace generation.
-"""
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Iterable
 
 import pytest
-import sys
-from pathlib import Path
+from rdflib import Dataset
 
 
 def pytest_configure(config):
-    """
-    Configure pytest with custom settings.
-    
-    Args:
-        config: pytest configuration object
-    """
-    # Register custom markers
-    config.addinivalue_line(
-        "markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')"
-    )
-    config.addinivalue_line(
-        "markers", "integration: marks tests as integration tests"
-    )
-    config.addinivalue_line(
-        "markers", "unit: marks tests as unit tests"
+    """Registers the suite markers used by the rebuilt test suite."""
+    config.addinivalue_line("markers", "coverage_suite: tests for the SonarQube coverage suite")
+    config.addinivalue_line("markers", "edge_case: tests for robustness and unusual inputs")
+
+
+def pytest_addoption(parser):
+    """Adds the suite selector used by local runs and CI."""
+    parser.addoption(
+        "--suite",
+        action="store",
+        default="all",
+        choices=("all", "coverage", "edge_case"),
+        help="Run a specific test category: all, coverage, or edge_case.",
     )
 
 
 def pytest_collection_modifyitems(config, items):
-    """
-    Modify test collection to add markers based on test location.
-    
-    Args:
-        config: pytest configuration object
-        items: list of test items
-    """
+    """Filters collected tests according to the selected suite marker."""
+    selected_suite = config.getoption("--suite")
+    if selected_suite == "all":
+        return
+
+    wanted_marker = "coverage_suite" if selected_suite == "coverage" else "edge_case"
+    kept = []
+    deselected = []
     for item in items:
-        # Add markers based on test file name
-        if "test_01" in str(item.fspath) or "test_02" in str(item.fspath):
-            item.add_marker(pytest.mark.unit)
-        elif "test_03" in str(item.fspath) or "test_04" in str(item.fspath):
-            item.add_marker(pytest.mark.integration)
-        elif "test_08" in str(item.fspath):
-            item.add_marker(pytest.mark.integration)
+        if wanted_marker in item.keywords:
+            kept.append(item)
+        else:
+            deselected.append(item)
 
-
-@pytest.fixture(scope="session")
-def project_root():
-    """
-    Provide path to project root directory.
-    
-    Returns:
-        Path: Project root directory
-    """
-    return Path(__file__).parent.parent.parent
-
-
-@pytest.fixture(scope="session")
-def data_directory(project_root):
-    """
-    Provide path to data directory.
-    
-    Returns:
-        Path: Data directory
-    """
-    return project_root / "data"
-
-
-@pytest.fixture(scope="session")
-def test_output_dir(project_root):
-    """
-    Provide path to test output directory.
-    
-    Creates the directory if it doesn't exist.
-    
-    Returns:
-        Path: Test output directory
-    """
-    output_dir = project_root / "tests" / "test_output"
-    output_dir.mkdir(exist_ok=True)
-    return output_dir
-
-
-@pytest.fixture
-def capture_debug_output(capsys):
-    """
-    Fixture to capture and return debug output.
-    
-    Provides a context manager that captures stdout/stderr
-    during test execution.
-    
-    Args:
-        capsys: pytest's capsys fixture
-        
-    Returns:
-        callable: Function to get captured output
-    """
-    def get_output():
-        captured = capsys.readouterr()
-        return captured.out + captured.err
-    
-    return get_output
-
-
-@pytest.fixture(autouse=True)
-def reset_environment():
-    """
-    Auto-use fixture to reset environment before each test.
-    
-    Ensures clean state between tests.
-    """
-    # Add any cleanup or reset logic here
-    yield
-    # Teardown logic if needed
+    if deselected:
+        config.hook.pytest_deselected(items=deselected)
+    items[:] = kept
 
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
-    """
-    Add custom summary information to test report.
-    
-    Args:
-        terminalreporter: pytest terminal reporter
-        exitstatus: test exit status
-        config: pytest configuration
-    """
+    """Prints a compact terminal summary aligned with the project workflow."""
     if exitstatus == 0:
         terminalreporter.write_sep("=", "TEST SUITE SUMMARY", green=True, bold=True)
         terminalreporter.write_line("All tests passed successfully!")
@@ -136,24 +57,46 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         terminalreporter.write_line(f"Tests completed with status: {exitstatus}")
 
 
-# Configure pytest options
-def pytest_addoption(parser):
-    """
-    Add custom command-line options to pytest.
-    
-    Args:
-        parser: pytest argument parser
-    """
-    parser.addoption(
-        "--debug-trace",
-        action="store_true",
-        default=False,
-        help="Enable detailed debug trace output"
-    )
-    parser.addoption(
-        "--save-traces",
-        action="store_true",
-        default=False,
-        help="Save debug traces to files"
-    )
+@pytest.fixture(scope="session")
+def project_root() -> Path:
+    """Returns the project root path."""
+    return Path(__file__).resolve().parents[2]
 
+
+@pytest.fixture(scope="session")
+def data_dir(project_root: Path) -> Path:
+    """Returns the repository data directory."""
+    return project_root / "data"
+
+
+@pytest.fixture()
+def dataset() -> Dataset:
+    """Provides a fresh rdflib Dataset for tests that need named-graph operations."""
+    return Dataset()
+
+
+@pytest.fixture()
+def write_mapping_files(tmp_path: Path):
+    """Creates a small mapping workspace from a mapping string and source files."""
+
+    def _write(mapping_text: str, files: dict[str, str]) -> Path:
+        for relative_path, content in files.items():
+            target = tmp_path / relative_path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(content, encoding="utf-8")
+
+        mapping_path = tmp_path / "mapping.ttl"
+        mapping_path.write_text(mapping_text, encoding="utf-8")
+        return mapping_path
+
+    return _write
+
+
+@pytest.fixture()
+def stream_to_list():
+    """Materializes iterable operator results to a plain list for assertions."""
+
+    def _materialize(rows: Iterable):
+        return list(rows)
+
+    return _materialize

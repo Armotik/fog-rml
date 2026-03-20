@@ -70,7 +70,7 @@ class MappingTuple(Mapping):
             if not isinstance(key, str):
                 raise TypeError(f"The attribute (key) of a MappingTuple must be a string, received: {type(key)}")
             if value is None:
-                raise ValueError(f"None is not allowed in MappingTuple. Use EPSILON for undefined values.")
+                raise ValueError("None is not allowed in MappingTuple. Use EPSILON for undefined values.")
 
         # Store data and initialize hash cache
         object.__setattr__(self, '_data', merged)

@@ -1,4 +1,4 @@
-from typing import Iterator, Dict, Any
+from typing import Iterable, Dict, Any
 
 from pyhartig.algebra.Tuple import MappingTuple
 from pyhartig.operators.Operator import Operator
@@ -22,7 +22,7 @@ class UnionOperator(Operator):
         # Default False => bag semantics (fast, may contain duplicates)
         self.distinct = bool(distinct)
 
-    def execute(self) -> Iterator[MappingTuple]:
+    def execute(self) -> Iterable[MappingTuple]:
         """
         Executes all child operators and merges their results.
         Union(r1, r2, ..., rn) = new MpaaingRelation (A_1, I_union)
@@ -32,28 +32,31 @@ class UnionOperator(Operator):
         from pyhartig.operators.Operator import StreamRows
 
         def _gen():
-            # Stream results from each child operator in order
-            if not self.distinct:
-                for op in self.operators:
-                    for row in op.execute():
-                        yield row
-                return
-
-            # distinct=True: track seen tuples and yield each unique row once
-            seen = set()
-            for op in self.operators:
-                for row in op.execute():
-                    try:
-                        key = tuple(sorted(row.items()))
-                    except Exception:
-                        key = str(row)
-
-                    if key in seen:
-                        continue
-                    seen.add(key)
-                    yield row
+            row_iterator = self._iter_distinct_rows() if self.distinct else self._iter_bag_rows()
+            yield from row_iterator
 
         return StreamRows(_gen())
+
+    def _iter_bag_rows(self):
+        for operator in self.operators:
+            yield from operator.execute()
+
+    def _iter_distinct_rows(self):
+        seen = set()
+        for operator in self.operators:
+            for row in operator.execute():
+                key = self._build_distinct_key(row)
+                if key in seen:
+                    continue
+                seen.add(key)
+                yield row
+
+    @staticmethod
+    def _build_distinct_key(row: MappingTuple):
+        try:
+            return tuple(sorted(row.items()))
+        except Exception:
+            return str(row)
 
     def explain(self, indent: int = 0, prefix: str = "") -> str:
         """

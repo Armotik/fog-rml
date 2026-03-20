@@ -45,7 +45,11 @@ class FunctionCall(Expression):
             # Ensure the function itself didn't return None or an error state
             # that should be represented as EPSILON in this algebra.
             return result if result is not None else EPSILON
-        except (TypeError, ValueError, ArithmeticError, Exception):
+        except (TypeError, ValueError, ArithmeticError):
+            # Capture potential domain errors (e.g., division by zero,
+            # incompatible types) and return the algebraic error constant.
+            return EPSILON
+        except Exception:
             # Capture potential domain errors (e.g., division by zero,
             # incompatible types) and return the algebraic error constant.
             return EPSILON

@@ -115,7 +115,7 @@ class Literal:
     """
     lexical_form: str
     datatype_iri: str = _XSD_STRING_IRI
-    language: str = None
+    language: str | None = None
 
     def __post_init__(self) -> None:
         """

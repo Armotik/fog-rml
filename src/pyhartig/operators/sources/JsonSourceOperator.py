@@ -10,8 +10,18 @@ JsonValue: TypeAlias = JsonScalar | list["JsonValue"] | dict[str, "JsonValue"]
 
 
 class JsonSourceOperator(SourceOperator):
+    """
+    Source operator specialized for JSON documents queried through JSONPath.
+    """
 
     def __init__(self, source_data: JsonValue | str | Path, iterator_query: str, attribute_mappings: Dict[str, str]):
+        """
+        Initializes the JSON source operator.
+        :param source_data: JSON payload or path to a JSON file.
+        :param iterator_query: JSONPath iterator query.
+        :param attribute_mappings: Mapping of output attributes to JSONPath extraction queries.
+        :return: None
+        """
         prepared_source = self._prepare_source_data(source_data)
         super().__init__(prepared_source, iterator_query, attribute_mappings)
 
@@ -44,12 +54,21 @@ class JsonSourceOperator(SourceOperator):
                        attribute_mappings: Dict[str, str]) -> "JsonSourceOperator":
         """
         Build an operator from a validated local JSON file.
+        :param source_path: Path to the JSON file.
+        :param iterator_query: JSONPath iterator query.
+        :param attribute_mappings: Mapping of output attributes to JSONPath extraction queries.
+        :return: JsonSourceOperator built from the file.
         """
         sanitized_data = cls._load_json_file(source_path)
         return cls(sanitized_data, iterator_query, attribute_mappings)
 
     @classmethod
     def _prepare_source_data(cls, source_data: JsonValue | str | Path) -> JsonValue | None:
+        """
+        Validates and sanitizes the JSON source payload.
+        :param source_data: JSON payload or path to a JSON file.
+        :return: Sanitized JSON payload, or None on failure.
+        """
         try:
             if isinstance(source_data, (str, Path)):
                 return cls._load_json_file(source_data)
@@ -59,6 +78,11 @@ class JsonSourceOperator(SourceOperator):
 
     @staticmethod
     def _resolve_json_path(source_path: str | Path) -> Path:
+        """
+        Resolves a JSON file path to a validated local file.
+        :param source_path: JSON source path.
+        :return: Resolved JSON file path.
+        """
         resolved_path = Path(source_path).expanduser().resolve(strict=True)
         if not resolved_path.is_file():
             raise ValueError(f"JSON source is not a file: {resolved_path}")
@@ -66,6 +90,11 @@ class JsonSourceOperator(SourceOperator):
 
     @classmethod
     def _load_json_file(cls, source_path: str | Path) -> JsonValue:
+        """
+        Loads and sanitizes a JSON file.
+        :param source_path: JSON source path.
+        :return: Sanitized JSON payload.
+        """
         json_path = cls._resolve_json_path(source_path)
         with json_path.open("r", encoding="utf-8") as f:
             loaded_data = json.load(f)
@@ -73,6 +102,11 @@ class JsonSourceOperator(SourceOperator):
 
     @classmethod
     def _sanitize_json_value(cls, value: Any) -> JsonValue:
+        """
+        Recursively sanitizes a JSON value to supported JSON scalar/container types.
+        :param value: JSON value to sanitize.
+        :return: Sanitized JSON value.
+        """
         if value is None or isinstance(value, (str, int, float, bool)):
             return value
 
@@ -91,10 +125,10 @@ class JsonSourceOperator(SourceOperator):
 
     def _apply_iterator(self, data: Any, query: str) -> List[Any]:
         """
-        Apply the iterator query on the data source (function eval(D, q))
-        :param data: JSON data source
-        :param query: Iterator query
-        :return: List of context
+        Apply the iterator query on the data source (function eval(D, q)).
+        :param data: JSON data source.
+        :param query: Iterator query.
+        :return: List of context objects.
         """
         jsonpath_expr = self._compiled_iterator
         if jsonpath_expr is None:
@@ -115,61 +149,70 @@ class JsonSourceOperator(SourceOperator):
 
     def _apply_extraction(self, context: Any, query: str) -> List[Any]:
         """
-        Apply the extraction query on a context object (function eval'(D, d, q'))
-        :param context: Context object
-        :param query: Extraction query
-        :return: List of extracted values for the attribute
+        Apply the extraction query on a context object (function eval'(D, d, q')).
+        :param context: Context object.
+        :param query: Extraction query.
+        :return: List of extracted values for the attribute.
+        """
+        matches = self._find_attribute_matches(context, query)
+        if not matches:
+            return []
+        return self._flatten_matches(matches)
+
+    def _find_attribute_matches(self, context: Any, query: str):
+        """
+        Finds JSONPath matches for an attribute query, including tolerant fallback compilation.
+        :param context: JSON context object.
+        :param query: Attribute extraction query.
+        :return: JSONPath matches for the query.
+        """
+        jsonpath_expr = self._get_compiled_attribute_expr(query)
+        matches = [] if jsonpath_expr is None else jsonpath_expr.find(context)
+        if matches or query.startswith("$"):
+            return matches
+
+        alternative_expr = self._compile_attribute_expr(f"$.{query}")
+        if alternative_expr is None:
+            return matches
+
+        self._compiled_attribute_exprs[query] = alternative_expr
+        return alternative_expr.find(context)
+
+    def _get_compiled_attribute_expr(self, query: str):
+        """
+        Returns a cached compiled JSONPath expression for an attribute query.
+        :param query: Attribute extraction query.
+        :return: Compiled JSONPath expression, or None.
         """
         jsonpath_expr = self._compiled_attribute_exprs.get(query)
-        if jsonpath_expr is None:
-            # Compile and cache on first use. Be tolerant: if the provided
-            # query is a bare attribute name (which causes jsonpath_ng.parse
-            # to raise), try compiling a `$.<name>` alternative before
-            # letting an exception propagate.
-            try:
-                jsonpath_expr = parse(query)
-            except Exception:
-                if not query.startswith('$'):
-                    alt_q = f'$.{query}'
-                    try:
-                        jsonpath_expr = parse(alt_q)
-                        # cache the alternative under the original query key
-                        self._compiled_attribute_exprs[query] = jsonpath_expr
-                    except Exception:
-                        # leave as None so caller handles missing matches
-                        jsonpath_expr = None
-                else:
-                    jsonpath_expr = None
-            else:
-                self._compiled_attribute_exprs[query] = jsonpath_expr
+        if jsonpath_expr is not None:
+            return jsonpath_expr
 
-        # If we couldn't compile an expression, treat as no matches and
-        # fall through to the alternative-fallback below.
-        if jsonpath_expr is None:
-            matches = []
-        else:
-            matches = jsonpath_expr.find(context)
+        jsonpath_expr = self._compile_attribute_expr(query)
+        self._compiled_attribute_exprs[query] = jsonpath_expr
+        return jsonpath_expr
 
-        # If no matches found, return empty list
-        if not matches:
-            # Fallback: if we didn't get any matches, and the original query
-            # isn't a JSONPath expression, try `$.<name>` as a last resort.
-            if not query.startswith('$'):
-                try:
-                    alt_q = f'$.{query}'
-                    alt_expr = parse(alt_q)
-                    # cache the alternative compiled expression for future use
-                    self._compiled_attribute_exprs[query] = alt_expr
-                    matches = alt_expr.find(context)
-                except Exception:
-                    pass
-            if not matches:
-                return []
+    @staticmethod
+    def _compile_attribute_expr(query: str):
+        """
+        Compiles a JSONPath expression, returning None on failure.
+        :param query: Attribute extraction query.
+        :return: Compiled JSONPath expression, or None.
+        """
+        try:
+            return parse(query)
+        except Exception:
+            return None
 
-        # Flatten the results
+    @staticmethod
+    def _flatten_matches(matches) -> List[Any]:
+        """
+        Flattens JSONPath matches to a plain list of extracted values.
+        :param matches: JSONPath matches.
+        :return: Flattened extracted values.
+        """
         results: List[Any] = []
         for match in matches:
-            # If the match value is a list, extend the results; otherwise, append the single value
             if isinstance(match.value, list):
                 results.extend(match.value)
             else:
@@ -178,8 +221,8 @@ class JsonSourceOperator(SourceOperator):
 
     def explain_json(self) -> Dict[str, Any]:
         """
-        Generate a JSON-serializable explanation of the JsonSource operator
-        :return: Dictionary representing the operator tree structure
+        Generate a JSON-serializable explanation of the JsonSource operator.
+        :return: Dictionary representing the operator tree structure.
         """
         base = super().explain_json()
         base["parameters"]["source_type"] = "JSON"
