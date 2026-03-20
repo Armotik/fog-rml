@@ -3,11 +3,16 @@ import re
 from pathlib import Path
 from typing import Any, Dict, Optional
 from urllib import parse, request
+from urllib.parse import urlsplit
 
 from pyhartig.operators.sources.JsonSourceOperator import JsonSourceOperator
 
 
 class SparqlSourceOperator(JsonSourceOperator):
+    """
+    Loads SPARQL query results and exposes them through the JSON source operator interface.
+    """
+
     def __init__(
         self,
         endpoint: str,
@@ -17,6 +22,15 @@ class SparqlSourceOperator(JsonSourceOperator):
         mapping_dir: Path,
         source_node: Optional[str] = None,
     ):
+        """
+        Initializes the operator from a SPARQL endpoint or a local RDF fallback source.
+        :param endpoint: SPARQL endpoint URL.
+        :param sparql_query: SPARQL query to execute.
+        :param iterator_query: JSONPath iterator applied to the SPARQL JSON result.
+        :param attribute_mappings: Mapping of output attributes to JSONPath expressions.
+        :param mapping_dir: Directory used to resolve local RDF fallback resources.
+        :param source_node: Optional mapping source node used to select a local resource.
+        """
         normalized_mappings = self._normalize_attribute_mappings(attribute_mappings)
         data = self._load_sparql_json_data(
             endpoint=endpoint,
@@ -28,7 +42,12 @@ class SparqlSourceOperator(JsonSourceOperator):
 
     @staticmethod
     def _normalize_attribute_mappings(attribute_mappings: Dict[str, str]) -> Dict[str, str]:
-        bare_name = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+        """
+        Normalizes attribute mappings to the nested shape used by SPARQL JSON bindings.
+        :param attribute_mappings: Raw attribute mappings produced by the mapping parser.
+        :return: Normalized attribute mappings for SPARQL result bindings.
+        """
+        bare_name = re.compile(r"^[A-Za-z_]\w*$", re.ASCII)
         normalized = {}
         for attr, query in attribute_mappings.items():
             q = str(query)
@@ -52,35 +71,97 @@ class SparqlSourceOperator(JsonSourceOperator):
 
     @staticmethod
     def _binding_for_value(value: Any) -> Dict[str, str]:
+        """
+        Converts one RDF term value to a SPARQL JSON binding object.
+        :param value: Bound RDF term value.
+        :return: SPARQL JSON binding dictionary.
+        """
         value_str = str(value)
-        if value_str.startswith("http://") or value_str.startswith("https://"):
+        if urlsplit(value_str).scheme in {"http", "https"}:
             return {"type": "uri", "value": value_str}
         return {"type": "literal", "value": value_str}
 
     @staticmethod
     def _validate_sparql_query(sparql_query: str) -> None:
+        """
+        Validates that a SPARQL query is non-empty, coherent and syntactically valid.
+        :param sparql_query: SPARQL query string to validate.
+        :return: None
+        """
         query_text = str(sparql_query or "")
+        SparqlSourceOperator._ensure_non_empty_query(query_text)
+        SparqlSourceOperator._validate_select_variables(query_text)
+        SparqlSourceOperator._parse_sparql_syntax(query_text)
+
+    @staticmethod
+    def _ensure_non_empty_query(query_text: str) -> None:
+        """
+        Rejects empty SPARQL queries.
+        :param query_text: Query text to validate.
+        :return: None
+        """
         if not query_text.strip():
             raise ValueError("Invalid SPARQL query: query is empty")
 
-        upper_q = query_text.upper()
-        if "SELECT" in upper_q and "WHERE" in upper_q:
-            select_start = upper_q.find("SELECT")
-            where_start = upper_q.find("WHERE", select_start + len("SELECT"))
-            if select_start != -1 and where_start != -1:
-                select_part = query_text[select_start + len("SELECT"):where_start]
-                if "*" not in select_part:
-                    vars_in_select = re.findall(r"\?[A-Za-z_][A-Za-z0-9_]*", select_part)
-                    seen = set()
-                    duplicates = set()
-                    for var in vars_in_select:
-                        if var in seen:
-                            duplicates.add(var)
-                        seen.add(var)
-                    if duplicates:
-                        dup_list = ", ".join(sorted(duplicates))
-                        raise ValueError(f"Invalid SPARQL query: duplicate SELECT variable(s): {dup_list}")
+    @staticmethod
+    def _validate_select_variables(query_text: str) -> None:
+        """
+        Rejects duplicate variables inside a SELECT clause.
+        :param query_text: Query text to inspect.
+        :return: None
+        """
+        select_part = SparqlSourceOperator._extract_select_clause(query_text)
+        if not select_part or "*" in select_part:
+            return
 
+        duplicates = SparqlSourceOperator._find_duplicate_select_vars(select_part)
+        if not duplicates:
+            return
+
+        dup_list = ", ".join(sorted(duplicates))
+        raise ValueError(f"Invalid SPARQL query: duplicate SELECT variable(s): {dup_list}")
+
+    @staticmethod
+    def _extract_select_clause(query_text: str) -> Optional[str]:
+        """
+        Extracts the raw SELECT clause content located before WHERE.
+        :param query_text: Query text to inspect.
+        :return: SELECT clause content, or None when it cannot be isolated.
+        """
+        upper_q = query_text.upper()
+        if "SELECT" not in upper_q or "WHERE" not in upper_q:
+            return None
+
+        select_start = upper_q.find("SELECT")
+        where_start = upper_q.find("WHERE", select_start + len("SELECT"))
+        if select_start == -1 or where_start == -1:
+            return None
+
+        return query_text[select_start + len("SELECT"):where_start]
+
+    @staticmethod
+    def _find_duplicate_select_vars(select_part: str) -> set[str]:
+        """
+        Finds duplicate variable names inside a SELECT clause.
+        :param select_part: Raw SELECT clause content.
+        :return: Set of duplicated variable names.
+        """
+        vars_in_select = re.findall(r"\?[A-Za-z_]\w*", select_part, re.ASCII)
+        seen = set()
+        duplicates = set()
+        for var in vars_in_select:
+            if var in seen:
+                duplicates.add(var)
+            seen.add(var)
+        return duplicates
+
+    @staticmethod
+    def _parse_sparql_syntax(query_text: str) -> None:
+        """
+        Validates SPARQL syntax with rdflib's parser.
+        :param query_text: Query text to parse.
+        :return: None
+        """
         try:
             from rdflib.plugins.sparql.parser import parseQuery
 
@@ -95,27 +176,76 @@ class SparqlSourceOperator(JsonSourceOperator):
         mapping_dir: Path,
         source_node: Optional[str],
     ) -> Optional[Dict[str, Any]]:
-        resource_file = None
-        if source_node:
-            svc_name = source_node.split("#")[-1] if "#" in source_node else source_node.rsplit("/", 1)[-1]
-            suffix_digits = []
-            for char in reversed(svc_name):
-                if char.isdigit():
-                    suffix_digits.append(char)
-                else:
-                    break
-            if suffix_digits:
-                resource_number = "".join(reversed(suffix_digits))
-                numbered_resource = mapping_dir / f"resource{resource_number}.ttl"
-                if numbered_resource.exists():
-                    resource_file = numbered_resource
-
+        """
+        Evaluates a SPARQL query against a local RDF resource when one is available.
+        :param sparql_query: SPARQL query string.
+        :param mapping_dir: Directory used to resolve local RDF resources.
+        :param source_node: Optional mapping source node used to target a numbered resource.
+        :return: SPARQL JSON result dictionary, or None when no local emulation is possible.
+        """
+        resource_file = cls._resolve_local_resource_file(mapping_dir, source_node)
         if resource_file is None:
-            for candidate in mapping_dir.glob("resource*.ttl"):
-                resource_file = candidate
-                break
+            return None
 
-        if resource_file is None or not resource_file.exists():
+        return cls._query_local_rdf_resource(resource_file, sparql_query)
+
+    @classmethod
+    def _resolve_local_resource_file(cls, mapping_dir: Path, source_node: Optional[str]) -> Optional[Path]:
+        """
+        Resolves the RDF file used for local SPARQL emulation.
+        :param mapping_dir: Directory used to resolve local RDF resources.
+        :param source_node: Optional mapping source node used to target a numbered resource.
+        :return: Matching local RDF file, or None.
+        """
+        resource_number = cls._extract_source_resource_number(source_node)
+        if resource_number is not None:
+            numbered_resource = mapping_dir / f"resource{resource_number}.ttl"
+            if numbered_resource.exists():
+                return numbered_resource
+
+        return cls._find_first_local_resource(mapping_dir)
+
+    @staticmethod
+    def _extract_source_resource_number(source_node: Optional[str]) -> Optional[str]:
+        """
+        Extracts the numeric suffix of a source node identifier.
+        :param source_node: Optional mapping source node identifier.
+        :return: Numeric suffix as a string, or None.
+        """
+        if not source_node:
+            return None
+
+        svc_name = source_node.split("#")[-1] if "#" in source_node else source_node.rsplit("/", 1)[-1]
+        suffix_digits = []
+        for char in reversed(svc_name):
+            if not char.isdigit():
+                break
+            suffix_digits.append(char)
+
+        if not suffix_digits:
+            return None
+        return "".join(reversed(suffix_digits))
+
+    @staticmethod
+    def _find_first_local_resource(mapping_dir: Path) -> Optional[Path]:
+        """
+        Returns the first available local RDF resource file in the mapping directory.
+        :param mapping_dir: Directory used to resolve local RDF resources.
+        :return: First matching RDF resource file, or None.
+        """
+        for candidate in mapping_dir.glob("resource*.ttl"):
+            return candidate
+        return None
+
+    @classmethod
+    def _query_local_rdf_resource(cls, resource_file: Path, sparql_query: str) -> Optional[Dict[str, Any]]:
+        """
+        Executes a SPARQL query against a local RDF resource file.
+        :param resource_file: Local RDF resource file.
+        :param sparql_query: SPARQL query string.
+        :return: SPARQL JSON result dictionary, or None on failure.
+        """
+        if not resource_file.exists():
             return None
 
         try:
@@ -124,35 +254,69 @@ class SparqlSourceOperator(JsonSourceOperator):
             rdf_graph = Graph()
             rdf_graph.parse(str(resource_file), format="turtle")
             result = rdf_graph.query(str(sparql_query))
-
-            bindings = []
-            for row in result:
-                row_dict = {}
-                for var_name, bound_value in row.asdict().items():
-                    if bound_value is None:
-                        continue
-                    row_dict[var_name] = cls._binding_for_value(bound_value)
-                bindings.append(row_dict)
-
-            # Some SPARQL engines (including rdflib in this context) may return
-            # zero rows for SELECT vars with an empty WHERE block. RML test-cases
-            # with constant subject/predicate/object still expect one mapping tuple.
-            if not bindings:
-                compact_query = "".join(str(sparql_query).split()).upper()
-                if "WHERE{}" in compact_query:
-                    bindings = [{}]
-
+            bindings = cls._build_local_bindings(result)
+            bindings = cls._apply_empty_where_binding_fallback(sparql_query, bindings)
             return {"head": {"vars": list(result.vars)}, "results": {"bindings": bindings}}
         except Exception:
             return None
 
+    @classmethod
+    def _build_local_bindings(cls, result) -> list[Dict[str, Dict[str, str]]]:
+        """
+        Converts rdflib query rows to SPARQL JSON bindings.
+        :param result: rdflib query result.
+        :return: List of SPARQL JSON binding rows.
+        """
+        bindings = []
+        for row in result:
+            row_dict = {}
+            for var_name, bound_value in row.asdict().items():
+                if bound_value is None:
+                    continue
+                row_dict[var_name] = cls._binding_for_value(bound_value)
+            bindings.append(row_dict)
+        return bindings
+
+    @staticmethod
+    def _apply_empty_where_binding_fallback(
+        sparql_query: str,
+        bindings: list[Dict[str, Dict[str, str]]],
+    ) -> list[Dict[str, Dict[str, str]]]:
+        """
+        Restores one empty binding for constant-only queries with an empty WHERE block.
+        :param sparql_query: SPARQL query string.
+        :param bindings: Bindings produced by the local SPARQL engine.
+        :return: Possibly adjusted bindings list.
+        """
+        if bindings:
+            return bindings
+
+        # Some SPARQL engines (including rdflib in this context) may return
+        # zero rows for SELECT vars with an empty WHERE block. RML test-cases
+        # with constant subject/predicate/object still expect one mapping tuple.
+        compact_query = "".join(str(sparql_query).split()).upper()
+        if "WHERE{}" in compact_query:
+            return [{}]
+        return bindings
+
     @staticmethod
     def _is_placeholder_endpoint(endpoint: str) -> bool:
+        """
+        Detects placeholder endpoints that should not be queried remotely.
+        :param endpoint: Endpoint URL to inspect.
+        :return: True when the endpoint is a placeholder.
+        """
         endpoint_str = str(endpoint)
         return "localhost:PORT" in endpoint_str or endpoint_str.endswith(":PORT")
 
     @classmethod
     def _query_remote_endpoint(cls, endpoint: str, sparql_query: str) -> Optional[Dict[str, Any]]:
+        """
+        Executes a SPARQL query against a remote endpoint and decodes the JSON response.
+        :param endpoint: SPARQL endpoint URL.
+        :param sparql_query: SPARQL query string.
+        :return: SPARQL JSON result dictionary, or None on failure.
+        """
         if cls._is_placeholder_endpoint(endpoint):
             return None
 
@@ -180,6 +344,14 @@ class SparqlSourceOperator(JsonSourceOperator):
         mapping_dir: Path,
         source_node: Optional[str],
     ) -> Dict[str, Any]:
+        """
+        Loads SPARQL results from a local RDF fallback or a remote endpoint.
+        :param endpoint: SPARQL endpoint URL.
+        :param sparql_query: SPARQL query string.
+        :param mapping_dir: Directory used to resolve local RDF resources.
+        :param source_node: Optional mapping source node used to target a local resource.
+        :return: SPARQL JSON result dictionary.
+        """
         cls._validate_sparql_query(str(sparql_query))
 
         local = cls._emulate_from_local_rdf(
@@ -197,6 +369,10 @@ class SparqlSourceOperator(JsonSourceOperator):
         return {"head": {"vars": []}, "results": {"bindings": []}}
 
     def explain_json(self) -> Dict[str, Any]:
+        """
+        Extends the JSON explanation with the SPARQL source type marker.
+        :return: JSON explanation dictionary.
+        """
         base = super().explain_json()
         base["parameters"]["source_type"] = "SPARQL"
         return base

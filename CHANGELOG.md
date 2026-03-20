@@ -163,6 +163,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
 
+## [0.3.4] - 2026-03-20
+
+### Changed
+- Centralized additional intentional HTTP IRIs and FnO/FnML namespaces in `namespaces.py` to reduce false-positive hotspot reports without changing RDF/FnO semantics.
+- Replaced remaining hardcoded intentional HTTP/FnO IRIs in `builtins.py`, `idlab_plugins.py`, `MappingParser.py`, `SparqlSourceOperator.py`, and `service_call.py` with centralized constants or scheme-based checks.
+- Refactored the `run` command into smaller helpers to reduce cognitive complexity without changing execution behavior.
+- Refactored `builtins.to_iri()` into smaller helpers to reduce cognitive complexity without changing IRI resolution semantics.
+- Simplified the blank-node identifier regex in `builtins.to_bnode()` without changing ASCII identifier handling.
+- Renamed non-snake-case helper functions in `idlab_plugins.py` while keeping the same registered IDLab function URIs.
+- Refactored `service_call.execute_query_with_service_call()` into focused SERVICE-CALL preparation, rewrite, and fallback helpers while standardizing its materialized list return type.
+- Replaced slow regex hotspots in `service_call.py` and `MappingParser.py` with deterministic string parsing for `SELECT` clause extraction and FnML parameter suffix ordering.
+- Refactored `SparqlSourceOperator._validate_sparql_query()` into focused validation helpers to reduce cognitive complexity without changing SPARQL query validation behavior.
+- Refactored `SparqlSourceOperator._emulate_from_local_rdf()` into focused local-resource resolution and RDF-query helpers to reduce cognitive complexity without changing local SPARQL emulation behavior.
+- Simplified the ASCII identifier regex in `SparqlSourceOperator._normalize_attribute_mappings()` without changing attribute normalization behavior.
+- Simplified the SPARQL `SELECT` variable regex in `SparqlSourceOperator._find_duplicate_select_vars()` without changing duplicate-variable detection behavior.
+- Simplified `MappingParser._flush_literal_buffer()` and related template parsing helpers as part of the cognitive-complexity cleanup in `MappingParser.py`.
+- Refactored `MappingParser._iter_template_segments()` into smaller brace-handling helpers to reduce cognitive complexity without changing template parsing behavior.
+- Refactored `MappingParser._create_ext_expr()` into dedicated FnML, constant, reference, template, and literal-handling helpers to reduce cognitive complexity without changing extension-expression semantics.
+- Refactored `MappingParser._find_candidate_parent_triples_map()` into dedicated source-resolution and candidate-matching helpers to reduce cognitive complexity without changing parent TriplesMap selection behavior.
+- Refactored `MappingParser._extract_join_attributes()` into dedicated operand-extraction and pair-appending helpers to reduce cognitive complexity without changing join-attribute extraction behavior.
+- Removed the duplicate `MappingParser._normalize_join_name()` implementation by reusing `_normalize_query_name()` for join operand normalization.
+- Refactored `MappingParser._extract_queries()` into focused query-normalization and term-map scanning helpers to reduce cognitive complexity without changing extracted attribute mappings.
+- Renamed the local `vars` binding in `MappingParser._register_template_query_variables()` to avoid shadowing the Python builtin.
+- Renamed the local `vars` binding in `MappingParser._extract_join_operand()` to avoid shadowing the Python builtin.
+- Refactored `MappingParser._inject_parent_join_mappings()` into a single-entry helper to reduce cognitive complexity without changing parent join attribute injection behavior.
+- Refactored `MappingParser._prepare_parent_source_mappings()` into separate parent-injection and collision-renaming helpers to reduce cognitive complexity without changing parent join mapping behavior.
+- Refactored `MappingParser._prepare_child_join_mappings()` into focused helpers for fallback cleanup and join-attribute injection to reduce cognitive complexity without changing join behavior.
+- Refactored `MappingParser.parse()` into dedicated loading, TriplesMap, and join helpers to reduce cognitive complexity while preserving pipeline construction behavior.
+
 ## [0.3.3] - 2026-03-19
 
 ### Changed

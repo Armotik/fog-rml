@@ -1,4 +1,5 @@
 import logging
+from urllib.parse import urlsplit
 from rdflib import Graph, URIRef, Namespace, Node, BNode, Literal as RDFLiteral
 from typing import List, Dict, Any
 from pathlib import Path
@@ -14,7 +15,17 @@ from pyhartig.expressions.Constant import Constant
 from pyhartig.expressions.Reference import Reference
 from pyhartig.expressions.FunctionCall import FunctionCall
 from pyhartig.algebra.Terms import IRI as AlgebraIRI, Literal as AlgebraLiteral
-from pyhartig.namespaces import D2RQ_BASE, QL_BASE, RDF_BASE, RML_BASE, RR_BASE, XSD_BASE
+from pyhartig.namespaces import (
+    D2RQ_BASE,
+    FNML_BASE,
+    FNO_BASE,
+    PYHARTIG_ERROR_URI,
+    QL_BASE,
+    RDF_BASE,
+    RML_BASE,
+    RR_BASE,
+    XSD_BASE,
+)
 from pyhartig.operators.SourceFactory import SourceFactory
 from pyhartig.functions.builtins import to_iri, to_literal, concat, to_bnode, to_literal_lang, percent_encode_component
 
@@ -23,8 +34,8 @@ RML = Namespace(RML_BASE)
 QL = Namespace(QL_BASE)
 RDF = Namespace(RDF_BASE)
 XSD = Namespace(XSD_BASE)
-FNML = Namespace("http://semweb.mmlab.be/ns/fnml#")
-FNO = Namespace("https://w3id.org/function/ontology#")
+FNML = Namespace(FNML_BASE)
+FNO = Namespace(FNO_BASE)
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +71,11 @@ class MappingParser:
 
     @staticmethod
     def _is_simple_identifier(value: str) -> bool:
+        """
+        Checks if the given string is a simple identifier (matches [A-Za-z_][A-Za-z0-9_-]*)
+        :param value: The string to check
+        :return: True if the string is a simple identifier, False otherwise
+        """
         if not value:
             return False
         first_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_"
@@ -69,7 +85,73 @@ class MappingParser:
         return all(ch in rest_chars for ch in value[1:])
 
     @staticmethod
+    def _flush_literal_buffer(segments: List[tuple[str, str]], literal_buffer: List[str]) -> None:
+        """
+        Flushes the literal buffer into the segments list as a single literal segment.
+        :param segments: The segments to flush
+        :param literal_buffer: The literal buffer
+        :return: None
+        """
+        if not literal_buffer:
+            return
+        segments.append(("literal", "".join(literal_buffer)))
+        literal_buffer.clear()
+
+    @staticmethod
+    def _consume_open_brace(
+            template_str: str,
+            index: int,
+            segments: List[tuple[str, str]],
+            literal_buffer: List[str],
+    ) -> int:
+        """
+        Consumes an open brace from the template string, handling escaped braces and variable extraction.
+        :param template_str: The template string
+        :param index: The index in the template string
+        :param segments: The segments list to append to
+        :param literal_buffer: The literal buffer
+        :return: The index in the template string
+        """
+        if index + 1 < len(template_str) and template_str[index + 1] == "{":
+            literal_buffer.append("{{")
+            return index + 2
+
+        end = template_str.find("}", index + 1)
+        if end == -1:
+            literal_buffer.append("{")
+            return index + 1
+
+        inner = template_str[index + 1:end]
+        if "{" in inner or (end + 1 < len(template_str) and template_str[end + 1] == "}"):
+            literal_buffer.append("{")
+            return index + 1
+
+        MappingParser._flush_literal_buffer(segments, literal_buffer)
+        segments.append(("var", inner))
+        return end + 1
+
+    @staticmethod
+    def _consume_close_brace(template_str: str, index: int, literal_buffer: List[str]) -> int:
+        """
+        Consumes a close brace from the template string, handling escaped braces.
+        :param template_str: The template string
+        :param index: The index in the template string
+        :param literal_buffer: The literal buffer
+        :return: The index in the template string
+        """
+        if index + 1 < len(template_str) and template_str[index + 1] == "}":
+            literal_buffer.append("}}")
+            return index + 2
+        literal_buffer.append("}")
+        return index + 1
+
+    @staticmethod
     def _iter_template_segments(template_str: str) -> List[tuple[str, str]]:
+        """
+        Iterates over the segments of a template string, yielding tuples of (kind, value) where kind is either "literal" or "var".
+        :param template_str: The template string
+        :return: The segments list
+        """
         segments: List[tuple[str, str]] = []
         literal_buffer: List[str] = []
         i = 0
@@ -77,46 +159,27 @@ class MappingParser:
         while i < len(template_str):
             current = template_str[i]
             if current == "{":
-                if i + 1 < len(template_str) and template_str[i + 1] == "{":
-                    literal_buffer.append("{{")
-                    i += 2
-                    continue
-
-                end = template_str.find("}", i + 1)
-                if end == -1:
-                    literal_buffer.append(current)
-                    i += 1
-                    continue
-
-                inner = template_str[i + 1:end]
-                if "{" in inner or (end + 1 < len(template_str) and template_str[end + 1] == "}"):
-                    literal_buffer.append(current)
-                    i += 1
-                    continue
-
-                if literal_buffer:
-                    segments.append(("literal", "".join(literal_buffer)))
-                    literal_buffer = []
-
-                segments.append(("var", inner))
-                i = end + 1
+                i = MappingParser._consume_open_brace(template_str, i, segments, literal_buffer)
                 continue
 
-            if current == "}" and i + 1 < len(template_str) and template_str[i + 1] == "}":
-                literal_buffer.append("}}")
-                i += 2
+            if current == "}":
+                i = MappingParser._consume_close_brace(template_str, i, literal_buffer)
                 continue
 
             literal_buffer.append(current)
             i += 1
 
-        if literal_buffer:
-            segments.append(("literal", "".join(literal_buffer)))
+        MappingParser._flush_literal_buffer(segments, literal_buffer)
 
         return segments
 
     @classmethod
     def _extract_single_brace_variables(cls, template_str: str) -> List[str]:
+        """
+        Extracts variable names from a template string that are enclosed in single braces (e.g., {var}).
+        :param template_str: The template string
+        :return: The list of variable names
+        """
         return [value for kind, value in cls._iter_template_segments(template_str) if kind == "var"]
 
     def parse(self) -> Operator:
@@ -124,64 +187,118 @@ class MappingParser:
         Parses an RML mapping file and translates it into an algebraic plan
         :return: Operator representing the entire mapping.
         """
-        # [INFO] Log the start of parsing
         logger.info(f"Parsing RML mapping file: {self.rml_file_path}")
+        self._load_mapping_graph()
+        triples_maps = self._collect_triples_maps()
+        logger.info(f"Found {len(triples_maps)} TriplesMaps to process.")
 
-        # Load the RML mapping file into an RDF graph
-        # Fail fast if the mapping file does not exist to avoid silent empty results
+        branches: List[Operator] = []
+        for tm in triples_maps:
+            branches.extend(self._process_triples_map(tm, triples_maps))
+
+        if not branches:
+            logger.error("Parsing failed: No operators generated.")
+            raise ValueError("No valid mappings generated from RML file.")
+
+        logger.info(f"Pipeline construction complete. Total Union branches: {len(branches)}")
+
+        if len(branches) == 1:
+            return branches[0]
+
+        return UnionOperator(branches)
+
+    def _load_mapping_graph(self) -> None:
+        """
+        Loads the RML mapping file into an RDF graph, with robust error handling and normalization.
+        :return: None
+        """
         from pathlib import Path as _Path
         if not _Path(self.rml_file_path).exists():
             logger.error(f"RML mapping file not found: {self.rml_file_path}")
             raise FileNotFoundError(f"RML mapping file not found: {self.rml_file_path}")
 
+        self._parse_rml_file()
+        logger.debug(f"RDF Graph loaded ({len(self.graph)} triples). Normalizing...")
+        self._validate_raw_triples_maps()
+        self._normalize_graph()
+        logger.debug("RML Graph normalized.")
+
+    def _parse_rml_file(self) -> None:
+        """
+        Attempts to parse the RML file using multiple strategies to handle various edge cases and malformed inputs.
+        :return: None
+        """
         try:
             self.graph.parse(self.rml_file_path, format="turtle")
+            return
         except Exception as e:
             logger.error(f"Failed to parse RML file {self.rml_file_path}: {e}")
-            # Try alternative RDF formats as a fallback
-            for fmt in ("n3", "trig", "xml"):
-                try:
-                    logger.info(f"Attempting parse with format='{fmt}'")
-                    self.graph.parse(self.rml_file_path, format=fmt)
-                    logger.info(f"Parsed RML file with format '{fmt}'")
-                    break
-                except Exception:
-                    continue
-            else:
-                # Try to sanitize unescaped backslashes inside quoted strings (Windows paths)
-                try:
-                    import re
-                    with open(self.rml_file_path, 'r', encoding='utf-8') as f:
-                        content = f.read()
 
-                    def _escape_backslashes_in_str(m):
-                        inner = m.group(1)
-                        if "\\\\" in inner:
-                            return '"' + inner + '"'
-                        return '"' + inner.replace('\\', '\\\\') + '"'
+        if self._parse_with_fallback_formats():
+            return
+        self._parse_with_sanitized_content()
 
-                    sanitized = re.sub(r'"([^"\\]*(?:\\.[^"\\]*)*)"', _escape_backslashes_in_str, content)
+    def _parse_with_fallback_formats(self) -> bool:
+        """
+        Attempts to parse the RML file using fallback RDF formats (N3, TriG, RDF/XML) to handle cases where Turtle parsing fails.
+        :return: None
+        """
+        for fmt in ("n3", "trig", "xml"):
+            try:
+                logger.info(f"Attempting parse with format='{fmt}'")
+                self.graph.parse(self.rml_file_path, format=fmt)
+                logger.info(f"Parsed RML file with format '{fmt}'")
+                return True
+            except Exception:
+                continue
+        return False
 
-                    # Try parsing the sanitized content directly
-                    logger.info("Attempting to parse sanitized RML content (escaped backslashes in strings)")
-                    self.graph.parse(data=sanitized, format='turtle')
-                    logger.info("Parsed RML file from sanitized content")
-                except Exception as e3:
-                    # Provide a small sample of the file for diagnostics
-                    try:
-                        with open(self.rml_file_path, 'r', encoding='utf-8') as f:
-                            sample = f.read(1000)
-                        logger.debug(f"RML file sample (first 1000 chars): {repr(sample)}")
-                    except Exception as e2:
-                        logger.debug(f"Could not read file for diagnostic: {e2}")
-                    # Re-raise the original parsing error so caller can handle it
-                    raise
+    def _parse_with_sanitized_content(self) -> None:
+        """
+        Attempts to parse the RML file after sanitizing its content by escaping backslashes in string literals. This can help handle cases where the Turtle parser fails due to unescaped backslashes in literals.
+        :return: None
+        """
+        try:
+            import re
+            with open(self.rml_file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
 
-        # [DEBUG] Log the number of triples loaded
-        logger.debug(f"RDF Graph loaded ({len(self.graph)} triples). Normalizing...")
+            def _escape_backslashes_in_str(m):
+                """
+                Escapes single backslashes inside a Turtle string literal match.
+                :param m: Regex match for one quoted string literal.
+                :return: Sanitized literal content ready for reparsing.
+                """
+                inner = m.group(1)
+                if "\\\\" in inner:
+                    return '"' + inner + '"'
+                return '"' + inner.replace('\\', '\\\\') + '"'
 
-        # Early validation: detect invalid mappings before normalization
-        # (e.g., multiple rr:subjectMap per TriplesMap which should raise InvalidRulesError)
+            sanitized = re.sub(r'"([^"\\]*(?:\\.[^"\\]*)*)"', _escape_backslashes_in_str, content)
+            logger.info("Attempting to parse sanitized RML content (escaped backslashes in strings)")
+            self.graph.parse(data=sanitized, format='turtle')
+            logger.info("Parsed RML file from sanitized content")
+        except Exception:
+            self._log_rml_file_sample()
+            raise
+
+    def _log_rml_file_sample(self) -> None:
+        """
+        Logs a sample of the RML file content for diagnostic purposes when parsing fails.
+        :return: None
+        """
+        try:
+            with open(self.rml_file_path, 'r', encoding='utf-8') as f:
+                sample = f.read(1000)
+            logger.debug(f"RML file sample (first 1000 chars): {repr(sample)}")
+        except Exception as e:
+            logger.debug(f"Could not read file for diagnostic: {e}")
+
+    def _validate_raw_triples_maps(self) -> None:
+        """
+        Validates the raw TriplesMap definitions in the graph to ensure that no TriplesMap contains multiple rr:subjectMap definitions, which would be invalid according to RML specifications. This is done before normalization to catch issues early and provide clearer error messages.
+        :return: None
+        """
         triples_maps_raw = set(self.graph.subjects(RDF.type, RR.TriplesMap))
         triples_maps_raw.update(self.graph.subjects(RML.logicalSource, None))
         for tm_raw in triples_maps_raw:
@@ -189,427 +306,680 @@ class MappingParser:
             if sm_count > 1:
                 raise ValueError(f"InvalidRulesError: TriplesMap {tm_raw} contains multiple rr:subjectMap definitions")
 
-        # Normalize the RML graph
-        self._normalize_graph()
-        logger.debug("RML Graph normalized.")
-
-        # Initialize an empty list to hold the operators for each Triples Map
-        S: List[Operator] = []
-
-        # We find all resources typed as rr:TriplesMap or having a logicalSource
+    def _collect_triples_maps(self):
+        """
+        Collects all TriplesMap nodes from the graph, including those that may not be explicitly typed as rr:TriplesMap but can be inferred from the presence of logical source or subject map properties. This ensures that we process all valid TriplesMaps even if they are not perfectly defined.
+        :return: None
+        """
         triples_maps = set(self.graph.subjects(RDF.type, RR.TriplesMap))
         triples_maps.update(self.graph.subjects(RML.logicalSource, None))
         triples_maps.update(self.graph.subjects(RR.logicalSource, None))
         triples_maps.update(self.graph.subjects(RR.logicalTable, None))
+        return triples_maps
 
-        # [INFO] Log the number of Triples Maps found
-        logger.info(f"Found {len(triples_maps)} TriplesMaps to process.")
+    def _process_triples_map(self, tm: Node, triples_maps) -> List[Operator]:
+        """
+        Processes a single TriplesMap node and constructs the corresponding operator branches for it. This includes resolving the logical source, building the base subject operator, and processing each predicate-object map to create the full set of operators for this TriplesMap.
+        :param tm: TriplesMap node
+        :param triples_maps: TriplesMap nodes
+        :return: List[Operator]
+        """
+        logger.debug(f"Processing TriplesMap: {tm}")
+        ls_node = self._resolve_logical_source(tm)
+        if not ls_node:
+            logger.warning(f"Skipping TriplesMap {tm}: No logical source found.")
+            return []
 
-        for tm in triples_maps:
-            # [DEBUG] Log the current Triples Map being processed
-            logger.debug(f"Processing TriplesMap: {tm}")
+        source_mappings = self._extract_queries(tm)
+        source_operator = self._create_source_operator(ls_node, source_mappings, f"Failed to create source for {tm}")
+        if source_operator is None:
+            return []
 
-            # Line 4: Let LS be the logical source of TM
-            ls_node = self.graph.value(tm, RML.logicalSource) or self.graph.value(tm, RR.logicalSource)
+        sm, phi_sbj, base_operator = self._build_base_subject_operator(tm, source_operator)
+        branches = self._process_predicate_object_maps(
+            tm, sm, phi_sbj, base_operator, ls_node, source_mappings, triples_maps
+        )
+        if not branches:
+            logger.debug(f"No branches generated for {tm} (maybe no POMs?).")
+        return branches
 
-            # Compatibility: support rr:logicalTable by mapping it to an internal
-            # logical source node backed by the first available D2RQ database node.
-            if not ls_node:
-                logical_table = self.graph.value(tm, RR.logicalTable)
-                if logical_table:
-                    d2rq_database_type = URIRef(f"{D2RQ_BASE}Database")
-                    db_source = next(self.graph.subjects(RDF.type, d2rq_database_type), None)
-                    table_name = self.graph.value(logical_table, RR.tableName)
-                    sql_query = self.graph.value(logical_table, RR.sqlQuery)
-                    sql_version = self.graph.value(logical_table, RR.sqlVersion)
+    def _resolve_logical_source(self, tm: Node) -> Node | None:
+        """
+        Resolves the logical source for a given TriplesMap node. It first checks for an explicit logical source definition (RML or RR), and if not found, it attempts to infer a logical source from a logical table definition. If a logical table is found, it constructs a logical source node based on the database connection information and query/table name specified in the logical table.
+        :param tm: TriplesMap node
+        :return: TriplesMap node with logical source or None if it cannot be resolved
+        """
+        ls_node = self.graph.value(tm, RML.logicalSource) or self.graph.value(tm, RR.logicalSource)
+        if ls_node:
+            return ls_node
 
-                    if db_source and (table_name is not None or sql_query is not None):
-                        ls_node = BNode()
-                        self.graph.add((ls_node, RML.source, db_source))
-                        if table_name is not None:
-                            self.graph.add((ls_node, RR.tableName, table_name))
-                        if sql_query is not None:
-                            self.graph.add((ls_node, RML.query, sql_query))
-                        if sql_version is not None:
-                            self.graph.add((ls_node, RR.sqlVersion, sql_version))
+        logical_table = self.graph.value(tm, RR.logicalTable)
+        if not logical_table:
+            return None
 
-            if not ls_node:
-                logger.warning(f"Skipping TriplesMap {tm}: No logical source found.")
+        d2rq_database_type = URIRef(f"{D2RQ_BASE}Database")
+        db_source = next(self.graph.subjects(RDF.type, d2rq_database_type), None)
+        table_name = self.graph.value(logical_table, RR.tableName)
+        sql_query = self.graph.value(logical_table, RR.sqlQuery)
+        sql_version = self.graph.value(logical_table, RR.sqlVersion)
+        if not db_source or (table_name is None and sql_query is None):
+            return None
+
+        ls_node = BNode()
+        self.graph.add((ls_node, RML.source, db_source))
+        if table_name is not None:
+            self.graph.add((ls_node, RR.tableName, table_name))
+        if sql_query is not None:
+            self.graph.add((ls_node, RML.query, sql_query))
+        if sql_version is not None:
+            self.graph.add((ls_node, RR.sqlVersion, sql_version))
+        return ls_node
+
+    def _create_source_operator(self, logical_source_node: Node, attribute_mappings: Dict[str, str],
+                                error_prefix: str) -> Operator | None:
+        """
+        Creates a source operator for the given logical source node and attribute mappings. This method uses the SourceFactory to create the appropriate source operator based on the type of logical source (e.g., CSV, JSON, SPARQL endpoint). It includes robust error handling to catch issues during source operator creation and logs detailed error messages to aid in debugging.
+        :param logical_source_node: Logical source node
+        :param attribute_mappings: Attribute mappings
+        :param error_prefix: Error prefix
+        :return: SourceOperator instance or None if creation fails
+        """
+        try:
+            return SourceFactory.create_source_operator(
+                graph=self.graph,
+                logical_source_node=logical_source_node,
+                mapping_dir=self.mapping_dir,
+                attribute_mappings=attribute_mappings
+            )
+        except ValueError as e:
+            logger.error(f"{error_prefix}: {e}")
+            return None
+
+    def _build_base_subject_operator(self, tm: Node, source_operator: Operator) -> tuple[Node, Expression, Operator]:
+        """
+        Builds the base subject operator for a given TriplesMap. It retrieves the subject map from the graph, creates the expression for the subject, and constructs an ExtendOperator to generate the subject term. This operator will serve as the base for further extensions when processing predicate-object maps.
+        :param tm: TriplesMap node
+        :param source_operator: SourceOperator instance
+        :return: ExtendOperator instance
+        """
+        sm_objs = list(self.graph.objects(tm, RR.subjectMap))
+        if len(sm_objs) > 1:
+            raise ValueError(f"InvalidRulesError: TriplesMap {tm} contains multiple rr:subjectMap definitions")
+
+        sm = sm_objs[0] if sm_objs else None
+        if sm is None:
+            raise ValueError(f"InvalidRulesError: TriplesMap {tm} contains no rr:subjectMap definition")
+
+        phi_sbj = self._create_ext_expr(sm, default_term_type="IRI")
+        base_operator = ExtendOperator(source_operator, "subject", phi_sbj)
+        return sm, phi_sbj, base_operator
+
+    def _process_predicate_object_maps(
+            self,
+            tm: Node,
+            sm: Node,
+            phi_sbj: Expression,
+            base_operator: Operator,
+            ls_node: Node,
+            source_mappings: Dict[str, str],
+            triples_maps,
+    ) -> List[Operator]:
+        """
+        Processes all PredicateObjectMaps for a given TriplesMap and constructs the corresponding operator branches for each. It iterates over all PredicateObjectMaps, builds the predicate and object expressions, and creates the necessary operators to generate the RDF triples according to the mapping. This method also handles referencing object maps by resolving parent TriplesMaps and constructing join operations as needed.
+        :param tm: TriplesMap node
+        :param sm: TriplesMap node
+        :param phi_sbj: PredicateObjectMap instance
+        :param base_operator: PredicateObjectMap instance
+        :param ls_node: PredicateObjectMap instance
+        :param triples_maps: TriplesMap instance
+        :return: List of RDF triples branches
+        """
+        poms = list(self.graph.objects(tm, RR.predicateObjectMap))
+        logger.debug(f"Found {len(poms)} PredicateObjectMaps in TriplesMap {tm}.")
+
+        branches = []
+        for pom in poms:
+            branch = self._build_predicate_object_branch(
+                tm, pom, sm, phi_sbj, base_operator, ls_node, source_mappings, triples_maps
+            )
+            if branch is not None:
+                branches.append(branch)
+        return branches
+
+    def _build_predicate_object_branch(
+            self,
+            tm: Node,
+            pom: Node,
+            sm: Node,
+            phi_sbj: Expression,
+            base_operator: Operator,
+            ls_node: Node,
+            source_mappings: Dict[str, str],
+            triples_maps,
+    ) -> Operator | None:
+        """
+        Builds the operator branch for a single PredicateObjectMap. It retrieves the predicate map and object map from the graph, creates the expressions for the predicate and object, and constructs the necessary operators to generate the RDF triples according to the mapping. If the object map is a referencing object map, it resolves the parent TriplesMap and constructs join operations as needed. This method includes robust error handling to catch issues during branch construction and logs detailed error messages to aid in debugging.
+        :param tm: TriplesMap node
+        :param sm: TriplesMap node
+        :param phi_sbj: PredicateObjectMap instance
+        :param base_operator: PredicateObjectMap instance
+        :param ls_node: PredicateObjectMap instance
+        :param triples_maps: TriplesMap instance
+        :return: RDF triples branches
+        """
+        pm = self.graph.value(pom, RR.predicateMap)
+        om = self.graph.value(pom, RR.objectMap)
+        phi_pred = self._create_ext_expr(pm, default_term_type="IRI")
+
+        try:
+            parent_tm = self.graph.value(om, RR.parentTriplesMap)
+        except Exception:
+            parent_tm = None
+
+        child_attrs, parent_attrs, child_queries, parent_queries = self._extract_join_attributes(om)
+        nojoin_parent_fallback = False
+        if (not parent_tm) and (om in self._q4_nojoin_parent):
+            parent_tm = self._q4_nojoin_parent.get(om)
+            nojoin_parent_fallback = True
+
+        if parent_tm:
+            branch = self._build_referencing_object_map_branch(
+                tm,
+                om,
+                ls_node,
+                phi_sbj,
+                phi_pred,
+                source_mappings,
+                triples_maps,
+                parent_tm,
+                child_attrs,
+                parent_attrs,
+                child_queries,
+                parent_queries,
+                nojoin_parent_fallback,
+            )
+            if branch is None:
+                return None
+        else:
+            branch = self._build_regular_object_map_branch(base_operator, om, phi_pred)
+
+        return self._apply_graph_and_project(branch, pom, sm, tm)
+
+    def _build_referencing_object_map_branch(
+            self,
+            tm: Node,
+            om: Node,
+            ls_node: Node,
+            phi_sbj: Expression,
+            phi_pred: Expression,
+            source_mappings: Dict[str, str],
+            triples_maps,
+            parent_tm: Node,
+            child_attrs: List[str],
+            parent_attrs: List[str],
+            child_queries: List[str],
+            parent_queries: List[str],
+            nojoin_parent_fallback: bool,
+    ) -> Operator | None:
+        """
+        Builds the operator branch for a referencing object map. It resolves the parent TriplesMap and its logical source, prepares the source mappings for the parent and child, creates the necessary source operators, and constructs an EquiJoinOperator to join the child and parent sources based on the specified join conditions. The resulting branch is then extended with the appropriate expressions for the subject, predicate, and object to generate the RDF triples according to the mapping. This method includes robust error handling to catch issues during branch construction and logs detailed error messages to aid in debugging.
+        :param tm: TriplesMap node
+        :param om: TriplesMap node
+        :param ls_node: TriplesMap node
+        :param phi_sbj: PredicateObjectMap instance
+        :param phi_pred: PredicateObjectMap instance
+        :param source_mappings: TriplesMap instance
+        :param triples_maps: TriplesMap instance
+        :param parent_tm: TriplesMap instance
+        :param child_attrs: TriplesMap instance
+        :param parent_attrs: TriplesMap instance
+        :param child_queries: TriplesMap instance
+        :param parent_queries: TriplesMap instance
+        :param nojoin_parent_fallback: bool
+        :return: RDF triples branches
+        """
+        parent_tm, parent_ls = self._resolve_parent_join_context(parent_tm, ls_node, parent_attrs, triples_maps)
+        if parent_ls is None:
+            logger.error(f"Parent TriplesMap {parent_tm} has no logicalSource; skipping join.")
+            return None
+
+        parent_source_mappings, rename_map = self._prepare_parent_source_mappings(
+            source_mappings, parent_tm, parent_attrs, parent_queries
+        )
+        parent_source = self._create_source_operator(
+            parent_ls,
+            parent_source_mappings,
+            f"Failed to create parent source for {parent_tm}",
+        )
+        if parent_source is None:
+            return None
+
+        phi_parent_sbj = self._build_parent_subject_expr(parent_tm, rename_map)
+        if len(child_attrs) != len(parent_attrs):
+            logger.error(f"Invalid join conditions in referencing object map {om}; skipping.")
+            return None
+
+        child_join_mappings = self._prepare_child_join_mappings(
+            source_mappings, om, child_attrs, child_queries, nojoin_parent_fallback
+        )
+        child_source = self._create_source_operator(
+            ls_node,
+            child_join_mappings,
+            f"Failed to create child source for join in {tm}",
+        )
+        if child_source is None:
+            return None
+
+        try:
+            effective_parent_attrs = [rename_map.get(name, name) for name in parent_attrs]
+            join_op = EquiJoinOperator(child_source, parent_source, child_attrs, effective_parent_attrs)
+        except Exception as e:
+            logger.error(f"Failed to create EquiJoinOperator for {tm} <> {parent_tm}: {e}")
+            return None
+
+        branch = ExtendOperator(join_op, "subject", phi_sbj)
+        if phi_parent_sbj is not None:
+            branch = ExtendOperator(branch, "parent_subject", phi_parent_sbj)
+        branch = ExtendOperator(branch, "predicate", phi_pred)
+        return ExtendOperator(branch, "object", Reference("parent_subject"))
+
+    def _resolve_parent_join_context(self, parent_tm: Node, ls_node: Node, parent_attrs: List[str], triples_maps):
+        """
+        Resolves the context for a parent TriplesMap in a referencing object map join. It first checks for an explicit logical source definition for the parent TriplesMap, and if not found, it looks for any clones of the parent TriplesMap that may have been created during normalization. If a clone is found, it uses the clone's logical source. If no explicit logical source is found, it attempts to resolve the parent TriplesMap by matching candidate TriplesMaps based on the join attributes and logical source characteristics. This method ensures that we can correctly identify the parent context for the join operation even in cases where the mapping is not perfectly defined.
+        :param parent_tm: TriplesMap node
+        :param ls_node: TriplesMap node
+        :param parent_attrs: TriplesMap instance
+        :param triples_maps: TriplesMap instance
+        :return: TriplesMap instance
+        """
+        parent_ls = self.graph.value(parent_tm, RML.logicalSource) or self.graph.value(parent_tm, RR.logicalSource)
+        if parent_ls:
+            return parent_tm, parent_ls
+
+        clone_rows = self._q5_tm_clones.get(parent_tm)
+        if clone_rows:
+            runtime_tm = self._q5_tm_runtime_nodes.get(parent_tm)
+            if runtime_tm is None:
+                runtime_tm = BNode()
+                for ls_c, sm_c, pom_c in clone_rows:
+                    self.graph.add((runtime_tm, RML.logicalSource, ls_c))
+                    self.graph.add((runtime_tm, RR.subjectMap, sm_c))
+                    self.graph.add((runtime_tm, RR.predicateObjectMap, pom_c))
+                self._q5_tm_runtime_nodes[parent_tm] = runtime_tm
+            parent_tm = runtime_tm
+            parent_ls = self.graph.value(parent_tm, RML.logicalSource) or self.graph.value(parent_tm, RR.logicalSource)
+            if parent_ls:
+                return parent_tm, parent_ls
+
+        try:
+            props = list(self.graph.predicate_objects(parent_tm))
+            logger.debug(f"Parent TriplesMap {parent_tm} predicates: {props}")
+        except Exception:
+            pass
+
+        resolved = self._find_candidate_parent_triples_map(ls_node, parent_attrs, triples_maps)
+        if resolved is None:
+            return parent_tm, None
+        logger.debug(f"Resolved parent TriplesMap by candidate match: {resolved}")
+        parent_tm = resolved
+        parent_ls = self.graph.value(parent_tm, RML.logicalSource) or self.graph.value(parent_tm, RR.logicalSource)
+        return parent_tm, parent_ls
+
+    def _find_candidate_parent_triples_map(self, ls_node: Node, parent_attrs: List[str], triples_maps):
+        """
+        Finds a candidate parent TriplesMap based on the logical source and join attributes. It iterates over all TriplesMaps and checks if they match the join attributes specified in the referencing object map. If multiple candidates match, it prefers those with a different logical source than the child, as this is more likely to be the intended parent in cases where the mapping is not perfectly defined. This method helps to resolve ambiguities in the mapping and ensures that we can still construct a valid operator pipeline even when the parent TriplesMap is not explicitly defined.
+        :param ls_node: TriplesMap node
+        :param parent_attrs: TriplesMap instance
+        :param triples_maps: TriplesMap instance
+        :return: TriplesMap instance
+        """
+        if not parent_attrs:
+            return None
+
+        child_source_literal = self._get_logical_source_literal(ls_node)
+
+        preferred = []
+        fallback = []
+        for cand in triples_maps:
+            if not self._candidate_matches_parent_attrs(cand, parent_attrs):
                 continue
 
-            # Algorithm 2 Call: P := EXTRACTQUERIES(TM)
-            P = self._extract_queries(tm)
+            cand_source = self._get_candidate_source_literal(cand)
+            if self._prefer_candidate_source(child_source_literal, cand_source):
+                preferred.append(cand)
+            else:
+                fallback.append(cand)
 
-            try:
-                E_src = SourceFactory.create_source_operator(
-                    graph=self.graph,
-                    logical_source_node=ls_node,
-                    mapping_dir=self.mapping_dir,
-                    attribute_mappings=P
+        if preferred:
+            return preferred[0]
+        if fallback:
+            return fallback[0]
+        return None
+
+    def _get_logical_source_literal(self, ls_node: Node):
+        """
+        Retrieves a string representation of the logical source for a given logical source node. It checks for the presence of RML.source or RR.source properties and returns their string value if found. This method is used to compare logical sources when resolving candidate parent TriplesMaps in referencing object maps, allowing us to prefer candidates with different logical sources than the child.
+        :param ls_node: TriplesMap node
+        :return: Logical Source string representation of the logical source for a given logical source node
+        """
+        try:
+            return str(self.graph.value(ls_node, RML.source) or self.graph.value(ls_node, RR.source) or "")
+        except Exception:
+            return None
+
+    def _get_candidate_source_literal(self, candidate_tm: Node):
+        """
+        Retrieves the logical source literal associated with a candidate parent TriplesMap.
+        :param candidate_tm: Candidate parent TriplesMap node.
+        :return: String representation of the candidate logical source, or None.
+        """
+        candidate_ls_node = self.graph.value(candidate_tm, RML.logicalSource) or self.graph.value(candidate_tm,
+                                                                                                  RR.logicalSource)
+        return self._get_logical_source_literal(candidate_ls_node)
+
+    def _candidate_matches_parent_attrs(self, candidate_tm: Node, parent_attrs: List[str]) -> bool:
+        """
+        Checks whether a candidate parent TriplesMap exposes one of the expected parent join attributes.
+        :param candidate_tm: Candidate parent TriplesMap node.
+        :param parent_attrs: Parent-side join attribute names.
+        :return: True when the candidate can provide at least one requested parent attribute.
+        """
+        import re
+
+        sm_cand = self.graph.value(candidate_tm, RR.subjectMap)
+        if not sm_cand:
+            return False
+
+        cand_ref = self.graph.value(sm_cand, RML.reference)
+        if cand_ref:
+            match = re.search(r"[A-Za-z_][A-Za-z0-9_\-]*", str(cand_ref))
+            cand_name = match.group(0) if match else str(cand_ref)
+            if any(cand_name == parent_attr for parent_attr in parent_attrs):
+                return True
+
+        cand_tmpl = self.graph.value(sm_cand, RR.template)
+        if not cand_tmpl:
+            return False
+
+        tmpl_str = str(cand_tmpl)
+        return any(parent_attr in tmpl_str or f"{{{parent_attr}}}" in tmpl_str for parent_attr in parent_attrs)
+
+    @staticmethod
+    def _prefer_candidate_source(child_source_literal, candidate_source_literal) -> bool:
+        """
+        Prefers parent candidates whose logical source differs from the child logical source.
+        :param child_source_literal: Child logical source literal.
+        :param candidate_source_literal: Candidate parent logical source literal.
+        :return: True when the candidate should be preferred.
+        """
+        return bool(
+            child_source_literal and candidate_source_literal and candidate_source_literal != child_source_literal)
+
+    def _prepare_parent_source_mappings(
+            self,
+            source_mappings: Dict[str, str],
+            parent_tm: Node,
+            parent_attrs: List[str],
+            parent_queries: List[str],
+    ):
+        """
+        Builds the attribute mapping dictionary used to instantiate the parent source in a join.
+        :param source_mappings: Child-side source mappings.
+        :param parent_tm: Parent TriplesMap node.
+        :param parent_attrs: Parent-side join attribute names.
+        :param parent_queries: Parent-side extraction queries.
+        :return: Tuple of parent source mappings and attribute rename map.
+        """
+        parent_source_mappings = self._extract_queries(parent_tm)
+        rename_map = {}
+        self._inject_parent_join_mappings(
+            parent_source_mappings,
+            rename_map,
+            source_mappings,
+            parent_attrs,
+            parent_queries,
+        )
+        self._rename_parent_mapping_collisions(parent_source_mappings, rename_map, source_mappings)
+        return parent_source_mappings, rename_map
+
+    @staticmethod
+    def _inject_parent_join_mappings(
+            parent_source_mappings: Dict[str, str],
+            rename_map: Dict[str, str],
+            source_mappings: Dict[str, str],
+            parent_attrs: List[str],
+            parent_queries: List[str],
+    ) -> None:
+        """
+        Injects parent join attributes into the parent source mappings.
+        :param parent_source_mappings: Parent-side source mappings to update.
+        :param rename_map: Mapping of original parent names to renamed attributes.
+        :param source_mappings: Child-side source mappings.
+        :param parent_attrs: Parent-side join attribute names.
+        :param parent_queries: Parent-side extraction queries.
+        :return: None
+        """
+        try:
+            for name, query in zip(parent_attrs, parent_queries):
+                MappingParser._inject_single_parent_join_mapping(
+                    parent_source_mappings,
+                    rename_map,
+                    source_mappings,
+                    name,
+                    query,
                 )
-            except ValueError as e:
-                logger.error(f"Failed to create source for {tm}: {e}")
-                continue
+        except Exception:
+            pass
 
-            tm_branches = []
+    @staticmethod
+    def _inject_single_parent_join_mapping(
+            parent_source_mappings: Dict[str, str],
+            rename_map: Dict[str, str],
+            source_mappings: Dict[str, str],
+            name: str,
+            query: str,
+    ) -> None:
+        """
+        Injects one parent join attribute into the parent source mappings, renaming it if needed.
+        :param parent_source_mappings: Parent-side source mappings to update.
+        :param rename_map: Mapping of original parent names to renamed attributes.
+        :param source_mappings: Child-side source mappings.
+        :param name: Parent-side join attribute name.
+        :param query: Parent-side extraction query.
+        :return: None
+        """
+        if not name:
+            return
 
-            # Line 6: Let SM be the subject map of TM
-            # Validate there is at most one subjectMap per TriplesMap according to R2RML/RML rules
-            sm_objs = list(self.graph.objects(tm, RR.subjectMap))
-            if len(sm_objs) > 1:
-                # This mapping is invalid (multiple subjectMap definitions); fail fast so tests expecting
-                # InvalidRulesError are handled as errors rather than producing possibly inconsistent triples.
-                raise ValueError(f"InvalidRulesError: TriplesMap {tm} contains multiple rr:subjectMap definitions")
-            sm = sm_objs[0] if sm_objs else None
-
-            # Line 7: phi_sbj := CREATEEXTEXPR(SM)
-            if sm:
-                phi_sbj = self._create_ext_expr(sm, default_term_type="IRI")
-                # Line 8: E := Extend(E_src, "subject", phi_sbj)
-                E_base = ExtendOperator(E_src, "subject", phi_sbj)
-            else:
-                # Treat missing subjectMap as an invalid mapping (fail fast)
-                raise ValueError(f"InvalidRulesError: TriplesMap {tm} contains no rr:subjectMap definition")
-
-            # Line 9: foreach predicate-object map POM in TM do
-            poms = list(self.graph.objects(tm, RR.predicateObjectMap))
-
-            # [DEBUG] Log number of PredicateObjectMaps found
-            logger.debug(f"Found {len(poms)} PredicateObjectMaps in TriplesMap {tm}.")
-
-            for pom in poms:
-                E = E_base
-
-                # Line 22: Let PM be the predicate map and OM be the object map of POM
-                pm = self.graph.value(pom, RR.predicateMap)
-                om = self.graph.value(pom, RR.objectMap)
-
-                # Line 24: phi_pred := CREATEEXTEXPR(PM)
-                phi_pred = self._create_ext_expr(pm, default_term_type="IRI")
-
-                # Detect referencing object maps (joins)
-                parent_tm = None
+        effective_query = query if query else name
+        if name in source_mappings:
+            new_name = f"parent_{name}"
+            parent_source_mappings[new_name] = effective_query
+            rename_map[name] = new_name
+            if name in parent_source_mappings:
                 try:
-                    parent_tm = self.graph.value(om, RR.parentTriplesMap)
+                    del parent_source_mappings[name]
                 except Exception:
-                    parent_tm = None
+                    pass
+            return
 
-                # Pre-extract join attributes so we can use them for resolution and
-                # to augment attribute mappings before creating source operators.
-                child_attrs, parent_attrs, child_queries, parent_queries = self._extract_join_attributes(om)
-                nojoin_parent_fallback = False
+        if name not in parent_source_mappings:
+            parent_source_mappings[name] = effective_query
 
-                if (not parent_tm) and (om in self._q4_nojoin_parent):
-                    parent_tm = self._q4_nojoin_parent.get(om)
-                    nojoin_parent_fallback = True
+    @staticmethod
+    def _rename_parent_mapping_collisions(
+            parent_source_mappings: Dict[str, str],
+            rename_map: Dict[str, str],
+            source_mappings: Dict[str, str],
+    ) -> None:
+        """
+        Renames parent mappings that would collide with child-side attribute names.
+        :param parent_source_mappings: Parent-side source mappings to update.
+        :param rename_map: Mapping of original parent names to renamed attributes.
+        :param source_mappings: Child-side source mappings.
+        :return: None
+        """
+        try:
+            for key in list(parent_source_mappings.keys()):
+                if key in source_mappings and not str(key).startswith("parent_"):
+                    new_name = f"parent_{key}"
+                    parent_source_mappings[new_name] = parent_source_mappings[key]
+                    del parent_source_mappings[key]
+                    rename_map[key] = new_name
+        except Exception:
+            pass
 
-                if parent_tm:
-                    # Build parent source operator
-                    parent_ls = self.graph.value(parent_tm, RML.logicalSource) or self.graph.value(parent_tm, RR.logicalSource)
-                    if not parent_ls:
-                        clone_rows = self._q5_tm_clones.get(parent_tm)
-                        if clone_rows:
-                            runtime_tm = self._q5_tm_runtime_nodes.get(parent_tm)
-                            if runtime_tm is None:
-                                runtime_tm = BNode()
-                                for ls_c, sm_c, pom_c in clone_rows:
-                                    self.graph.add((runtime_tm, RML.logicalSource, ls_c))
-                                    self.graph.add((runtime_tm, RR.subjectMap, sm_c))
-                                    self.graph.add((runtime_tm, RR.predicateObjectMap, pom_c))
-                                self._q5_tm_runtime_nodes[parent_tm] = runtime_tm
-                            parent_tm = runtime_tm
-                            parent_ls = self.graph.value(parent_tm, RML.logicalSource) or self.graph.value(parent_tm, RR.logicalSource)
+    def _build_parent_subject_expr(self, parent_tm: Node, rename_map: Dict[str, str]):
+        """
+        Builds the parent subject expression used as the object of a referencing object map.
+        :param parent_tm: Parent TriplesMap node.
+        :param rename_map: Mapping of original parent names to renamed attributes.
+        :return: Parent subject expression, or None if no subject map exists.
+        """
+        parent_sm = self.graph.value(parent_tm, RR.subjectMap)
+        if not parent_sm:
+            return None
 
-                    if not parent_ls:
-                        # Try to log some diagnostics to help tests/debugging
-                        try:
-                            props = list(self.graph.predicate_objects(parent_tm))
-                            logger.debug(f"Parent TriplesMap {parent_tm} predicates: {props}")
-                        except Exception:
-                            pass
+        phi_parent_sbj = self._create_ext_expr(parent_sm, default_term_type="IRI")
+        if rename_map and phi_parent_sbj is not None:
+            try:
+                self._rename_reference_attributes(phi_parent_sbj, rename_map)
+            except Exception:
+                pass
+        return phi_parent_sbj
 
-                        # Try to locate the actual TriplesMap matching the join parent's reference
-                        # by scanning existing TriplesMaps for a subjectMap that uses the
-                        # same rml:reference or contains the same template variable.
-                        found = False
-                        if parent_attrs:
-                            # Prefer candidate TriplesMaps whose logical source differs from
-                            # the child's logical source (e.g., sport.csv vs student.csv).
-                            import re
-                            child_source_literal = None
-                            try:
-                                child_ls_node = ls_node
-                                child_source_literal = str(self.graph.value(child_ls_node, RML.source) or self.graph.value(child_ls_node, RR.source) or "")
-                            except Exception:
-                                child_source_literal = None
+    def _rename_reference_attributes(self, expr: Expression, rename_map: Dict[str, str]) -> None:
+        """
+        Recursively rewrites reference attribute names inside an expression tree.
+        :param expr: Expression tree to update.
+        :param rename_map: Mapping of original attribute names to renamed attributes.
+        :return: None
+        """
+        from pyhartig.expressions.Reference import Reference as ReferenceExpr
+        from pyhartig.expressions.FunctionCall import FunctionCall as FunctionCallExpr
 
-                            preferred = []
-                            fallback = []
+        if isinstance(expr, ReferenceExpr):
+            if expr.attribute_name in rename_map:
+                expr.attribute_name = rename_map[expr.attribute_name]
+            return
 
-                            for cand in triples_maps:
-                                sm_cand = self.graph.value(cand, RR.subjectMap)
-                                if not sm_cand:
-                                    continue
+        if isinstance(expr, FunctionCallExpr):
+            for arg in expr.arguments:
+                self._rename_reference_attributes(arg, rename_map)
 
-                                cand_ls_node = self.graph.value(cand, RML.logicalSource) or self.graph.value(cand, RR.logicalSource)
-                                cand_source = None
-                                try:
-                                    cand_source = str(self.graph.value(cand_ls_node, RML.source) or self.graph.value(cand_ls_node, RR.source) or "")
-                                except Exception:
-                                    cand_source = None
+    def _prepare_child_join_mappings(
+            self,
+            source_mappings: Dict[str, str],
+            om: Node,
+            child_attrs: List[str],
+            child_queries: List[str],
+            nojoin_parent_fallback: bool,
+    ) -> Dict[str, str]:
+        """
+        Builds the child-side attribute mappings needed to evaluate a join.
+        :param source_mappings: Child-side source mappings.
+        :param om: Referencing object map node.
+        :param child_attrs: Child-side join attribute names.
+        :param child_queries: Child-side extraction queries.
+        :param nojoin_parent_fallback: Whether normalization converted a no-join parent mapping.
+        :return: Child-side source mappings for the join source.
+        """
+        child_join_mappings = dict(source_mappings)
+        self._strip_nojoin_child_mappings(child_join_mappings, om, child_attrs, nojoin_parent_fallback)
+        self._add_missing_child_join_mappings(child_join_mappings, child_attrs, child_queries)
+        return child_join_mappings
 
-                                # check rml:reference
-                                cand_ref = self.graph.value(sm_cand, RML.reference)
-                                matched = False
-                                if cand_ref:
-                                    m = re.search(r"[A-Za-z_][A-Za-z0-9_\-]*", str(cand_ref))
-                                    cand_name = m.group(0) if m else str(cand_ref)
-                                    if any(cand_name == pa for pa in parent_attrs):
-                                        matched = True
+    def _strip_nojoin_child_mappings(
+            self,
+            child_join_mappings: Dict[str, str],
+            om: Node,
+            child_attrs: List[str],
+            nojoin_parent_fallback: bool,
+    ) -> None:
+        """
+        Removes child mappings that were synthesized from a no-join parent fallback object map.
+        :param child_join_mappings: Child-side source mappings to update.
+        :param om: Referencing object map node.
+        :param child_attrs: Child-side join attribute names.
+        :param nojoin_parent_fallback: Whether normalization converted a no-join parent mapping.
+        :return: None
+        """
+        import re
 
-                                # check template variables inside rr:template
-                                if not matched:
-                                    cand_tmpl = self.graph.value(sm_cand, RR.template)
-                                    if cand_tmpl:
-                                        tmpl_str = str(cand_tmpl)
-                                        for pa in parent_attrs:
-                                            if pa in tmpl_str or f"{{{pa}}}" in tmpl_str:
-                                                matched = True
-                                                break
+        if not nojoin_parent_fallback or child_attrs:
+            return
 
-                                if not matched:
-                                    continue
+        om_ref = self.graph.value(om, RML.reference)
+        if om_ref:
+            match = re.search(r"[A-Za-z_][A-Za-z0-9_\-.]*", str(om_ref))
+            if match:
+                child_join_mappings.pop(match.group(0), None)
 
-                                # Prefer candidates with a different source file than the child
-                                if child_source_literal and cand_source and cand_source != child_source_literal:
-                                    preferred.append((cand, cand_ls_node))
-                                else:
-                                    fallback.append((cand, cand_ls_node))
+        om_template = self.graph.value(om, RR.template)
+        if not om_template:
+            return
 
-                            pick = None
-                            if preferred:
-                                pick = preferred[0]
-                            elif fallback:
-                                pick = fallback[0]
+        for var in self._extract_single_brace_variables(str(om_template)):
+            child_join_mappings.pop(var, None)
 
-                            if pick:
-                                parent_tm = pick[0]
-                                parent_ls = self.graph.value(parent_tm, RML.logicalSource) or self.graph.value(parent_tm, RR.logicalSource)
-                                found = True
-                                logger.debug(f"Resolved parent TriplesMap by candidate match: {parent_tm}")
-                            else:
-                                found = False
+    @staticmethod
+    def _add_missing_child_join_mappings(
+            child_join_mappings: Dict[str, str],
+            child_attrs: List[str],
+            child_queries: List[str],
+    ) -> None:
+        """
+        Ensures that all child join attributes are present in the child-side source mappings.
+        :param child_join_mappings: Child-side source mappings to update.
+        :param child_attrs: Child-side join attribute names.
+        :param child_queries: Child-side extraction queries.
+        :return: None
+        """
+        for name, query in zip(child_attrs, child_queries):
+            if not name or name in child_join_mappings:
+                continue
+            child_join_mappings[name] = query if query else name
 
-                        if not found and (parent_ls is None):
-                            logger.error(f"Parent TriplesMap {parent_tm} has no logicalSource; skipping join.")
-                            continue
+    def _build_regular_object_map_branch(self, base_operator: Operator, om: Node, phi_pred: Expression) -> Operator:
+        """
+        Builds the operator branch for a non-referencing object map.
+        :param base_operator: Base operator that already produces the subject.
+        :param om: Object map node.
+        :param phi_pred: Predicate expression.
+        :return: Branch producing subject, predicate and object attributes.
+        """
+        om_template = self.graph.value(om, RR.template)
+        if om_template:
+            tstr = str(om_template)
+            prefix = tstr.split('{', 1)[0]
+            default_term_type = "IRI" if prefix and urlsplit(prefix).scheme else "Literal"
+        else:
+            default_term_type = "Literal"
 
-                    # Extract parent queries and ensure parent attribute mappings include the join parent attributes
-                    P_parent = self._extract_queries(parent_tm)
-                    rename_map = {}
-                    try:
-                        for name, q in zip(parent_attrs, parent_queries):
-                            if not name:
-                                continue
-                            # Determine a sensible extraction query for the parent attribute.
-                            # If the parent attribute provides an explicit query use it,
-                            # otherwise assume a simple attribute/column name.
-                            effective_q = q if q else name
-                            # If this parent attribute name would collide with
-                            # attributes produced by the child (P), synthesize
-                            # a namespaced parent key and remember the mapping so
-                            # we can update any subject expression references.
-                            if name in P:
-                                new_name = f"parent_{name}"
-                                P_parent[new_name] = effective_q
-                                rename_map[name] = new_name
-                                # Avoid exposing the original parent attribute
-                                # name on the parent source to prevent merge
-                                # conflicts during tuple merging.
-                                if name in P_parent:
-                                    try:
-                                        del P_parent[name]
-                                    except Exception:
-                                        pass
-                            else:
-                                # avoid overwriting existing parent mappings
-                                if name not in P_parent:
-                                    P_parent[name] = effective_q
-                    except Exception:
-                        pass
+        phi_obj = self._create_ext_expr(om, default_term_type=default_term_type)
+        branch = ExtendOperator(base_operator, "predicate", phi_pred)
+        return ExtendOperator(branch, "object", phi_obj)
 
-                    # Also rename any other parent attributes that collide with
-                    # child attributes to avoid tuple-merge conflicts after join
-                    # (e.g., both sides exposing ID.value with different values).
-                    try:
-                        for k in list(P_parent.keys()):
-                            if k in P and not str(k).startswith("parent_"):
-                                new_name = f"parent_{k}"
-                                P_parent[new_name] = P_parent[k]
-                                del P_parent[k]
-                                rename_map[k] = new_name
-                    except Exception:
-                        pass
+    def _apply_graph_and_project(self, branch: Operator, pom: Node, sm: Node, tm: Node) -> Operator:
+        """
+        Adds the graph term to a branch and projects the final quad attributes.
+        :param branch: Branch to extend.
+        :param pom: Predicate-object map node.
+        :param sm: Subject map node.
+        :param tm: TriplesMap node.
+        :return: Final projected branch.
+        """
+        gm_node = self.graph.value(pom, RR.graphMap) or (sm and self.graph.value(sm, RR.graphMap))
+        if gm_node:
+            try:
+                phi_graph = self._create_ext_expr(gm_node, default_term_type="IRI")
+                branch = ExtendOperator(branch, "graph", phi_graph)
+            except Exception as e:
+                logger.error(f"Failed to create graph extension for POM {pom} in TM {tm}: {e}")
+        else:
+            branch = ExtendOperator(branch, "graph", Constant(AlgebraIRI(str(RR.defaultGraph))))
 
-                    try:
-                        E_parent_src = SourceFactory.create_source_operator(
-                            graph=self.graph,
-                            logical_source_node=parent_ls,
-                            mapping_dir=self.mapping_dir,
-                            attribute_mappings=P_parent
-                        )
-                    except ValueError as e:
-                        logger.error(f"Failed to create parent source for {parent_tm}: {e}")
-                        continue
-
-                    # Prepare parent subject expression (do not extend parent source yet)
-                    parent_sm = self.graph.value(parent_tm, RR.subjectMap)
-                    if parent_sm:
-                        phi_parent_sbj = self._create_ext_expr(parent_sm, default_term_type="IRI")
-                        # If we renamed parent attributes, update any Reference
-                        # expressions inside the subject expression to point to
-                        # the namespaced parent attribute keys.
-                        if rename_map and phi_parent_sbj is not None:
-                            def _rename_refs(expr):
-                                # Mutate Reference nodes in-place
-                                from pyhartig.expressions.Reference import Reference
-                                from pyhartig.expressions.FunctionCall import FunctionCall
-                                if isinstance(expr, Reference):
-                                    if expr.attribute_name in rename_map:
-                                        expr.attribute_name = rename_map[expr.attribute_name]
-                                elif isinstance(expr, FunctionCall):
-                                    for arg in expr.arguments:
-                                        _rename_refs(arg)
-                                # Constants and others have no nested refs
-                            try:
-                                _rename_refs(phi_parent_sbj)
-                            except Exception:
-                                pass
-                    else:
-                        phi_parent_sbj = None
-
-                    if len(child_attrs) != len(parent_attrs):
-                        logger.error(f"Invalid join conditions in referencing object map {om}; skipping.")
-                        continue
-
-                    # Ensure the child attributes used in the join are available in
-                    # a dedicated child-source mapping for this join branch. E_src was
-                    # created before join conditions were expanded, so build a fresh
-                    # source operator that includes join attributes.
-                    P_child_join = dict(P)
-                    if nojoin_parent_fallback and not child_attrs:
-                        import re
-                        om_ref = self.graph.value(om, RML.reference)
-                        if om_ref:
-                            m = re.search(r"[A-Za-z_][A-Za-z0-9_\-.]*", str(om_ref))
-                            if m and m.group(0) in P_child_join:
-                                del P_child_join[m.group(0)]
-                        om_template = self.graph.value(om, RR.template)
-                        if om_template:
-                            for var in self._extract_single_brace_variables(str(om_template)):
-                                if var in P_child_join:
-                                    del P_child_join[var]
-                    for name, q in zip(child_attrs, child_queries):
-                        if not name:
-                            continue
-                        if name not in P_child_join:
-                            if q:
-                                P_child_join[name] = q
-                            else:
-                                P_child_join[name] = name
-
-                    try:
-                        E_child_src = SourceFactory.create_source_operator(
-                            graph=self.graph,
-                            logical_source_node=ls_node,
-                            mapping_dir=self.mapping_dir,
-                            attribute_mappings=P_child_join
-                        )
-                    except ValueError as e:
-                        logger.error(f"Failed to create child source for join in {tm}: {e}")
-                        continue
-
-                    # Ensure parent attribute mappings include parent join attributes (already added to P_parent above)
-
-                    # Create EquiJoin between the raw source operators (before subject extension)
-                    try:
-                        # If any parent attributes were renamed to avoid
-                        # collisions, update the parent_attrs list to refer
-                        # to the renamed keys so the EquiJoin probes the
-                        # correct attributes on the right-hand tuples.
-                        effective_parent_attrs = [rename_map.get(n, n) for n in parent_attrs]
-                        join_op = EquiJoinOperator(E_child_src, E_parent_src, child_attrs, effective_parent_attrs)
-                    except Exception as e:
-                        logger.error(f"Failed to create EquiJoinOperator for {tm} <> {parent_tm}: {e}")
-                        continue
-
-                    # After joining, first extend to create the child's subject attribute
-                    E_after_child = ExtendOperator(join_op, "subject", phi_sbj)
-
-                    # Then extend to create the parent's subject under a distinct name to avoid attribute collision
-                    if phi_parent_sbj is not None:
-                        E_after_parent = ExtendOperator(E_after_child, "parent_subject", phi_parent_sbj)
-                    else:
-                        E_after_parent = E_after_child
-
-                    # Finally, set predicate and set object to parent's subject
-                    E = ExtendOperator(E_after_parent, "predicate", phi_pred)
-                    E = ExtendOperator(E, "object", Reference("parent_subject"))
-
-                else:
-                    # Line 25: phi_obj := CREATEEXTEXPR(OM)
-                    # Heuristic: if the objectMap contains a template that looks
-                    # like an IRI (e.g., starts with http(s) or contains a scheme
-                    # before template vars), prefer IRI as the default term type
-                    om_template = self.graph.value(om, RR.template)
-                    if om_template:
-                        tstr = str(om_template)
-                        prefix = tstr.split('{', 1)[0]
-                        if prefix.startswith('http://') or prefix.startswith('https://') or (':' in prefix):
-                            phi_obj = self._create_ext_expr(om, default_term_type="IRI")
-                        else:
-                            phi_obj = self._create_ext_expr(om, default_term_type="Literal")
-                    else:
-                        phi_obj = self._create_ext_expr(om, default_term_type="Literal")
-
-                    # Line 26: E := Extend(E, "predicate", phi_pred)
-                    E = ExtendOperator(E, "predicate", phi_pred)
-
-                    # Line 27: E := Extend(E, "object", phi_obj)
-                    E = ExtendOperator(E, "object", phi_obj)
-
-                # Named-graph support: prefer POM-level graphMap, fallback to subject-level graphMap
-                gm_node = self.graph.value(pom, RR.graphMap) or (sm and self.graph.value(sm, RR.graphMap))
-                if gm_node:
-                    try:
-                        phi_graph = self._create_ext_expr(gm_node, default_term_type="IRI")
-                        E = ExtendOperator(E, "graph", phi_graph)
-                    except Exception as e:
-                        logger.error(f"Failed to create graph extension for POM {pom} in TM {tm}: {e}")
-                else:
-                    E = ExtendOperator(E, "graph", Constant(AlgebraIRI(str(RR.defaultGraph))))
-
-                E = ProjectOperator(E, {"subject", "predicate", "object", "graph"})
-
-                tm_branches.append(E)
-
-            # Line 28: S := S U {E}
-            if tm_branches:
-                S.extend(tm_branches)
-            else:
-                logger.debug(f"No branches generated for {tm} (maybe no POMs?).")
-
-        # Line 29: return Union(S)
-        if not S:
-            logger.error("Parsing failed: No operators generated.")
-            raise ValueError("No valid mappings generated from RML file.")
-
-        logger.info(f"Pipeline construction complete. Total Union branches: {len(S)}")
-
-        if len(S) == 1:
-            return S[0]
-
-        return UnionOperator(S)
+        return ProjectOperator(branch, {"subject", "predicate", "object", "graph"})
 
     def _normalize_graph(self):
         """
@@ -780,62 +1150,72 @@ class MappingParser:
         :param tm: The Triples Map URIRef.
         :return: A dictionary mapping query parameters to themselves.
         """
-        P = {}
-
-        def _normalize_name(s: str) -> str:
-            import re
-            if not s:
-                return s
-            m = re.search(r"[A-Za-z_][A-Za-z0-9_\-.]*", s)
-            if m:
-                return m.group(0)
-            return s
-
-        def scan_map(term_map) -> None:
-            """
-            Scans a term map for references and templates to extract query parameters.
-            :param term_map: The term map to scan.
-            :return: None
-            """
-            if not term_map:
-                return
-
-            ref = self.graph.value(term_map, RML.reference)
-            if ref:
-                ref_str = str(ref)
-                name = _normalize_name(ref_str)
-                P[name] = ref_str
-
-            tmpl = self.graph.value(term_map, RR.template)
-            if tmpl:
-                # Unescape any escaped braces so variables inside templates are
-                # detected correctly when the Turtle file encoded literal braces
-                # as "\\{" and "\\}".
-                tmpl_str = str(tmpl).replace('\\{', '{').replace('\\}', '}')
-                vars = self._extract_single_brace_variables(tmpl_str)
-                for v in vars:
-                    # If the variable name is a simple identifier, use dot-notation;
-                    # otherwise use bracket-notation to support names with spaces
-                    if self._is_simple_identifier(v):
-                        P[v] = f"$.{v}"
-                    else:
-                        # escape single quotes inside v
-                        safe_v = v.replace("'", "\\'")
-                        P[v] = f"$['{safe_v}']"
+        queries = {}
 
         sm = self.graph.value(tm, RR.subjectMap)
-        scan_map(sm)
+        self._scan_term_map_queries(sm, queries)
         # Also scan any subject-level graphMap so variables used to build named graphs
         # get included in attribute mappings
-        scan_map(self.graph.value(sm, RR.graphMap))
+        self._scan_term_map_queries(self.graph.value(sm, RR.graphMap), queries)
 
         for pom in self.graph.objects(tm, RR.predicateObjectMap):
-            scan_map(self.graph.value(pom, RR.predicateMap))
-            scan_map(self.graph.value(pom, RR.objectMap))
+            self._scan_term_map_queries(self.graph.value(pom, RR.predicateMap), queries)
+            self._scan_term_map_queries(self.graph.value(pom, RR.objectMap), queries)
             # Include any graphMap attached to the predicate-object map
-            scan_map(self.graph.value(pom, RR.graphMap))
+            self._scan_term_map_queries(self.graph.value(pom, RR.graphMap), queries)
 
-        return P
+        return queries
+
+    @staticmethod
+    def _normalize_query_name(value: str) -> str:
+        """
+        Normalizes a reference or join operand to its attribute identifier.
+        :param value: Raw reference string.
+        :return: Extracted attribute identifier when possible.
+        """
+        import re
+
+        if not value:
+            return value
+        match = re.search(r"[A-Za-z_][A-Za-z0-9_\-.]*", value)
+        if match:
+            return match.group(0)
+        return value
+
+    def _scan_term_map_queries(self, term_map: Node, queries: Dict[str, str]) -> None:
+        """
+        Collects reference and template-derived extraction queries from a term map.
+        :param term_map: Term map node to inspect.
+        :param queries: Output dictionary of attribute mappings.
+        :return: None
+        """
+        if not term_map:
+            return
+
+        ref = self.graph.value(term_map, RML.reference)
+        if ref:
+            ref_str = str(ref)
+            queries[self._normalize_query_name(ref_str)] = ref_str
+
+        tmpl = self.graph.value(term_map, RR.template)
+        if tmpl:
+            self._register_template_query_variables(str(tmpl), queries)
+
+    def _register_template_query_variables(self, template_value: str, queries: Dict[str, str]) -> None:
+        """
+        Registers template variables as extraction queries in source mappings.
+        :param template_value: Raw rr:template string.
+        :param queries: Output dictionary of attribute mappings.
+        :return: None
+        """
+        tmpl_str = template_value.replace('\\{', '{').replace('\\}', '}')
+        template_vars = self._extract_single_brace_variables(tmpl_str)
+        for value in template_vars:
+            if self._is_simple_identifier(value):
+                queries[value] = f"$.{value}"
+            else:
+                safe_v = value.replace("'", "\\'")
+                queries[value] = f"$['{safe_v}']"
 
     def _extract_join_attributes(self, object_map: Node):
         """
@@ -847,52 +1227,81 @@ class MappingParser:
         child_queries = []
         parent_queries = []
 
-        def _normalize_name(s: str) -> str:
-            import re
-            if not s:
-                return s
-            m = re.search(r"[A-Za-z_][A-Za-z0-9_\-.]*", s)
-            if m:
-                return m.group(0)
-            return s
-
         for jc in self.graph.objects(object_map, RR.joinCondition):
             parent = self.graph.value(jc, RR.parent)
             child = self.graph.value(jc, RR.child)
-
-            def _extract(node):
-                if node is None:
-                    return None, None
-                try:
-                    ref = self.graph.value(node, RML.reference)
-                    if ref:
-                        q = str(ref)
-                        return _normalize_name(q), q
-                    tmpl = self.graph.value(node, RR.template)
-                    if tmpl:
-                        vars = self._extract_single_brace_variables(str(tmpl))
-                        if len(vars) == 1:
-                            v = vars[0]
-                            if self._is_simple_identifier(v):
-                                return v, f"$.{v}"
-                            else:
-                                safe_v = v.replace("'", "\\'")
-                                return v, f"$['{safe_v}']"
-                        return str(tmpl), None
-                except Exception:
-                    pass
-                return str(node), None
-
-            p_name, p_q = _extract(parent)
-            c_name, c_q = _extract(child)
-
-            if c_name and p_name:
-                child_attrs.append(c_name)
-                parent_attrs.append(p_name)
-                child_queries.append(c_q)
-                parent_queries.append(p_q)
+            p_name, p_q = self._extract_join_operand(parent)
+            c_name, c_q = self._extract_join_operand(child)
+            self._append_join_attribute_pair(
+                child_attrs,
+                parent_attrs,
+                child_queries,
+                parent_queries,
+                c_name,
+                p_name,
+                c_q,
+                p_q,
+            )
 
         return child_attrs, parent_attrs, child_queries, parent_queries
+
+    def _extract_join_operand(self, node):
+        """
+        Extracts the attribute name and query associated with one join operand node.
+        :param node: rr:child or rr:parent operand node.
+        :return: Tuple of normalized attribute name and extraction query.
+        """
+        if node is None:
+            return None, None
+        try:
+            ref = self.graph.value(node, RML.reference)
+            if ref:
+                query = str(ref)
+                return self._normalize_query_name(query), query
+
+            tmpl = self.graph.value(node, RR.template)
+            if tmpl:
+                template_vars = self._extract_single_brace_variables(str(tmpl))
+                if len(template_vars) == 1:
+                    value = template_vars[0]
+                    if self._is_simple_identifier(value):
+                        return value, f"$.{value}"
+                    safe_v = value.replace("'", "\\'")
+                    return value, f"$['{safe_v}']"
+                return str(tmpl), None
+        except Exception:
+            pass
+        return str(node), None
+
+    @staticmethod
+    def _append_join_attribute_pair(
+            child_attrs: List[str],
+            parent_attrs: List[str],
+            child_queries: List[str],
+            parent_queries: List[str],
+            child_name,
+            parent_name,
+            child_query,
+            parent_query,
+    ) -> None:
+        """
+        Appends one child/parent join attribute pair and their extraction queries.
+        :param child_attrs: Child-side attribute names.
+        :param parent_attrs: Parent-side attribute names.
+        :param child_queries: Child-side extraction queries.
+        :param parent_queries: Parent-side extraction queries.
+        :param child_name: Child-side attribute name.
+        :param parent_name: Parent-side attribute name.
+        :param child_query: Child-side extraction query.
+        :param parent_query: Parent-side extraction query.
+        :return: None
+        """
+        if not child_name or not parent_name:
+            return
+        child_attrs.append(child_name)
+        parent_attrs.append(parent_name)
+        child_queries.append(child_query)
+        parent_queries.append(parent_query)
 
     def _create_ext_expr(self, term_map: Node, default_term_type: str = "Literal") -> Expression:
         """
@@ -901,197 +1310,269 @@ class MappingParser:
         :param default_term_type: The default term type if none is specified.
         :return: An Expression representing the term map.
         """
-        # FnML function term maps (fnml:functionValue)
+        fnml_expr = self._create_fnml_ext_expr(term_map)
+        if fnml_expr is not None:
+            return fnml_expr
+
+        const_expr = self._create_constant_ext_expr(term_map)
+        if const_expr is not None:
+            return const_expr
+
+        ref_expr = self._create_reference_ext_expr(term_map, default_term_type)
+        if ref_expr is not None:
+            return ref_expr
+
+        template_expr = self._create_template_ext_expr(term_map, default_term_type)
+        if template_expr is not None:
+            return template_expr
+
+        return Constant(AlgebraIRI(PYHARTIG_ERROR_URI))
+
+    def _create_fnml_ext_expr(self, term_map: Node):
+        """
+        Builds an expression for an FnML function-valued term map.
+        :param term_map: Term map node.
+        :return: FunctionCall expression or None when the term map is not FnML-based.
+        """
         try:
             fn_node = self.graph.value(term_map, FNML.functionValue)
         except Exception:
             fn_node = None
+        if fn_node is None:
+            return None
 
-        if fn_node is not None:
-            # fn_node is a node describing the function call; it contains
-            # predicateObjectMap entries where one POM uses fno:executes
-            # to specify the function IRI and others specify parameters.
-            func_uri = None
-            params = []
+        func_uri = self._resolve_fnml_function_uri(fn_node)
+        params = self._collect_fnml_params(fn_node)
+        if func_uri:
+            return FunctionCall(func_uri, params)
+        return None
 
-            # Support direct FnO declaration patterns where the function node
-            # carries an `fno:executes` triple itself (not wrapped in a POM).
-            try:
-                fno_exec_direct = self.graph.value(fn_node, FNO.executes)
-                if fno_exec_direct is not None:
-                    func_uri = str(fno_exec_direct)
-            except Exception:
-                pass
+    def _resolve_fnml_function_uri(self, fn_node: Node):
+        """
+        Resolves the function URI executed by an FnML function value node.
+        :param fn_node: FnML function value node.
+        :return: Function URI string or None.
+        """
+        func_uri = None
+        try:
+            fno_exec_direct = self.graph.value(fn_node, FNO.executes)
+            if fno_exec_direct is not None:
+                func_uri = str(fno_exec_direct)
+        except Exception:
+            pass
 
-            for pom in self.graph.objects(fn_node, RR.predicateObjectMap):
-                pm = self.graph.value(pom, RR.predicateMap)
-                om = self.graph.value(pom, RR.objectMap)
-                if pm is None or om is None:
-                    continue
-                pm_const = self.graph.value(pm, RR.constant)
-                # detect the function identifier
-                if pm_const == FNO.executes or (isinstance(pm_const, URIRef) and str(pm_const).endswith('#executes')):
-                    # object map should contain a constant with the function IRI
-                    f_const = self.graph.value(om, RR.constant)
-                    if f_const is not None:
-                        func_uri = str(f_const)
-                    continue
-                # treat other object maps as positional parameters; allow nested function term maps
-                try:
-                    arg_expr = self._create_ext_expr(om, default_term_type="Literal")
-                except Exception:
-                    arg_expr = Constant(AlgebraLiteral(""))
-                params.append((pm_const, arg_expr))
+        for pom in self.graph.objects(fn_node, RR.predicateObjectMap):
+            pm = self.graph.value(pom, RR.predicateMap)
+            om = self.graph.value(pom, RR.objectMap)
+            if pm is None or om is None:
+                continue
+            pm_const = self.graph.value(pm, RR.constant)
+            if pm_const == FNO.executes or (isinstance(pm_const, URIRef) and str(pm_const).endswith('#executes')):
+                f_const = self.graph.value(om, RR.constant)
+                if f_const is not None:
+                    func_uri = str(f_const)
+        return func_uri
 
-            # Order params by numeric suffix if present, otherwise preserve graph order
-            def _param_key(item):
-                key, _ = item
-                if key is None:
-                    return 0
-                s = str(key)
-                import re
-                m = re.search(r"(\d+)$", s)
-                if m:
-                    return int(m.group(1))
-                return 0
+    def _collect_fnml_params(self, fn_node: Node):
+        """
+        Collects and orders FnML function parameters from a function value node.
+        :param fn_node: FnML function value node.
+        :return: Ordered list of parameter expressions.
+        """
+        params = []
+        for pom in self.graph.objects(fn_node, RR.predicateObjectMap):
+            param = self._extract_fnml_param(pom)
+            if param is not None:
+                params.append(param)
+        return [expr for _, expr in sorted(params, key=self._fnml_param_sort_key)]
 
-            params_sorted = [p for _, p in sorted(params, key=_param_key)]
-            if func_uri:
-                return FunctionCall(func_uri, params_sorted)
+    def _extract_fnml_param(self, pom: Node):
+        """
+        Extracts one FnML parameter expression from a predicate-object map.
+        :param pom: Predicate-object map attached to the function value node.
+        :return: Tuple of parameter predicate and expression, or None.
+        """
+        pm = self.graph.value(pom, RR.predicateMap)
+        om = self.graph.value(pom, RR.objectMap)
+        if pm is None or om is None:
+            return None
 
-        # Line 1: Constant
+        pm_const = self.graph.value(pm, RR.constant)
+        if pm_const == FNO.executes or (isinstance(pm_const, URIRef) and str(pm_const).endswith('#executes')):
+            return None
+
+        try:
+            arg_expr = self._create_ext_expr(om, default_term_type="Literal")
+        except Exception:
+            arg_expr = Constant(AlgebraLiteral(""))
+        return pm_const, arg_expr
+
+    @staticmethod
+    def _fnml_param_sort_key(item):
+        """
+        Computes a stable sort key for ordered FnML parameters.
+        :param item: Tuple containing the parameter predicate and expression.
+        :return: Integer sort key extracted from the predicate suffix.
+        """
+        key, _ = item
+        if key is None:
+            return 0
+        key_str = str(key)
+        suffix_digits: List[str] = []
+        for char in reversed(key_str):
+            if not char.isdigit():
+                break
+            suffix_digits.append(char)
+        if not suffix_digits:
+            return 0
+        return int("".join(reversed(suffix_digits)))
+
+    def _create_constant_ext_expr(self, term_map: Node):
+        """
+        Builds an expression for a constant-valued term map.
+        :param term_map: Term map node.
+        :return: Constant expression or None when no rr:constant is defined.
+        """
         const = self.graph.value(term_map, RR.constant)
-        if const:
-            if isinstance(const, URIRef):
-                return Constant(AlgebraIRI(str(const)))
-            if isinstance(const, RDFLiteral):
-                if const.language:
-                    return Constant(AlgebraLiteral(str(const), language=str(const.language)))
-                if const.datatype:
-                    return Constant(AlgebraLiteral(str(const), datatype_iri=str(const.datatype)))
-            return Constant(AlgebraLiteral(str(const)))
+        if not const:
+            return None
+        if isinstance(const, URIRef):
+            return Constant(AlgebraIRI(str(const)))
+        if isinstance(const, RDFLiteral):
+            if const.language:
+                return Constant(AlgebraLiteral(str(const), language=str(const.language)))
+            if const.datatype:
+                return Constant(AlgebraLiteral(str(const), datatype_iri=str(const.datatype)))
+        return Constant(AlgebraLiteral(str(const)))
 
-        # Line 3: Reference
+    def _create_reference_ext_expr(self, term_map: Node, default_term_type: str):
+        """
+        Builds an expression for a reference-valued term map.
+        :param term_map: Term map node.
+        :param default_term_type: Fallback term type when rr:termType is absent.
+        :return: Expression for the reference value, or None.
+        """
         ref = self.graph.value(term_map, RML.reference)
-        if ref:
-            term_type = self.graph.value(term_map, RR.termType)
+        if not ref:
+            return None
 
-            if term_type is None:
-                term_type = RR[default_term_type]
+        term_type, lang_node, datatype_node = self._resolve_term_map_type_info(term_map, default_term_type)
+        ref_expr = Reference(self._normalize_query_name(str(ref)))
+        if term_type == RR.IRI:
+            return self._build_reference_iri_expr(ref_expr)
+        if term_type == RR.BlankNode:
+            return FunctionCall(to_bnode, [ref_expr])
+        return self._build_literal_expr(ref_expr, datatype_node, lang_node)
 
-            if default_term_type == "IRI" and term_type == RR.Literal:
-                raise ValueError("InvalidRulesError: rr:subjectMap cannot have rr:termType rr:Literal")
-
-            # Normalize attribute name for references so Reference expressions
-            # and attribute mappings use consistent attribute keys
-            def _normalize_name(s: str) -> str:
-                import re
-                if not s:
-                    return s
-                m = re.search(r"[A-Za-z_][A-Za-z0-9_\-.]*", s)
-                if m:
-                    return m.group(0)
-                return s
-
-            ref_str = str(ref)
-            ref_name = _normalize_name(ref_str)
-            ref_expr = Reference(ref_name)
-
-            # Handle rr:language if present on the term map
-            lang_node = self.graph.value(term_map, RR.language)
-            datatype_node = self.graph.value(term_map, RR.datatype)
-
-            if lang_node is not None and datatype_node is not None:
-                raise ValueError("InvalidRulesError: rr:language and rr:datatype cannot both be specified on the same term map")
-
-            if term_type == RR.IRI:
-                # Reference-valued term maps: follow R2RML semantics — do not percent-encode.
-                if self.base_iri:
-                    return FunctionCall(to_iri, [ref_expr, Constant(self.base_iri), Constant(False)])
-                return FunctionCall(to_iri, [ref_expr, Constant(None), Constant(False)])
-            elif term_type == RR.BlankNode:
-                return FunctionCall(to_bnode, [ref_expr])
-            else:
-                if datatype_node is not None:
-                    if not isinstance(datatype_node, URIRef):
-                        raise ValueError(f"Invalid rr:datatype value: {datatype_node}")
-                    return FunctionCall(to_literal, [ref_expr, Constant(str(datatype_node))])
-                if lang_node is not None:
-                    lang_raw = str(lang_node).strip()
-                    # Strict behavior: rr:language must be a valid BCP47 language tag.
-                    # Do not accept human-language names like "english"; require the
-                    # canonical language tag (e.g., "en", "es").
-                    from pyhartig.algebra.Terms import Literal as _AlgebraLiteral
-                    try:
-                        _AlgebraLiteral("x", language=lang_raw)
-                    except Exception:
-                        raise ValueError(f"Invalid rr:language value: {lang_raw}")
-                    return FunctionCall(to_literal_lang, [ref_expr, Constant(lang_raw)])
-                return FunctionCall(to_literal, [ref_expr, Constant(str(XSD.string))])
-
-        # Line 5: Template
+    def _create_template_ext_expr(self, term_map: Node, default_term_type: str):
+        """
+        Builds an expression for a template-valued term map.
+        :param term_map: Term map node.
+        :param default_term_type: Fallback term type when rr:termType is absent.
+        :return: Expression for the template value, or None.
+        """
         tmpl = self.graph.value(term_map, RR.template)
-        if tmpl:
-            template_str = str(tmpl)
-            # Split by curly braces but keep delimiters to identify vars
-            # Unescape any backslash-escaped braces so templates like "\\{\\{ {X} \\}\\}"
-            # become "{{ {X} }}" before extracting variables. This matches how the
-            # RML test-suite encodes literal brace characters in Turtle files.
-            template_str = template_str.replace('\\{', '{').replace('\\}', '}')
-            parts = self._iter_template_segments(template_str)
+        if not tmpl:
+            return None
 
-            args = []
-            for part_type, part_value in parts:
-                if part_type == "var":
-                    var = part_value
-                    # Percent-encode inserted reference components so template
-                    # insertion semantics match the RML test-suite expectations
-                    args.append(FunctionCall(percent_encode_component, [Reference(var)]))
-                elif part_value:
-                    args.append(Constant(AlgebraLiteral(part_value)))
+        concat_expr = self._build_template_concat_expr(str(tmpl))
+        term_type, lang_node, datatype_node = self._resolve_term_map_type_info(term_map, default_term_type)
+        if term_type == RR.IRI:
+            return self._build_template_iri_expr(concat_expr)
+        if term_type == RR.BlankNode:
+            return FunctionCall(to_bnode, [concat_expr])
+        return self._build_literal_expr(concat_expr, datatype_node, lang_node)
 
-            if not args: return Constant(AlgebraLiteral(""))
+    def _resolve_term_map_type_info(self, term_map: Node, default_term_type: str):
+        """
+        Resolves the effective term type, language and datatype associated with a term map.
+        :param term_map: Term map node.
+        :param default_term_type: Fallback term type when rr:termType is absent.
+        :return: Tuple of effective term type, language node and datatype node.
+        """
+        term_type = self.graph.value(term_map, RR.termType)
+        if term_type is None:
+            term_type = RR[default_term_type]
 
-            concat_expr = FunctionCall(concat, args)
+        if default_term_type == "IRI" and term_type == RR.Literal:
+            raise ValueError("InvalidRulesError: rr:subjectMap cannot have rr:termType rr:Literal")
 
-            term_type = self.graph.value(term_map, RR.termType)
+        lang_node = self.graph.value(term_map, RR.language)
+        datatype_node = self.graph.value(term_map, RR.datatype)
+        if lang_node is not None and datatype_node is not None:
+            raise ValueError(
+                "InvalidRulesError: rr:language and rr:datatype cannot both be specified on the same term map")
+        return term_type, lang_node, datatype_node
 
-            if term_type is None:
-                term_type = RR[default_term_type]
+    def _build_reference_iri_expr(self, ref_expr: Reference):
+        """
+        Wraps a reference expression in the builtin IRI constructor.
+        :param ref_expr: Reference expression to convert to an IRI.
+        :return: FunctionCall building the final IRI.
+        """
+        if self.base_iri:
+            return FunctionCall(to_iri, [ref_expr, Constant(self.base_iri), Constant(False)])
+        return FunctionCall(to_iri, [ref_expr, Constant(None), Constant(False)])
 
-            if default_term_type == "IRI" and term_type == RR.Literal:
-                raise ValueError("InvalidRulesError: rr:subjectMap cannot have rr:termType rr:Literal")
+    def _build_template_concat_expr(self, template_str: str):
+        """
+        Converts an rr:template string into a concatenation expression.
+        :param template_str: Raw template string.
+        :return: Concatenation expression for the template expansion.
+        """
+        template_str = template_str.replace('\\{', '{').replace('\\}', '}')
+        parts = self._iter_template_segments(template_str)
+        args = []
+        for part_type, part_value in parts:
+            if part_type == "var":
+                args.append(FunctionCall(percent_encode_component, [Reference(part_value)]))
+            elif part_value:
+                args.append(Constant(AlgebraLiteral(part_value)))
+        if not args:
+            return Constant(AlgebraLiteral(""))
+        return FunctionCall(concat, args)
 
-            # Check for rr:language on template term maps
-            lang_node = self.graph.value(term_map, RR.language)
-            datatype_node = self.graph.value(term_map, RR.datatype)
+    def _build_template_iri_expr(self, concat_expr: Expression):
+        """
+        Wraps a template concatenation expression in the builtin IRI constructor.
+        :param concat_expr: Concatenation expression produced from an rr:template.
+        :return: FunctionCall building the final IRI.
+        """
+        if self.base_iri:
+            return FunctionCall(to_iri, [concat_expr, Constant(self.base_iri)])
+        return FunctionCall(to_iri, [concat_expr])
 
-            if lang_node is not None and datatype_node is not None:
-                raise ValueError("InvalidRulesError: rr:language and rr:datatype cannot both be specified on the same term map")
+    def _build_literal_expr(self, value_expr: Expression, datatype_node, lang_node):
+        """
+        Wraps an expression in the appropriate literal constructor according to datatype or language.
+        :param value_expr: Expression producing the lexical form.
+        :param datatype_node: Optional datatype node.
+        :param lang_node: Optional language tag node.
+        :return: FunctionCall building the final literal.
+        """
+        if datatype_node is not None:
+            if not isinstance(datatype_node, URIRef):
+                raise ValueError(f"Invalid rr:datatype value: {datatype_node}")
+            return FunctionCall(to_literal, [value_expr, Constant(str(datatype_node))])
+        if lang_node is not None:
+            lang_raw = self._validated_language_tag(lang_node)
+            return FunctionCall(to_literal_lang, [value_expr, Constant(lang_raw)])
+        return FunctionCall(to_literal, [value_expr, Constant(str(XSD.string))])
 
-            if term_type == RR.IRI:
-                if self.base_iri:
-                    return FunctionCall(to_iri, [concat_expr, Constant(self.base_iri)])
-                return FunctionCall(to_iri, [concat_expr])
-            elif term_type == RR.BlankNode:
-                return FunctionCall(to_bnode, [concat_expr])
-            else:
-                if datatype_node is not None:
-                    if not isinstance(datatype_node, URIRef):
-                        raise ValueError(f"Invalid rr:datatype value: {datatype_node}")
-                    return FunctionCall(to_literal, [concat_expr, Constant(str(datatype_node))])
-                if lang_node is not None:
-                    lang_raw = str(lang_node).strip()
-                    # Do not map human-language names to tags; require canonical BCP47.
-                    from pyhartig.algebra.Terms import Literal as _AlgebraLiteral
-                    try:
-                        _AlgebraLiteral("x", language=lang_raw)
-                    except Exception:
-                        raise ValueError(f"Invalid rr:language value: {lang_raw}")
-                    return FunctionCall(to_literal_lang, [concat_expr, Constant(lang_raw)])
-                return FunctionCall(to_literal, [concat_expr, Constant(str(XSD.string))])
-
-        return Constant(AlgebraIRI("http://error"))
+    @staticmethod
+    def _validated_language_tag(lang_node) -> str:
+        """
+        Validates a language tag by attempting to construct an RDF literal with it.
+        :param lang_node: Language tag node.
+        :return: Normalized language tag string.
+        """
+        lang_raw = str(lang_node).strip()
+        from pyhartig.algebra.Terms import Literal as _AlgebraLiteral
+        try:
+            _AlgebraLiteral("x", language=lang_raw)
+        except Exception:
+            raise ValueError(f"Invalid rr:language value: {lang_raw}")
+        return lang_raw
 
     def explain(self) -> str:
         """
@@ -1116,6 +1597,7 @@ class MappingParser:
 
         :param output_path: Path to output file
         :param format: "json" or "text"
+        :return: None
         """
         import json
 

@@ -6,7 +6,7 @@ import re
 from pyhartig.algebra.Tuple import EPSILON, _Epsilon, AlgebraicValue
 from pyhartig.algebra.Terms import IRI, Literal, BlankNode
 from pyhartig.functions.registry import FunctionRegistry
-from pyhartig.namespaces import XSD_STRING
+from pyhartig.namespaces import PYHARTIG_FUNCTIONS_BASE, XSD_STRING
 
 
 def _to_string(value: AlgebraicValue) -> Union[str, None]:
@@ -38,6 +38,9 @@ def _to_string(value: AlgebraicValue) -> Union[str, None]:
 
 
 def _is_absolute_iri(s: str) -> bool:
+    """
+    Checks whether a string is a syntactically valid absolute IRI candidate.
+    """
     # Basic syntactic check: must have a scheme and a path or netloc, and must not
     # contain illegal characters such as spaces or control characters.
     if not isinstance(s, str):
@@ -56,6 +59,9 @@ def _is_absolute_iri(s: str) -> bool:
 
 
 def _percent_encode(s: str, preserve_percent: bool = False) -> str:
+    """
+    Percent-encodes an IRI string while preserving scheme-specific safe characters.
+    """
     # Percent-encode but preserve IRI scheme and netloc when present.
     # When `preserve_percent` is True, existing percent-encodings ('%') are
     # treated as safe and will not be encoded again. This avoids double-
@@ -87,6 +93,59 @@ def _percent_encode(s: str, preserve_percent: bool = False) -> str:
     return urllib.parse.quote(s, safe=safe)
 
 
+def _build_absolute_iri(value: str) -> Union[IRI, _Epsilon]:
+    """
+    Builds an IRI term from an absolute IRI string, or EPSILON on failure.
+    """
+    if not _is_absolute_iri(value):
+        return EPSILON
+    try:
+        return IRI(value)
+    except Exception:
+        return EPSILON
+
+
+def _join_reference_iri(base: str, lex: str) -> Union[str, None]:
+    """
+    Resolves a reference lexical form against a base IRI.
+    """
+    try:
+        if isinstance(base, str):
+            return base + lex
+        return urllib.parse.urljoin(base, lex)
+    except Exception:
+        return None
+
+
+def _resolve_with_base(base: str, lex: str, template_mode: bool) -> Union[IRI, _Epsilon]:
+    """
+    Resolves a lexical form to an IRI when a base IRI is available.
+    """
+    if not template_mode:
+        joined = _join_reference_iri(base, lex)
+        if not joined:
+            return EPSILON
+        return _build_absolute_iri(joined)
+
+    try:
+        safe = _percent_encode(lex, preserve_percent=True)
+        return IRI(urllib.parse.urljoin(base, safe))
+    except Exception:
+        return EPSILON
+
+
+def _resolve_without_base(lex: str, template_mode: bool) -> Union[IRI, _Epsilon]:
+    """
+    Resolves a lexical form to an IRI when no base IRI is available.
+    """
+    if not template_mode:
+        return EPSILON
+    try:
+        return IRI(_percent_encode(lex, preserve_percent=True))
+    except Exception:
+        return EPSILON
+
+
 def to_iri(value: AlgebraicValue, base: str = None, template_mode: bool = True) -> Union[IRI, _Epsilon]:
     """
     Convert an AlgebraicValue to an IRI.
@@ -96,69 +155,24 @@ def to_iri(value: AlgebraicValue, base: str = None, template_mode: bool = True) 
     - template_mode=False: for reference-valued term maps do NOT percent-encode; only accept
       absolute IRI or base+value that yields an absolute IRI; otherwise return EPSILON (data error).
     """
-    if value == EPSILON or value is None:
-        return EPSILON
-
-    # obtain lexical form
     lex = _to_string(value)
     if lex is None:
         return EPSILON
 
-    # If lex looks like absolute IRI, accept it
-    if _is_absolute_iri(lex):
-        try:
-            return IRI(lex)
-        except Exception:
-            return EPSILON
+    absolute_iri = _build_absolute_iri(lex)
+    if absolute_iri is not EPSILON:
+        return absolute_iri
 
-    # If base provided, try to resolve by simple concatenation (urljoin)
     if base:
-        try:
-            # For reference-valued term maps we MUST NOT percent-encode; resolve
-            # by simple string concatenation so that path segments like "path/../x"
-            # are preserved rather than normalized by urljoin.
-            if not template_mode:
-                if isinstance(base, str):
-                    if base.endswith('/'):
-                        joined = base + lex
-                    else:
-                        joined = base + lex
-                else:
-                    joined = urllib.parse.urljoin(base, lex)
-                if _is_absolute_iri(joined):
-                    return IRI(joined)
+        return _resolve_with_base(base, lex, template_mode)
 
-            # Template mode: percent-encode the assembled lexical and resolve
-            # using urljoin (preserves intended semantics for templates).
-            if template_mode:
-                # When templates already percent-encode inserted components
-                # we want to avoid double-encoding '%' characters.
-                safe = _percent_encode(lex, preserve_percent=True)
-                joined_safe = urllib.parse.urljoin(base, safe)
-                try:
-                    return IRI(joined_safe)
-                except Exception:
-                    return EPSILON
-        except Exception:
-            pass
-
-        # reference-mode and base did not produce absolute IRI => data error
-        return EPSILON
-
-    # No base provided
-    if template_mode:
-        try:
-            # Preserve existing percent-encodings when converting template
-            # lexical values into IRIs to avoid double-encoding.
-            return IRI(_percent_encode(lex, preserve_percent=True))
-        except Exception:
-            return EPSILON
-
-    # Reference-mode without base cannot produce an IRI from a non-absolute value
-    return EPSILON
+    return _resolve_without_base(lex, template_mode)
 
 
 def to_literal(value: AlgebraicValue, datatype: str) -> Union[Literal, _Epsilon]:
+    """
+    Converts an algebraic value to a typed RDF literal.
+    """
     if value == EPSILON or value is None:
         return EPSILON
     if isinstance(value, Literal) and datatype == XSD_STRING.value:
@@ -186,6 +200,9 @@ def percent_encode_component(value: AlgebraicValue) -> Union[Literal, _Epsilon]:
 
 
 def to_literal_lang(value: AlgebraicValue, lang: str) -> Union[Literal, _Epsilon]:
+    """
+    Converts an algebraic value to a language-tagged RDF literal.
+    """
     if value == EPSILON or value is None:
         return EPSILON
     lex = _to_string(value)
@@ -195,6 +212,9 @@ def to_literal_lang(value: AlgebraicValue, lang: str) -> Union[Literal, _Epsilon
 
 
 def to_bnode(value: AlgebraicValue) -> Union[BlankNode, _Epsilon]:
+    """
+    Converts an algebraic value to a blank node, hashing when needed for a stable identifier.
+    """
     if value == EPSILON or value is None:
         return EPSILON
     lex = _to_string(value)
@@ -202,7 +222,7 @@ def to_bnode(value: AlgebraicValue) -> Union[BlankNode, _Epsilon]:
         return EPSILON
     if isinstance(lex, str):
         candidate = lex.strip()
-        if candidate and re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", candidate):
+        if candidate and re.match(r"^[A-Za-z_]\w*$", candidate, re.ASCII):
             return BlankNode(candidate)
     hash_object = hashlib.sha256(lex.encode('utf-8'))
     bnode_id = f"b{hash_object.hexdigest()}"
@@ -210,6 +230,9 @@ def to_bnode(value: AlgebraicValue) -> Union[BlankNode, _Epsilon]:
 
 
 def concat(*args: AlgebraicValue) -> Union[Literal, _Epsilon]:
+    """
+    Concatenates algebraic values into a single xsd:string literal.
+    """
     result = ""
     for v in args:
         s = _to_string(v)
@@ -220,11 +243,11 @@ def concat(*args: AlgebraicValue) -> Union[Literal, _Epsilon]:
 
 
 try:
-    FunctionRegistry.register("http://pyhartig.org/functions#concat", concat)
-    FunctionRegistry.register("http://pyhartig.org/functions#toIRI", to_iri)
-    FunctionRegistry.register("http://pyhartig.org/functions#toLiteral", to_literal)
-    FunctionRegistry.register("http://pyhartig.org/functions#toBNode", to_bnode)
-    FunctionRegistry.register("http://pyhartig.org/functions#toLiteralLang", to_literal_lang)
-    FunctionRegistry.register("http://pyhartig.org/functions#percentEncodeComponent", percent_encode_component)
+    FunctionRegistry.register(f"{PYHARTIG_FUNCTIONS_BASE}concat", concat)
+    FunctionRegistry.register(f"{PYHARTIG_FUNCTIONS_BASE}toIRI", to_iri)
+    FunctionRegistry.register(f"{PYHARTIG_FUNCTIONS_BASE}toLiteral", to_literal)
+    FunctionRegistry.register(f"{PYHARTIG_FUNCTIONS_BASE}toBNode", to_bnode)
+    FunctionRegistry.register(f"{PYHARTIG_FUNCTIONS_BASE}toLiteralLang", to_literal_lang)
+    FunctionRegistry.register(f"{PYHARTIG_FUNCTIONS_BASE}percentEncodeComponent", percent_encode_component)
 except Exception:
     pass
