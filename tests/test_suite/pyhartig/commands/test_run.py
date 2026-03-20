@@ -43,6 +43,7 @@ def test_run_command_serializes_rows(monkeypatch, tmp_path: Path):
     assert "<http://example.org/s> <http://example.org/p> \"value\" ." in output.read_text(encoding="utf-8")
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_run_command_requires_existing_mapping_file():
     with pytest.raises(SystemExit) as exc:
@@ -78,6 +79,7 @@ def test_run_command_helpers_cover_serialization_paths(monkeypatch, tmp_path: Pa
     assert command._finalize_lines(entries) == ["line-2"]
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_run_command_writes_stdout_and_explain_mode(monkeypatch, capsys, tmp_path: Path):
     mapping = tmp_path / "mapping.ttl"
@@ -93,6 +95,7 @@ def test_run_command_writes_stdout_and_explain_mode(monkeypatch, capsys, tmp_pat
     assert "pipeline" in capsys.readouterr().out
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_run_command_exits_on_unexpected_errors(monkeypatch, tmp_path: Path):
     mapping = tmp_path / "mapping.ttl"

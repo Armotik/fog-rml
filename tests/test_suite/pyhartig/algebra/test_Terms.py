@@ -16,6 +16,7 @@ def test_terms_repr_and_language_handling():
     assert repr(blank) == "_:b1"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_terms_reject_invalid_iri_and_language_tag():
     with pytest.raises(InvalidIRIError):

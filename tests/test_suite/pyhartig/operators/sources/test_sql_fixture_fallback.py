@@ -91,6 +91,7 @@ def test_sql_fixture_fallback_helper_functions_cover_normalization_paths(tmp_pat
     assert _execute_fixture_query(normalized_script, "SELECT * FROM demo", False)[0]["id"] == 1
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_sql_fixture_fallback_strict_mode_rejects_invalid_table_identifier(tmp_path: Path, monkeypatch):
     fixture = tmp_path / "resource1.sql"
@@ -101,6 +102,7 @@ def test_sql_fixture_fallback_strict_mode_rejects_invalid_table_identifier(tmp_p
     monkeypatch.delenv("PYHARTIG_STRICT_REFERENCES", raising=False)
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_sql_fixture_fallback_helper_edge_cases(tmp_path: Path):
     fixture = tmp_path / "resource1.sql"

@@ -11,6 +11,7 @@ def test_mapping_package_imports():
     assert module.__name__ == "pyhartig.mapping"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_mapping_package_reloads():
     module = importlib.import_module("pyhartig.mapping")

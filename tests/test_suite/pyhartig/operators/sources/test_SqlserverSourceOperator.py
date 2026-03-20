@@ -25,12 +25,14 @@ def test_sqlserver_source_operator_builds_connection_strings(monkeypatch, tmp_pa
     monkeypatch.setattr(SqlserverSourceOperator, "_load_rows", original_load_rows)
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_sqlserver_source_operator_rejects_invalid_url_dsn():
     with pytest.raises(ValueError):
         SqlserverSourceOperator._build_url_connection_string("postgresql://host/db", None, None)
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_sqlserver_source_operator_import_and_fetch_paths(monkeypatch, tmp_path):
     fixture = tmp_path / "resource1.sql"

@@ -11,6 +11,7 @@ def test_pyhartig_package_imports():
     assert module.__name__ == "pyhartig"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_pyhartig_package_reloads_cleanly():
     module = importlib.import_module("pyhartig")

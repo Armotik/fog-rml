@@ -33,6 +33,7 @@ def test_equijoin_operator_matches_on_keys(stream_to_list):
     assert "EqJoin" not in joined.explain_json()["type"]
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_equijoin_operator_handles_legacy_args_and_missing_keys(stream_to_list):
     joined = EquiJoinOperator(
@@ -60,6 +61,7 @@ def test_equijoin_operator_helper_methods_cover_normalization_and_key_lookup():
     assert joined.explain_json()["parameters"]["join_conditions"] == [{"left": "id", "right": "ref"}]
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_equijoin_operator_rejects_bad_constructor_arguments():
     with pytest.raises(ValueError):
@@ -83,6 +85,7 @@ def test_equijoin_operator_logs_overlap_and_skips_missing_join_keys(stream_to_li
     assert any("overlap" in record.message for record in caplog.records)
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_equijoin_operator_handles_internal_overlap_guard_exceptions():
     class _BrokenMappingsOperator(_StaticOperator):

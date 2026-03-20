@@ -13,6 +13,7 @@ def test_function_registry_registers_and_lists_functions():
     FunctionRegistry.unregister("http://example.org/f")
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_function_registry_unregister_is_idempotent():
     FunctionRegistry.unregister("http://example.org/missing")

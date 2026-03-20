@@ -34,6 +34,7 @@ def test_list_issues_converts_repo_urls_and_merges_payloads(monkeypatch, tmp_pat
     assert len(merged) == 2
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_list_issues_fails_when_no_supported_repo_is_provided(tmp_path: Path):
     command = ListIssuesCommand()
@@ -91,6 +92,7 @@ def test_list_issues_configures_parser_and_executes_full_flow(monkeypatch, tmp_p
     assert executed["explain"] is True
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_list_issues_handles_fetch_errors_and_non_list_payloads(monkeypatch):
     command = ListIssuesCommand()

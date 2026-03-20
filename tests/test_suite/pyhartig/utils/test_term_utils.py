@@ -15,6 +15,7 @@ def test_term_utils_converts_terms_to_rdflib():
     assert term_to_rdflib(BlankNode("b1")) == RDFBNode("b1")
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_term_utils_handles_none_and_epsilon():
     assert term_to_rdflib(None) is None

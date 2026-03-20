@@ -24,11 +24,13 @@ def test_ntriples_serializer_serializes_triples():
     assert NTriplesSerializer()._escape_string('a"b\n') == 'a\\"b\\n'
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_ntriples_serializer_returns_none_for_incomplete_rows():
     assert NTriplesSerializer().serialize(MappingTuple({"subject": IRI("http://example.org/s")})) is None
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_ntriples_serializer_rejects_invalid_term_positions():
     with pytest.raises(TypeError):
@@ -47,6 +49,7 @@ def test_ntriples_serializer_formats_blank_nodes_and_literal_variants(monkeypatc
     assert serializer._format_term(IRI("http://example.org/a path"), allowed_types=(IRI,)) == "<http://example.org/a%20path>"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_ntriples_serializer_rejects_unknown_runtime_term_types():
     with pytest.raises(ValueError):

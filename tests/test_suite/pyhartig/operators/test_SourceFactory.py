@@ -45,6 +45,7 @@ def test_source_factory_creates_file_backed_sources(tmp_path: Path):
     assert isinstance(SourceFactory.create_source_operator(graph, xml_ls, tmp_path, {"id": "id"}), XmlSourceOperator)
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_source_factory_supports_sparql_and_rejects_unknown_formulation(tmp_path: Path):
     graph = Graph()
@@ -90,6 +91,7 @@ def test_source_factory_helper_methods_cover_path_resolution_and_database_detect
     assert SourceFactory._detect_database_source_class(metadata["jdbc_driver"], metadata["dsn"]).__name__ == "MysqlSourceOperator"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_source_factory_file_loader_error_paths_and_missing_fallbacks(monkeypatch, tmp_path: Path):
     missing = tmp_path / "missing.json"
@@ -143,6 +145,7 @@ def test_source_factory_covers_database_and_lookup_branches(monkeypatch, tmp_pat
     assert SourceFactory._get_reference_formulation_factory(None) is SourceFactory._create_json_source
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_source_factory_covers_positive_search_and_generic_loader_failures(monkeypatch, tmp_path: Path):
     target = tmp_path / "items.json"

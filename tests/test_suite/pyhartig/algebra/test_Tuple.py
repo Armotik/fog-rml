@@ -21,6 +21,7 @@ def test_mapping_tuple_supports_merge_extend_and_project():
     assert "Tuple(" in repr(merged)
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_mapping_tuple_rejects_none_values_and_conflicts():
     with pytest.raises(ValueError):

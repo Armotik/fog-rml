@@ -11,6 +11,7 @@ def test_serializers_package_imports():
     assert module.__name__ == "pyhartig.serializers"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_serializers_package_reloads():
     module = importlib.import_module("pyhartig.serializers")

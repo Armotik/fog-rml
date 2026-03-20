@@ -17,6 +17,7 @@ def test_csv_source_operator_reads_rows_and_dotted_values(tmp_path: Path, stream
     assert rows[0]["name"] == "Alice"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_csv_source_operator_returns_empty_list_on_invalid_query():
     source = CsvSourceOperator([{"ID": "1"}], "$", {"missing": "x"})
@@ -34,6 +35,7 @@ def test_csv_source_operator_helper_branches_cover_normalization_and_case_insens
     assert source._resolve_dotted_query({"nested": "Alice"}, "nested.name") == []
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_csv_source_operator_handles_invalid_context_and_source_loading_errors():
     class _BrokenRows:

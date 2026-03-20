@@ -54,12 +54,14 @@ def test_builtin_helpers_cover_string_and_iri_resolution_paths():
     assert _resolve_without_base("urn:test:ok", template_mode=True).value == "urn:test:ok"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_builtins_return_epsilon_or_hashed_blank_nodes_on_invalid_input():
     assert to_iri("not a valid iri", template_mode=False) == EPSILON
     assert to_bnode("contains space").identifier.startswith("b")
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_builtins_cover_epsilon_shortcuts_and_existing_literals():
     literal = Literal("hello")
@@ -110,6 +112,7 @@ def test_builtins_cover_remaining_resolution_and_exception_branches(monkeypatch)
     assert _resolve_with_base("http://example.org/base/", "a b", template_mode=True) == EPSILON
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_builtins_cover_base_iri_and_stable_blank_node_cases():
     assert to_iri(BlankNode("b1")) == EPSILON

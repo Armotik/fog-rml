@@ -15,6 +15,7 @@ def test_idlab_plugins_behave_and_register():
     assert FunctionRegistry.get(f"{IDLAB_FUNCTIONS_BASE}trueCondition") is true_condition
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_idlab_plugins_handle_negative_cases():
     assert not_equal("a", "b") is True

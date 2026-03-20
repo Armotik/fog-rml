@@ -357,6 +357,7 @@ def test_mapping_parser_term_map_helper_methods_cover_remaining_builders(tmp_pat
     assert parser._build_literal_expr(Reference("name"), None, RDFLiteral("fr")).function.__name__ == "to_literal_lang"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_mapping_parser_additional_edge_cases_cover_errors_and_text_save(tmp_path: Path, monkeypatch):
     parser = _parser_for(tmp_path, SIMPLE_JSON_MAPPING)
@@ -390,6 +391,7 @@ def test_mapping_parser_additional_edge_cases_cover_errors_and_text_save(tmp_pat
     monkeypatch.setattr(parser, "parse", lambda: type("P", (), {"explain": lambda self: "plan", "explain_json": lambda self: {"type": "plan"}})())
     parser.save_explanation(str(text_output), format="text")
     assert text_output.read_text(encoding="utf-8") == "plan"
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_mapping_parser_handles_invalid_shapes_and_multiple_branches(write_mapping_files):
     invalid_mapping = SIMPLE_JSON_MAPPING.replace(
@@ -425,6 +427,7 @@ def test_mapping_parser_handles_invalid_shapes_and_multiple_branches(write_mappi
     assert isinstance(MappingParser(str(multi_mapping_path)).parse(), UnionOperator)
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_mapping_parser_edge_cases_cover_validation_and_error_branches(tmp_path: Path, monkeypatch):
     parser = _parser_for(tmp_path, SIMPLE_JSON_MAPPING)

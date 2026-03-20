@@ -31,6 +31,7 @@ def test_project_operator_keeps_requested_attributes(stream_to_list):
     assert operator.explain_json()["parameters"]["attributes"] == ["id"]
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_project_operator_raises_for_missing_attributes():
     operator = ProjectOperator(_StaticOperator([MappingTuple({"id": 1})]), {"missing"})
@@ -38,6 +39,7 @@ def test_project_operator_raises_for_missing_attributes():
         list(operator.execute())
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_project_operator_returns_empty_stream_for_empty_parent(stream_to_list):
     operator = ProjectOperator(_StaticOperator([]), {"id"})

@@ -18,6 +18,7 @@ def test_function_call_resolves_registry_function():
     FunctionRegistry.unregister("http://example.org/f#join")
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_function_call_returns_epsilon_on_missing_argument():
     expr = FunctionCall(lambda value: value, [Reference("missing")])

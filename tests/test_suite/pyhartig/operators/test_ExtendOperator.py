@@ -34,6 +34,7 @@ def test_extend_operator_adds_computed_attribute(stream_to_list):
     assert "Extend(" in operator.explain()
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_extend_operator_fallback_path_handles_non_mapping_rows(stream_to_list):
     operator = ExtendOperator(_StaticOperator([{"id": 1}]), "copy", Reference("id"))
@@ -50,6 +51,7 @@ def test_extend_operator_expression_helpers_cover_all_supported_shapes():
     assert operator._explain_expression(object()).startswith("<object object")
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_extend_operator_expression_json_handles_unknown_values():
     operator = ExtendOperator(_StaticOperator([]), "value", Constant(Literal("x")))

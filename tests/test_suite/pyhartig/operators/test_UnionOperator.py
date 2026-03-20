@@ -30,6 +30,7 @@ def test_union_operator_merges_rows_with_distinct_mode(stream_to_list):
     assert union.explain_json()["parameters"]["distinct"] is True
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_union_operator_keeps_duplicates_in_bag_mode(stream_to_list):
     row = MappingTuple({"id": 1})
@@ -37,6 +38,7 @@ def test_union_operator_keeps_duplicates_in_bag_mode(stream_to_list):
     assert len(stream_to_list(union.execute())) == 2
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_union_operator_distinct_key_falls_back_to_string(monkeypatch):
     class _Row:

@@ -57,6 +57,7 @@ def test_service_call_helpers_and_rewrite(dataset, tmp_path: Path, monkeypatch):
     assert execute_query_with_service_call(dataset, query, tmp_path)[0][0] == "ok"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_service_call_returns_empty_result_on_query_failure(dataset, monkeypatch, tmp_path: Path):
     monkeypatch.setattr("pyhartig.sparql.service_call._find_service_call_matches", lambda _query: [])
@@ -147,6 +148,7 @@ def test_service_call_helper_functions_cover_materialization_and_aggregation(mon
     assert _execute_materialized_query(dataset, "SELECT * WHERE { }") == []
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_service_call_helper_edge_cases(monkeypatch, tmp_path: Path):
     class _ContextOnlyDataset:

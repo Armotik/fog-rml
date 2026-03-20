@@ -13,6 +13,7 @@ def test_constant_returns_same_value():
     assert constant.evaluate(MappingTuple({"id": 1})).lexical_form == "hello"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_constant_repr_is_stable():
     assert "Const(" in repr(Constant(Literal("hello")))

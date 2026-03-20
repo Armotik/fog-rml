@@ -31,6 +31,7 @@ def test_main_loads_commands_and_dispatches(monkeypatch):
     assert command.executed_with.flag is True
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_main_exits_when_no_command_is_selected(monkeypatch):
     monkeypatch.setattr(__main__, "load_commands", lambda: {})

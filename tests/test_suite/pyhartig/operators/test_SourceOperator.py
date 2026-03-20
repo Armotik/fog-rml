@@ -23,6 +23,7 @@ def test_source_operator_executes_cartesian_products(stream_to_list):
     assert _DictSource._normalize_row_dict({"missing": None})["missing"] == EPSILON
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_source_operator_strict_reference_mode_raises(monkeypatch):
     source = _DictSource({"items": [{"id": [1]}]}, "$", {"id": "id", "missing": "missing"})

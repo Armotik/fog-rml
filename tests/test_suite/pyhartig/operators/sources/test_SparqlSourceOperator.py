@@ -24,6 +24,7 @@ def test_sparql_source_operator_validates_and_emulates_local_rdf(tmp_path: Path)
     assert data["results"]["bindings"]
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_sparql_source_operator_rejects_invalid_queries():
     with pytest.raises(ValueError):
@@ -72,6 +73,7 @@ def test_sparql_source_operator_helper_branches_cover_remote_and_binding_paths(m
     }
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_sparql_source_operator_rejects_empty_or_invalid_queries_and_exposes_json_explanation(monkeypatch, tmp_path: Path):
     with pytest.raises(ValueError):

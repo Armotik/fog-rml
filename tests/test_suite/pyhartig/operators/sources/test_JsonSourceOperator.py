@@ -34,11 +34,13 @@ def test_json_source_operator_helper_paths_cover_compilation_and_flattening(tmp_
     assert JsonSourceOperator._flatten_matches([type("M", (), {"value": ["a", "b"]})(), type("M", (), {"value": "c"})()]) == ["a", "b", "c"]
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_json_source_operator_rejects_unsupported_payload_types():
     assert JsonSourceOperator._prepare_source_data(object()) is None
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_json_source_operator_handles_invalid_paths_and_queries(tmp_path: Path):
     with pytest.raises(ValueError):
@@ -66,6 +68,7 @@ def test_json_source_operator_covers_invalid_compilation_and_fallback_attribute_
     assert fallback_source._find_attribute_matches({"name": "Alice"}, "name") == ["hit"]
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_json_source_operator_rejects_invalid_json_shapes_and_non_string_keys():
     with pytest.raises(ValueError):

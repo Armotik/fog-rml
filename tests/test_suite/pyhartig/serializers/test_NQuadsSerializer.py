@@ -24,6 +24,7 @@ def test_nquads_serializer_serializes_named_graph_rows():
     assert is_quad is True
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_nquads_serializer_falls_back_to_triples_for_invalid_graph():
     row = MappingTuple(
@@ -69,6 +70,7 @@ def test_nquads_serializer_formats_default_graph_blank_nodes_and_literals(monkey
     assert serializer._format_term(IRI("http://example.org/a path"), allowed_types=(IRI,)) == "<http://example.org/a%20path>"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_nquads_serializer_rejects_unknown_runtime_term_types():
     with pytest.raises(ValueError):

@@ -28,6 +28,7 @@ def test_base_command_contract_can_be_implemented():
     assert command.args.value == "42"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_base_command_cannot_be_instantiated_directly():
     with pytest.raises(TypeError):

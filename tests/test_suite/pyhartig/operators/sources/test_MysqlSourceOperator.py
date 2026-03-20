@@ -27,12 +27,14 @@ def test_mysql_source_operator_normalizes_dsn_and_connection_kwargs(monkeypatch,
     monkeypatch.setattr(MysqlSourceOperator, "_load_rows", original_load_rows)
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_mysql_source_operator_requires_complete_connection_info():
     with pytest.raises(ValueError):
         MysqlSourceOperator._build_connection_kwargs("mysql:///db", None, None)
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_mysql_source_operator_handles_import_and_connection_errors(monkeypatch, tmp_path):
     fixture = tmp_path / "resource1.sql"

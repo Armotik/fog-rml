@@ -32,6 +32,7 @@ def test_stream_rows_and_operator_extend_helper():
     assert extended.new_attribute == "kind"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_stream_rows_supports_negative_index():
     rows = StreamRows(iter([MappingTuple({"id": 1}), MappingTuple({"id": 2})]))

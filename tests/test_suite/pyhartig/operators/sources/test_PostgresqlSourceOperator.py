@@ -27,12 +27,14 @@ def test_postgresql_source_operator_normalizes_dsn_and_connection_kwargs(monkeyp
     monkeypatch.setattr(PostgresqlSourceOperator, "_load_rows", original_load_rows)
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_postgresql_source_operator_requires_complete_connection_info():
     with pytest.raises(ValueError):
         PostgresqlSourceOperator._build_connection_kwargs("postgresql:///db", None, None)
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_postgresql_source_operator_handles_import_and_connection_paths(monkeypatch, tmp_path):
     fixture = tmp_path / "resource1.sql"

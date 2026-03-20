@@ -16,6 +16,7 @@ def test_expression_subclass_evaluates_mapping():
     assert _Identity().evaluate(MappingTuple({"value": 5})) == 5
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_expression_subclass_returns_epsilon_for_missing_key():
     assert _Identity().evaluate(MappingTuple()) == EPSILON

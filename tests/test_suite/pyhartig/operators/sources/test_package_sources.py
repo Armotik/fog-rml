@@ -11,6 +11,7 @@ def test_sources_package_imports():
     assert module.__name__ == "pyhartig.operators.sources"
 
 
+@pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_sources_package_reloads():
     module = importlib.import_module("pyhartig.operators.sources")
