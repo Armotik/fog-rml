@@ -156,6 +156,44 @@ python scripts/run_rml_conformance.py \
     --output-dir external/rml-test-cases/results
 ```
 
+### 3.4. List Articles Use Case (`list-articles`)
+
+A convenience command to fetch article metadata from several external sources (OpenAlex, HAL, DBLP, SerpAPI), normalize the results, inject them into a provided RML mapping, and materialize RDF quads per-author.
+
+Usage:
+
+```bash
+python -m pyhartig list-articles "<Author Name>" \
+    -m <mapping.ttl> \
+    -o <outdir> \
+    --sources openalex,hal,dblp,serpapi \
+    --start-year 2020 --end-year 2026
+```
+
+Flags and arguments:
+- `<Author Name>`: Positional argument — the author to search for (quoted if it contains spaces).
+- `-m`, `--mapping`: Path to the RML mapping file (Turtle). The mapping is expected to reference local JSON source files (see `tests/use_cases/list_articles/data/`).
+- `-o`, `--outdir`: Directory where output will be written. By default the command writes beside the mapping file.
+- `--sources`: Comma-separated list of sources to fetch. Supported values: `openalex`, `hal`, `dblp`, `serpapi`.
+- `--start-year` / `--end-year`: Integer year bounds to filter fetched results.
+- `--explain`: Print the algebraic execution plan for the mapping instead of executing it.
+- `-v` / `-vv`: Verbosity flags for logging output.
+
+Behavior and notes:
+- The command will run fetch scripts (shell or the Python fallback) to populate `*.json` files expected by the mapping. If SerpAPI is used, set `SERPAPI_KEY` in the environment or place it in a `.env` file in the mapping data folder.
+- Output filename: the command writes N-Quads named after the sanitized author, e.g. `Pascal_Molli.nq`, colocated with the mapping by default (or under `--outdir` if provided). Serializer selection follows the output extension (`.nq` → N-Quads).
+- Extension points: The mapping may call FnML/FnO extension functions; register any required functions (see the `functions` package) before running.
+
+Example (run for `Pascal Molli` mapping in tests):
+
+```powershell
+python.exe -m pyhartig list-articles "Pascal Molli" \
+    --mapping tests/use_cases/list_articles/data/mapping.ttl \
+    --outdir tests/use_cases/list_articles \
+    --sources openalex,hal,dblp,serpapi \
+    --start-year 2020 --end-year 2026
+```
+
 Behavior summary:
 * Detects mapping + expected output files per case.
 * Executes `pyhartig run` with an output format matching the expected file extension.

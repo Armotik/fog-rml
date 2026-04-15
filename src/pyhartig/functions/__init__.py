@@ -12,4 +12,9 @@ try:
 except Exception:
 	pass
 
+try:
+	from . import fog_plugins  # noqa: F401
+except Exception:
+	pass
+
 __all__ = ["FunctionRegistry"]

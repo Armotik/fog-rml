@@ -163,6 +163,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
   codebase. This differentiates a "student project" from a viable "ETL engine".
 
+## [0.3.6] - 2026-04-15
+
+### Added
+- Added a Python fetch fallback for the `list-articles` use case (`tests/use_cases/list_articles/fetch_all_py.py`) to run source fetches when shell scripts are not available.
+- Added a lightweight compatibility shim to satisfy legacy `fog_rml.*` imports used by older workflows.
+
+### Changed
+- `list-articles` CLI: default output now placed alongside the mapping file and named using a sanitized `<author>.nq` (N-Quads). Serializer selection follows the output extension.
+- Registered and improved extension functions in `src/pyhartig/functions/fog_plugins.py` for `http://fog-rml.org/functions#subject_for_row` and `#graph_for_source`.
+- Normalization improvements: extension helpers now accept Term-like objects, strip angle-bracketed IRIs, and filter explicit error markers before producing identifiers or graph IRIs.
+
+### Fixed
+- Removed occurrences of `<http://error>` in generated N-Quads by filtering error markers and using deterministic fallback IRIs for missing identifiers.
+- Fixed an UnboundLocalError in `list_articles.py` and ensured `requests` is available for the Python fetch fallback.
+
+
+
 ## [0.3.5] - 2026-03-20
 
 ### Changed

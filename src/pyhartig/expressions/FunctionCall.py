@@ -25,12 +25,10 @@ class FunctionCall(Expression):
         :return: The result of applying the function to the evaluated arguments, or EPSILON if any argument is EPSILON or an error occurs.
         """
         evaluated_args = []
-        
-        # Evaluate arguments and check for EPSILON immediately (Strict Propagation)
+        # Evaluate arguments; do not short-circuit on EPSILON so functions
+        # can implement their own fallback logic when some args are missing.
         for arg in self.arguments:
             val = arg.evaluate(tuple_data)
-            if val is EPSILON:
-                return EPSILON
             evaluated_args.append(val)
 
         # Apply the function safely to ensure total functionality

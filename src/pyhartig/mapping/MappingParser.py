@@ -188,7 +188,7 @@ class MappingParser:
         :return: Operator representing the entire mapping.
         """
         logger.info(f"Parsing RML mapping file: {self.rml_file_path}")
-        self._load_mapping_graph()
+        self._load_mapping_graph()  # Load the mapping graph from the RML file
         triples_maps = self._collect_triples_maps()
         logger.info(f"Found {len(triples_maps)} TriplesMaps to process.")
 
@@ -979,7 +979,78 @@ class MappingParser:
         else:
             branch = ExtendOperator(branch, "graph", Constant(AlgebraIRI(str(RR.defaultGraph))))
 
-        return ProjectOperator(branch, {"subject", "predicate", "object", "graph"})
+        # Try to apply algebraic equivalence: Project^{P U {a}}(Extend_phi^a(r)) = Extend_phi^a(Project^P(r))
+        # We conservatively push a Project below an Extend when:
+        # - the operator is a single Extend (parent is not another Extend)
+        # - the extended attribute is in the final projection
+        # - the extension expression only references source attributes (not produced by deeper Extends)
+        final_proj = {"subject", "predicate", "object", "graph"}
+
+        def _collect_expr_refs(expr) -> set:
+            refs = set()
+            from pyhartig.expressions.Reference import Reference as RefExpr
+            from pyhartig.expressions.FunctionCall import FunctionCall as FuncExpr
+            from pyhartig.expressions.Constant import Constant as ConstExpr
+
+            if isinstance(expr, RefExpr):
+                refs.add(expr.attribute_name)
+                return refs
+            if isinstance(expr, FuncExpr):
+                for a in expr.arguments:
+                    refs.update(_collect_expr_refs(a))
+                return refs
+            if isinstance(expr, ConstExpr):
+                return refs
+            # conservative fallback: no refs discovered
+            try:
+                # Some expression types may expose subexpressions via .arguments
+                args = getattr(expr, "arguments", None)
+                if args:
+                    for a in args:
+                        refs.update(_collect_expr_refs(a))
+            except Exception:
+                pass
+            return refs
+
+        def _parent_has_extends(op: Operator) -> set:
+            # collect new_attribute names of any ExtendOperator in the subtree rooted at op
+            names = set()
+            from pyhartig.operators.ExtendOperator import ExtendOperator as _Ext
+            try:
+                if isinstance(op, _Ext):
+                    names.add(op.new_attribute)
+                    names.update(_parent_has_extends(op.parent_operator))
+                else:
+                    # try to inspect known binary/leaf operators for parents
+                    parent = getattr(op, "operator", None) or getattr(op, "parent_operator", None)
+                    if parent is not None:
+                        names.update(_parent_has_extends(parent))
+            except Exception:
+                pass
+            return names
+
+        try:
+            from pyhartig.operators.ExtendOperator import ExtendOperator as _ExtOp
+            if isinstance(branch, _ExtOp):
+                ext = branch
+                # only push if parent is not itself an Extend (conservative)
+                if ext.new_attribute in final_proj and not isinstance(ext.parent_operator, _ExtOp):
+                    refs = _collect_expr_refs(ext.expression)
+                    if refs:
+                        parent_ext_names = _parent_has_extends(ext.parent_operator)
+                        # ensure expression doesn't depend on attributes produced by deeper Extends
+                        if refs.isdisjoint(parent_ext_names):
+                            try:
+                                branch = ExtendOperator(ProjectOperator(ext.parent_operator, refs), ext.new_attribute,
+                                                        ext.expression)
+                            except Exception:
+                                # if projection fails (e.g., empty/ref mismatch), fall back to original
+                                branch = ext
+        except Exception:
+            # any error in attempting the rewrite should not break parsing
+            pass
+
+        return ProjectOperator(branch, final_proj)
 
     def _normalize_graph(self):
         """
@@ -1211,11 +1282,17 @@ class MappingParser:
         tmpl_str = template_value.replace('\\{', '{').replace('\\}', '}')
         template_vars = self._extract_single_brace_variables(tmpl_str)
         for value in template_vars:
-            if self._is_simple_identifier(value):
-                queries[value] = f"$.{value}"
+            # If the template variable is a dotted path (e.g. "info.key"),
+            # keep it as a relative dotted JSONPath so it resolves against
+            # the iterator context (nested access). Otherwise, if it's a
+            # simple identifier use it directly. For other complex names
+            # (containing spaces or other special characters) use a
+            # bracketed lookup.
+            if "." in value or self._is_simple_identifier(value):
+                queries[value] = f"{value}"
             else:
                 safe_v = value.replace("'", "\\'")
-                queries[value] = f"$['{safe_v}']"
+                queries[value] = f"['{safe_v}']"
 
     def _extract_join_attributes(self, object_map: Node):
         """
