@@ -1283,16 +1283,18 @@ class MappingParser:
         template_vars = self._extract_single_brace_variables(tmpl_str)
         for value in template_vars:
             # If the template variable is a dotted path (e.g. "info.key"),
-            # keep it as a relative dotted JSONPath so it resolves against
-            # the iterator context (nested access). Otherwise, if it's a
-            # simple identifier use it directly. For other complex names
-            # (containing spaces or other special characters) use a
-            # bracketed lookup.
-            if "." in value or self._is_simple_identifier(value):
-                queries[value] = f"{value}"
+            # keep it as a bracketed JSONPath lookup so it resolves against
+            # the iterator context (nested access). If it's a simple
+            # identifier, use the short `$.name` JSONPath. For other complex
+            # names (containing spaces or special characters) use a
+            # bracketed lookup with proper escaping.
+            safe_v = value.replace("'", "\\'")
+            if "." in value:
+                queries[value] = f"$['{safe_v}']"
+            elif self._is_simple_identifier(value):
+                queries[value] = f"$.{value}"
             else:
-                safe_v = value.replace("'", "\\'")
-                queries[value] = f"['{safe_v}']"
+                queries[value] = f"$['{safe_v}']"
 
     def _extract_join_attributes(self, object_map: Node):
         """
