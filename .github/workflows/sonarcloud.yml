@@ -2,8 +2,6 @@ name: CI & SonarCloud Coverage
 
 on:
   push:
-    branches:
-      - main
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -43,6 +41,7 @@ jobs:
           pytest tests/test_suite --suite coverage --cov=src/fog_rml --cov-report=xml
 
       - name: SonarCloud Scan
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         uses: SonarSource/sonarqube-scan-action@v7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
