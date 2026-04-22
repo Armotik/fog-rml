@@ -1,16 +1,18 @@
-#!/usr/bin/env python3
-"""Run pyhartig on RML test cases and compare outputs using rdflib.
+﻿#!/usr/bin/env python3
+"""Run fog-rml on RML test cases and compare outputs using rdflib.
 
 Usage:
-  python scripts/run_rml_conformance.py --tests-dir /path/to/rml-test-cases --suite Core --output-dir /tmp/pyhartig_conformance
+  python scripts/run_rml_conformance.py --tests-dir /path/to/rml-test-cases --suite Core --output-dir /tmp/fog_rml_conformance
 
 Behavior:
 - Scans the provided tests directory for subdirectories that contain an RML mapping file (*.ttl or *.rml) and an expected RDF output (*.nt, *.ttl, *.nq)
-- For each detected test case, runs `python -m pyhartig run -m <mapping> -o <tmpfile>`
+- For each detected test case, runs `fog-rml run -m <mapping> -o <tmpfile>` when available
+  and falls back to the module invocation if the CLI entry point is not on PATH.
 - Compares produced RDF to expected RDF using rdflib graph isomorphism
 - Prints a summary with pass/fail counts and coverage percentage
 """
 import argparse
+import logging
 import subprocess
 import tempfile
 import shutil
@@ -24,16 +26,23 @@ import urllib.parse
 import os
 import csv
 
-from pyhartig.namespaces import D2RQ_BASE, RML_BASE, SD_BASE
+from fog_rml.namespaces import D2RQ_BASE, RML_BASE, SD_BASE
 
 EXT_MAPPING = (".ttl", ".rml")
 EXT_EXPECTED = (".nt", ".ttl", ".nq", ".trig")
+logger = logging.getLogger(__name__)
 
 warnings.filterwarnings(
     "ignore",
     message="ConjunctiveGraph is deprecated, use Dataset instead.",
     category=DeprecationWarning,
 )
+
+
+def configure_logging(verbose: bool) -> None:
+    """Configure simple stderr logging for the script."""
+    level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(level=level, format="%(message)s", stream=sys.stderr)
 
 
 def guess_format(path: Path):
@@ -262,19 +271,27 @@ def rewrite_mapping_to_local(mapping: Path, case_dir: Path, tmp_root: Path) -> P
     return tmp_mapping
 
 
-def run_pyhartig_mapping(mapping: Path, output_path: Path, verbose: bool = False, strict_references: bool = False) -> int:
-    cmd = [sys.executable, "-m", "pyhartig", "run", "-m", str(mapping), "-o", str(output_path)]
+def run_fog_rml_mapping(mapping: Path, output_path: Path, verbose: bool = False, strict_references: bool = False) -> int:
+    cli = shutil.which("fog-rml")
+    if cli:
+        cmd = [cli, "run", "-m", str(mapping), "-o", str(output_path)]
+    else:
+        cmd = [sys.executable, "-m", "fog_rml", "run", "-m", str(mapping), "-o", str(output_path)]
     env = os.environ.copy()
     if strict_references:
-        env["PYHARTIG_STRICT_REFERENCES"] = "1"
+        env["FOG_RML_STRICT_REFERENCES"] = "1"
     else:
-        env.pop("PYHARTIG_STRICT_REFERENCES", None)
+        env.pop("FOG_RML_STRICT_REFERENCES", None)
     if verbose:
-        print("Running:", " ".join(cmd))
+        logger.info("Running: %s", " ".join(cmd))
     proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
     if verbose:
-        print(proc.stdout.decode("utf-8", errors="ignore"))
-        print(proc.stderr.decode("utf-8", errors="ignore"))
+        stdout_text = proc.stdout.decode("utf-8", errors="ignore").rstrip()
+        stderr_text = proc.stderr.decode("utf-8", errors="ignore").rstrip()
+        if stdout_text:
+            logger.info("%s", stdout_text)
+        if stderr_text:
+            logger.info("%s", stderr_text)
     return proc.returncode
 
 
@@ -307,21 +324,22 @@ def compare_rdf_files(expected: Path, actual: Path) -> bool:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run pyhartig on RML test cases and compare RDF outputs")
+    parser = argparse.ArgumentParser(description="Run fog-rml on RML test cases and compare RDF outputs")
     parser.add_argument("--tests-dir", required=True, help="Path to downloaded RML test cases root")
     parser.add_argument("--suite", default=None, help="Optional subdirectory/suite name to limit (e.g., Core)")
     parser.add_argument("--output-dir", default=None, help="Directory to write temporary outputs")
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
+    configure_logging(args.verbose)
 
     tests_root = Path(args.tests_dir)
     if args.suite:
         tests_root = tests_root / args.suite
     if not tests_root.exists():
-        print("Tests directory not found:", tests_root)
+        logger.error("Tests directory not found: %s", tests_root)
         sys.exit(2)
 
-    out_dir = Path(args.output_dir) if args.output_dir else Path(tempfile.mkdtemp(prefix="pyhartig_conformance_"))
+    out_dir = Path(args.output_dir) if args.output_dir else Path(tempfile.mkdtemp(prefix="fog_rml_conformance_"))
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Try to locate a metadata.csv file that lists tests and whether an error is expected
@@ -351,7 +369,7 @@ def main():
 
     cases = list(find_test_cases(tests_root))
     if not cases:
-        print("No test cases found under:", tests_root)
+        logger.error("No test cases found under: %s", tests_root)
         sys.exit(2)
 
     total = len(cases)
@@ -365,7 +383,8 @@ def main():
 
     for case_dir, mapping, expected in cases:
         if args.verbose:
-            print(f"\n=== Running case: {case_dir} ===")
+            logger.info("")
+            logger.info("=== Running case: %s ===", case_dir)
         expects_error = metadata_map.get(case_dir.name, False)
 
         # Materialize a per-case results folder containing original test assets
@@ -444,25 +463,25 @@ def main():
         if rewritten_mapping:
             use_mapping = rewritten_mapping
             if args.verbose:
-                print(f"Using rewritten mapping: {use_mapping}")
+                logger.info("Using rewritten mapping: %s", use_mapping)
         else:
             if skip_case:
                 skipped_external += 1
                 results.append((case_dir, None, "skipped (external source)"))
                 if args.verbose:
-                    print(f"SKIP: {case_dir} (external source referenced)")
+                    logger.info("SKIP: %s (external source referenced)", case_dir)
                 continue
             use_mapping = mapping
 
         # Use the same extension as the expected file so we produce matching formats
         expected_suffix = expected.suffix if expected.suffix else '.nt'
-        tmp_out = case_out_dir / f"output_pyhartig{expected_suffix}"
+        tmp_out = case_out_dir / f"output_fog_rml{expected_suffix}"
         try:
             if tmp_out.exists():
                 tmp_out.unlink()
         except Exception:
             pass
-        rc = run_pyhartig_mapping(
+        rc = run_fog_rml_mapping(
             use_mapping,
             tmp_out,
             verbose=args.verbose,
@@ -480,20 +499,20 @@ def main():
                 expected_error_passed += 1
                 results.append((case_dir, True, "expected error observed"))
                 if args.verbose:
-                    print(f"PASS (expected error): {case_dir}")
+                    logger.info("PASS (expected error): %s", case_dir)
             else:
                 failed += 1
                 expected_error_failed += 1
-                results.append((case_dir, False, "expected error but pyhartig succeeded"))
+                results.append((case_dir, False, "expected error but fog-rml succeeded"))
                 if args.verbose:
-                    print(f"FAIL (expected error not observed): {case_dir}")
+                    logger.info("FAIL (expected error not observed): %s", case_dir)
             continue
 
         if rc != 0:
             failed += 1
-            results.append((case_dir, False, "pyhartig failed (exit code %d)" % rc))
+            results.append((case_dir, False, "fog-rml failed (exit code %d)" % rc))
             if args.verbose:
-                print(f"pyhartig failed for {case_dir} (rc={rc})")
+                logger.info("fog-rml failed for %s (rc=%s)", case_dir, rc)
             continue
         try:
             ok = compare_rdf_files(expected, tmp_out)
@@ -506,12 +525,12 @@ def main():
             passed += 1
             results.append((case_dir, True, ""))
             if args.verbose:
-                print(f"PASS: {case_dir}")
+                logger.info("PASS: %s", case_dir)
         else:
             failed += 1
             results.append((case_dir, False, "graphs not isomorphic"))
             if args.verbose:
-                print(f"FAIL: {case_dir}")
+                logger.info("FAIL: %s", case_dir)
 
     # Cleanup temporary rewritten mappings before reporting final output location
     try:
@@ -524,35 +543,43 @@ def main():
     effective_total = total - skipped_external
     if effective_total < 0:
         effective_total = 0
-    print("\nConformance run summary")
-    print(f"Total cases: {effective_total}")
-    print(f"Passed: {passed}")
-    print(f"Failed: {failed}")
+    logger.info("")
+    logger.info("Conformance run summary")
+    logger.info("Total cases: %s", effective_total)
+    logger.info("Passed: %s", passed)
+    logger.info("Failed: %s", failed)
     if expected_error_passed or expected_error_failed:
-        print(f"Expected-error cases (pass/fail): {expected_error_passed}/{expected_error_failed}")
+        logger.info(
+            "Expected-error cases (pass/fail): %s/%s",
+            expected_error_passed,
+            expected_error_failed,
+        )
     if skipped_external:
-        print(f"Skipped external: {skipped_external}")
+        logger.info("Skipped external: %s", skipped_external)
     # If there are no effective cases, report full coverage
     pct = (passed / effective_total) * 100 if effective_total else 100.0
-    print(f"Coverage: {pct:.1f}%")
+    logger.info("Coverage: %.1f%%", pct)
 
     # Print failed cases
     if failed > 0:
-        print("\nFailed cases:")
+        logger.info("")
+        logger.info("Failed cases:")
         for case_dir, status, msg in results:
             if status is False:
-                print(f"- {case_dir}: {msg}")
+                logger.info("- %s: %s", case_dir, msg)
 
     # Keep outputs for inspection
-    print(f"\nOutputs retained in: {out_dir}")
+    logger.info("")
+    logger.info("Outputs retained in: %s", out_dir)
 
     # Return non-zero if coverage below threshold (optional)
     threshold = 80.0
     if pct < threshold:
-        print(f"Coverage below {threshold}%; failing run (exit 3)")
+        logger.error("Coverage below %s%%; failing run (exit 3)", threshold)
         sys.exit(3)
     sys.exit(0)
 
 
 if __name__ == "__main__":
     main()
+

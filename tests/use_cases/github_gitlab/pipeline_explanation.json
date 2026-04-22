@@ -30,6 +30,97 @@
           "parameters": {
             "new_attribute": "object",
             "expression": {
+              "type": "Constant",
+              "value_type": "Literal",
+              "value": "GitLab",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string"
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://example.org/source"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://gitlab.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "iid"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "iid": "$.iid"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
               "type": "FunctionCall",
               "function": "to_literal",
               "arguments": [
@@ -53,6 +144,107 @@
                 "type": "Constant",
                 "value_type": "IRI",
                 "value": "http://schema.org/name"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://gitlab.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "iid"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "iid": "$.iid",
+                    "title": "title"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
+              "type": "FunctionCall",
+              "function": "to_literal",
+              "arguments": [
+                {
+                  "type": "Reference",
+                  "attribute": "body"
+                },
+                {
+                  "type": "Constant",
+                  "value_type": "str",
+                  "value": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              ]
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://schema.org/description"
               }
             },
             "parent": {
@@ -95,7 +287,199 @@
                   "iterator": "$[*]",
                   "attribute_mappings": {
                     "number": "$.number",
-                    "title": "title"
+                    "body": "body"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
+              "type": "FunctionCall",
+              "function": "to_literal",
+              "arguments": [
+                {
+                  "type": "Reference",
+                  "attribute": "body"
+                },
+                {
+                  "type": "Constant",
+                  "value_type": "str",
+                  "value": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              ]
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://schema.org/description"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://github.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "number"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "number": "$.number",
+                    "body": "body"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
+              "type": "Constant",
+              "value_type": "Literal",
+              "value": "GitLab",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string"
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://example.org/source"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://gitlab.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "iid"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "iid": "$.iid"
                   },
                   "source_type": "JSON",
                   "jsonpath_iterator": "$[*]"
@@ -232,6 +616,198 @@
           "parameters": {
             "new_attribute": "object",
             "expression": {
+              "type": "Constant",
+              "value_type": "Literal",
+              "value": "GitHub",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string"
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://example.org/source"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://github.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "number"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "number": "$.number"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
+              "type": "FunctionCall",
+              "function": "to_literal",
+              "arguments": [
+                {
+                  "type": "Reference",
+                  "attribute": "title"
+                },
+                {
+                  "type": "Constant",
+                  "value_type": "str",
+                  "value": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              ]
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://schema.org/name"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://gitlab.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "iid"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "iid": "$.iid",
+                    "title": "title"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
               "type": "FunctionCall",
               "function": "to_literal",
               "arguments": [
@@ -298,6 +874,388 @@
                   "attribute_mappings": {
                     "number": "$.number",
                     "created_at": "created_at"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
+              "type": "FunctionCall",
+              "function": "to_literal",
+              "arguments": [
+                {
+                  "type": "Reference",
+                  "attribute": "title"
+                },
+                {
+                  "type": "Constant",
+                  "value_type": "str",
+                  "value": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              ]
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://schema.org/name"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://github.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "number"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "number": "$.number",
+                    "title": "title"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
+              "type": "FunctionCall",
+              "function": "to_literal",
+              "arguments": [
+                {
+                  "type": "Reference",
+                  "attribute": "title"
+                },
+                {
+                  "type": "Constant",
+                  "value_type": "str",
+                  "value": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              ]
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://schema.org/name"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://gitlab.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "iid"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "iid": "$.iid",
+                    "title": "title"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
+              "type": "Constant",
+              "value_type": "IRI",
+              "value": "http://schema.org/Issue"
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://gitlab.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "iid"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "iid": "$.iid"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
+              "type": "Constant",
+              "value_type": "IRI",
+              "value": "http://schema.org/Issue"
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://github.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "number"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "number": "$.number"
                   },
                   "source_type": "JSON",
                   "jsonpath_iterator": "$[*]"
@@ -540,107 +1498,6 @@
               "arguments": [
                 {
                   "type": "Reference",
-                  "attribute": "description"
-                },
-                {
-                  "type": "Constant",
-                  "value_type": "str",
-                  "value": "http://www.w3.org/2001/XMLSchema#string"
-                }
-              ]
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://schema.org/description"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://gitlab.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "iid"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "iid": "$.iid",
-                    "description": "description"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "FunctionCall",
-              "function": "to_literal",
-              "arguments": [
-                {
-                  "type": "Reference",
                   "attribute": "created_at"
                 },
                 {
@@ -742,7 +1599,7 @@
               "arguments": [
                 {
                   "type": "Reference",
-                  "attribute": "body"
+                  "attribute": "title"
                 },
                 {
                   "type": "Constant",
@@ -759,7 +1616,7 @@
               "expression": {
                 "type": "Constant",
                 "value_type": "IRI",
-                "value": "http://schema.org/description"
+                "value": "http://schema.org/name"
               }
             },
             "parent": {
@@ -802,7 +1659,98 @@
                   "iterator": "$[*]",
                   "attribute_mappings": {
                     "number": "$.number",
-                    "body": "body"
+                    "title": "title"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
+              "type": "Constant",
+              "value_type": "Literal",
+              "value": "GitHub",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string"
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://example.org/source"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://github.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "number"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "number": "$.number"
                   },
                   "source_type": "JSON",
                   "jsonpath_iterator": "$[*]"
@@ -1160,7 +2108,7 @@
                         {
                           "type": "Constant",
                           "value_type": "Literal",
-                          "value": "http://github.com/issue/",
+                          "value": "http://gitlab.com/issue/",
                           "datatype": "http://www.w3.org/2001/XMLSchema#string"
                         },
                         {
@@ -1169,7 +2117,7 @@
                           "arguments": [
                             {
                               "type": "Reference",
-                              "attribute": "number"
+                              "attribute": "iid"
                             }
                           ]
                         }
@@ -1184,7 +2132,7 @@
                 "parameters": {
                   "iterator": "$[*]",
                   "attribute_mappings": {
-                    "number": "$.number"
+                    "iid": "$.iid"
                   },
                   "source_type": "JSON",
                   "jsonpath_iterator": "$[*]"
@@ -1225,7 +2173,7 @@
               "arguments": [
                 {
                   "type": "Reference",
-                  "attribute": "body"
+                  "attribute": "description"
                 },
                 {
                   "type": "Constant",
@@ -1243,6 +2191,98 @@
                 "type": "Constant",
                 "value_type": "IRI",
                 "value": "http://schema.org/description"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://gitlab.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "iid"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "iid": "$.iid",
+                    "description": "description"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
+              "type": "Constant",
+              "value_type": "Literal",
+              "value": "GitHub",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string"
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://example.org/source"
               }
             },
             "parent": {
@@ -1284,8 +2324,7 @@
                 "parameters": {
                   "iterator": "$[*]",
                   "attribute_mappings": {
-                    "number": "$.number",
-                    "body": "body"
+                    "number": "$.number"
                   },
                   "source_type": "JSON",
                   "jsonpath_iterator": "$[*]"
@@ -1451,6 +2490,107 @@
                         {
                           "type": "Constant",
                           "value_type": "Literal",
+                          "value": "http://github.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "number"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "number": "$.number",
+                    "created_at": "created_at"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
+              "type": "FunctionCall",
+              "function": "to_literal",
+              "arguments": [
+                {
+                  "type": "Reference",
+                  "attribute": "created_at"
+                },
+                {
+                  "type": "Constant",
+                  "value_type": "str",
+                  "value": "http://www.w3.org/2001/XMLSchema#dateTime"
+                }
+              ]
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://schema.org/dateCreated"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
                           "value": "http://gitlab.com/issue/",
                           "datatype": "http://www.w3.org/2001/XMLSchema#string"
                         },
@@ -1512,10 +2652,19 @@
           "parameters": {
             "new_attribute": "object",
             "expression": {
-              "type": "Constant",
-              "value_type": "Literal",
-              "value": "GitLab",
-              "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              "type": "FunctionCall",
+              "function": "to_literal",
+              "arguments": [
+                {
+                  "type": "Reference",
+                  "attribute": "user.login"
+                },
+                {
+                  "type": "Constant",
+                  "value_type": "str",
+                  "value": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              ]
             }
           },
           "parent": {
@@ -1525,7 +2674,7 @@
               "expression": {
                 "type": "Constant",
                 "value_type": "IRI",
-                "value": "http://example.org/source"
+                "value": "http://schema.org/creator"
               }
             },
             "parent": {
@@ -1543,7 +2692,7 @@
                         {
                           "type": "Constant",
                           "value_type": "Literal",
-                          "value": "http://gitlab.com/issue/",
+                          "value": "http://github.com/issue/",
                           "datatype": "http://www.w3.org/2001/XMLSchema#string"
                         },
                         {
@@ -1552,7 +2701,7 @@
                           "arguments": [
                             {
                               "type": "Reference",
-                              "attribute": "iid"
+                              "attribute": "number"
                             }
                           ]
                         }
@@ -1567,7 +2716,109 @@
                 "parameters": {
                   "iterator": "$[*]",
                   "attribute_mappings": {
-                    "iid": "$.iid"
+                    "number": "$.number",
+                    "user.login": "user.login"
+                  },
+                  "source_type": "JSON",
+                  "jsonpath_iterator": "$[*]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Project",
+      "parameters": {
+        "attributes": [
+          "graph",
+          "object",
+          "predicate",
+          "subject"
+        ]
+      },
+      "parent": {
+        "type": "Extend",
+        "parameters": {
+          "new_attribute": "graph",
+          "expression": {
+            "type": "Constant",
+            "value_type": "IRI",
+            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
+          }
+        },
+        "parent": {
+          "type": "Extend",
+          "parameters": {
+            "new_attribute": "object",
+            "expression": {
+              "type": "FunctionCall",
+              "function": "to_literal",
+              "arguments": [
+                {
+                  "type": "Reference",
+                  "attribute": "created_at"
+                },
+                {
+                  "type": "Constant",
+                  "value_type": "str",
+                  "value": "http://www.w3.org/2001/XMLSchema#dateTime"
+                }
+              ]
+            }
+          },
+          "parent": {
+            "type": "Extend",
+            "parameters": {
+              "new_attribute": "predicate",
+              "expression": {
+                "type": "Constant",
+                "value_type": "IRI",
+                "value": "http://schema.org/dateCreated"
+              }
+            },
+            "parent": {
+              "type": "Extend",
+              "parameters": {
+                "new_attribute": "subject",
+                "expression": {
+                  "type": "FunctionCall",
+                  "function": "to_iri",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "function": "concat",
+                      "arguments": [
+                        {
+                          "type": "Constant",
+                          "value_type": "Literal",
+                          "value": "http://github.com/issue/",
+                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                        },
+                        {
+                          "type": "FunctionCall",
+                          "function": "percent_encode_component",
+                          "arguments": [
+                            {
+                              "type": "Reference",
+                              "attribute": "number"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "parent": {
+                "type": "Source",
+                "operator_class": "JsonSourceOperator",
+                "parameters": {
+                  "iterator": "$[*]",
+                  "attribute_mappings": {
+                    "number": "$.number",
+                    "created_at": "created_at"
                   },
                   "source_type": "JSON",
                   "jsonpath_iterator": "$[*]"
@@ -1669,572 +2920,6 @@
                   "attribute_mappings": {
                     "iid": "$.iid",
                     "description": "description"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "FunctionCall",
-              "function": "to_literal",
-              "arguments": [
-                {
-                  "type": "Reference",
-                  "attribute": "title"
-                },
-                {
-                  "type": "Constant",
-                  "value_type": "str",
-                  "value": "http://www.w3.org/2001/XMLSchema#string"
-                }
-              ]
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://schema.org/name"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://gitlab.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "iid"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "iid": "$.iid",
-                    "title": "title"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "Constant",
-              "value_type": "Literal",
-              "value": "GitHub",
-              "datatype": "http://www.w3.org/2001/XMLSchema#string"
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://example.org/source"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://github.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "number"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "number": "$.number"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "Constant",
-              "value_type": "Literal",
-              "value": "GitHub",
-              "datatype": "http://www.w3.org/2001/XMLSchema#string"
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://example.org/source"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://github.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "number"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "number": "$.number"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "FunctionCall",
-              "function": "to_literal",
-              "arguments": [
-                {
-                  "type": "Reference",
-                  "attribute": "body"
-                },
-                {
-                  "type": "Constant",
-                  "value_type": "str",
-                  "value": "http://www.w3.org/2001/XMLSchema#string"
-                }
-              ]
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://schema.org/description"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://github.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "number"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "number": "$.number",
-                    "body": "body"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "Constant",
-              "value_type": "Literal",
-              "value": "GitLab",
-              "datatype": "http://www.w3.org/2001/XMLSchema#string"
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://example.org/source"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://gitlab.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "iid"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "iid": "$.iid"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "Constant",
-              "value_type": "Literal",
-              "value": "GitLab",
-              "datatype": "http://www.w3.org/2001/XMLSchema#string"
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://example.org/source"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://gitlab.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "iid"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "iid": "$.iid"
                   },
                   "source_type": "JSON",
                   "jsonpath_iterator": "$[*]"
@@ -2473,8 +3158,9 @@
             "new_attribute": "object",
             "expression": {
               "type": "Constant",
-              "value_type": "IRI",
-              "value": "http://schema.org/Issue"
+              "value_type": "Literal",
+              "value": "GitLab",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string"
             }
           },
           "parent": {
@@ -2484,7 +3170,7 @@
               "expression": {
                 "type": "Constant",
                 "value_type": "IRI",
-                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+                "value": "http://example.org/source"
               }
             },
             "parent": {
@@ -2527,309 +3213,6 @@
                   "iterator": "$[*]",
                   "attribute_mappings": {
                     "iid": "$.iid"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "FunctionCall",
-              "function": "to_literal",
-              "arguments": [
-                {
-                  "type": "Reference",
-                  "attribute": "created_at"
-                },
-                {
-                  "type": "Constant",
-                  "value_type": "str",
-                  "value": "http://www.w3.org/2001/XMLSchema#dateTime"
-                }
-              ]
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://schema.org/dateCreated"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://github.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "number"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "number": "$.number",
-                    "created_at": "created_at"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "FunctionCall",
-              "function": "to_literal",
-              "arguments": [
-                {
-                  "type": "Reference",
-                  "attribute": "title"
-                },
-                {
-                  "type": "Constant",
-                  "value_type": "str",
-                  "value": "http://www.w3.org/2001/XMLSchema#string"
-                }
-              ]
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://schema.org/name"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://gitlab.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "iid"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "iid": "$.iid",
-                    "title": "title"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "FunctionCall",
-              "function": "to_literal",
-              "arguments": [
-                {
-                  "type": "Reference",
-                  "attribute": "title"
-                },
-                {
-                  "type": "Constant",
-                  "value_type": "str",
-                  "value": "http://www.w3.org/2001/XMLSchema#string"
-                }
-              ]
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://schema.org/name"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://gitlab.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "iid"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "iid": "$.iid",
-                    "title": "title"
                   },
                   "source_type": "JSON",
                   "jsonpath_iterator": "$[*]"
@@ -2971,7 +3354,7 @@
               "arguments": [
                 {
                   "type": "Reference",
-                  "attribute": "title"
+                  "attribute": "body"
                 },
                 {
                   "type": "Constant",
@@ -2988,7 +3371,7 @@
               "expression": {
                 "type": "Constant",
                 "value_type": "IRI",
-                "value": "http://schema.org/name"
+                "value": "http://schema.org/description"
               }
             },
             "parent": {
@@ -3031,7 +3414,7 @@
                   "iterator": "$[*]",
                   "attribute_mappings": {
                     "number": "$.number",
-                    "title": "title"
+                    "body": "body"
                   },
                   "source_type": "JSON",
                   "jsonpath_iterator": "$[*]"
@@ -3122,389 +3505,6 @@
                   "iterator": "$[*]",
                   "attribute_mappings": {
                     "iid": "$.iid"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "Constant",
-              "value_type": "IRI",
-              "value": "http://schema.org/Issue"
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://gitlab.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "iid"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "iid": "$.iid"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "FunctionCall",
-              "function": "to_literal",
-              "arguments": [
-                {
-                  "type": "Reference",
-                  "attribute": "created_at"
-                },
-                {
-                  "type": "Constant",
-                  "value_type": "str",
-                  "value": "http://www.w3.org/2001/XMLSchema#dateTime"
-                }
-              ]
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://schema.org/dateCreated"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://github.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "number"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "number": "$.number",
-                    "created_at": "created_at"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "Constant",
-              "value_type": "Literal",
-              "value": "GitHub",
-              "datatype": "http://www.w3.org/2001/XMLSchema#string"
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://example.org/source"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://github.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "number"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "number": "$.number"
-                  },
-                  "source_type": "JSON",
-                  "jsonpath_iterator": "$[*]"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Project",
-      "parameters": {
-        "attributes": [
-          "graph",
-          "object",
-          "predicate",
-          "subject"
-        ]
-      },
-      "parent": {
-        "type": "Extend",
-        "parameters": {
-          "new_attribute": "graph",
-          "expression": {
-            "type": "Constant",
-            "value_type": "IRI",
-            "value": "http://www.w3.org/ns/r2rml#defaultGraph"
-          }
-        },
-        "parent": {
-          "type": "Extend",
-          "parameters": {
-            "new_attribute": "object",
-            "expression": {
-              "type": "FunctionCall",
-              "function": "to_literal",
-              "arguments": [
-                {
-                  "type": "Reference",
-                  "attribute": "user.login"
-                },
-                {
-                  "type": "Constant",
-                  "value_type": "str",
-                  "value": "http://www.w3.org/2001/XMLSchema#string"
-                }
-              ]
-            }
-          },
-          "parent": {
-            "type": "Extend",
-            "parameters": {
-              "new_attribute": "predicate",
-              "expression": {
-                "type": "Constant",
-                "value_type": "IRI",
-                "value": "http://schema.org/creator"
-              }
-            },
-            "parent": {
-              "type": "Extend",
-              "parameters": {
-                "new_attribute": "subject",
-                "expression": {
-                  "type": "FunctionCall",
-                  "function": "to_iri",
-                  "arguments": [
-                    {
-                      "type": "FunctionCall",
-                      "function": "concat",
-                      "arguments": [
-                        {
-                          "type": "Constant",
-                          "value_type": "Literal",
-                          "value": "http://github.com/issue/",
-                          "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                        },
-                        {
-                          "type": "FunctionCall",
-                          "function": "percent_encode_component",
-                          "arguments": [
-                            {
-                              "type": "Reference",
-                              "attribute": "number"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "parent": {
-                "type": "Source",
-                "operator_class": "JsonSourceOperator",
-                "parameters": {
-                  "iterator": "$[*]",
-                  "attribute_mappings": {
-                    "number": "$.number",
-                    "user.login": "user.login"
                   },
                   "source_type": "JSON",
                   "jsonpath_iterator": "$[*]"

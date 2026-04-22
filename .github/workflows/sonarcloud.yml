@@ -1,4 +1,4 @@
-name: CI & SonarCloud Coverage
+﻿name: CI & SonarCloud Coverage
 
 on:
   push:

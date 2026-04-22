@@ -1,11 +1,11 @@
-# PyHartig Test Suite
+﻿# fog-rml Test Suite
 
 ## Overview
 
-The test suite is now organized as a mirror of `src/pyhartig/`.
+The test suite is now organized as a mirror of `src/fog_rml/`.
 
-For each source file in `src/pyhartig/**`, there is a corresponding test module in
-`tests/test_suite/pyhartig/**`. Each mirrored test module contains:
+For each source file in `src/fog_rml/**`, there is a corresponding test module in
+`tests/test_suite/fog_rml/**`. Each mirrored test module contains:
 
 - at least one `coverage_suite` test used by SonarQube coverage runs
 - at least one `edge_case` test used to exercise robustness paths
@@ -39,24 +39,24 @@ Equivalent marker-based commands are also available:
 
 The main mirrored directories are:
 
-- `tests/test_suite/pyhartig/`
-- `tests/test_suite/pyhartig/algebra/`
-- `tests/test_suite/pyhartig/commands/`
-- `tests/test_suite/pyhartig/expressions/`
-- `tests/test_suite/pyhartig/functions/`
-- `tests/test_suite/pyhartig/mapping/`
-- `tests/test_suite/pyhartig/operators/`
-- `tests/test_suite/pyhartig/operators/sources/`
-- `tests/test_suite/pyhartig/serializers/`
-- `tests/test_suite/pyhartig/sparql/`
-- `tests/test_suite/pyhartig/utils/`
+- `tests/test_suite/fog_rml/`
+- `tests/test_suite/fog_rml/algebra/`
+- `tests/test_suite/fog_rml/commands/`
+- `tests/test_suite/fog_rml/expressions/`
+- `tests/test_suite/fog_rml/functions/`
+- `tests/test_suite/fog_rml/mapping/`
+- `tests/test_suite/fog_rml/operators/`
+- `tests/test_suite/fog_rml/operators/sources/`
+- `tests/test_suite/fog_rml/serializers/`
+- `tests/test_suite/fog_rml/sparql/`
+- `tests/test_suite/fog_rml/utils/`
 
 Examples:
 
-- `src/pyhartig/commands/run.py` -> `tests/test_suite/pyhartig/commands/test_run.py`
-- `src/pyhartig/operators/SourceFactory.py` -> `tests/test_suite/pyhartig/operators/test_SourceFactory.py`
-- `src/pyhartig/operators/sources/JsonSourceOperator.py` -> `tests/test_suite/pyhartig/operators/sources/test_JsonSourceOperator.py`
-- `src/pyhartig/sparql/service_call.py` -> `tests/test_suite/pyhartig/sparql/test_service_call.py`
+- `src/fog_rml/commands/run.py` -> `tests/test_suite/fog_rml/commands/test_run.py`
+- `src/fog_rml/operators/SourceFactory.py` -> `tests/test_suite/fog_rml/operators/test_SourceFactory.py`
+- `src/fog_rml/operators/sources/JsonSourceOperator.py` -> `tests/test_suite/fog_rml/operators/sources/test_JsonSourceOperator.py`
+- `src/fog_rml/sparql/service_call.py` -> `tests/test_suite/fog_rml/sparql/test_service_call.py`
 
 ## Fixtures
 
@@ -85,8 +85,8 @@ suite to large integration fixtures or numbered scenario files.
 
 Based on Definition 11: `Project^P(r) : (A, I) -> (P, I')` where:
 - `r = (A, I)`: Source mapping relation with attributes A and instance I
-- `P ⊆ A`: Non-empty subset of attributes to retain
-- Result: New mapping relation `(P, I')` where `I' = { t[P] | t ∈ I }`
+- `P âŠ† A`: Non-empty subset of attributes to retain
+- Result: New mapping relation `(P, I')` where `I' = { t[P] | t âˆˆ I }`
 
 **Test Coverage**:
 - Single attribute projection
@@ -105,14 +105,14 @@ Based on Definition 11: `Project^P(r) : (A, I) -> (P, I')` where:
 
 **Key Features**:
 - Tests the `ProjectOperator` core functionality
-- Validates strict mode behavior (P ⊆ A enforced)
+- Validates strict mode behavior (P âŠ† A enforced)
 - Tests integration with other operators (Source, Extend, Union)
 - Validates edge cases and error handling
 - Integration tests for RDF generation and heterogeneous schema handling
 
 **Strict Mode Rationale**:
 - Safer behavior: detects bugs early when projecting non-existent attributes
-- Conforms to classical relational algebra where `P ⊆ A` is required
+- Conforms to classical relational algebra where `P âŠ† A` is required
 - Heterogeneous schemas can be handled with `Union` + multiple `Project` operations
 
 **Example - Handling Heterogeneous Schemas**:
@@ -193,10 +193,10 @@ union = UnionOperator([project_a, project_b])
 ### Run All Tests
 
 ```bash
-# Retournez à la racine du projet
+# Retournez Ã  la racine du projet
 cd ../..
 
-# Puis exécutez les tests
+# Puis exÃ©cutez les tests
 pytest tests/test_suite/ -v -s
 
 # Ou le script de tests
@@ -290,7 +290,7 @@ Tuples:
 ================================================================================
 [DEBUG] Validation
 --------------------------------------------------------------------------------
-✓ All assertions passed
+âœ“ All assertions passed
 ================================================================================
 ```
 
@@ -351,9 +351,10 @@ pytest tests/test_suite/ -v -s
 
 ## License
 
-This test suite is part of the PyHartig project and follows the same license.
+This test suite is part of the fog-rml project and follows the same license.
 
 ---
 
 **Last Updated**: 2025-12-09
 **Test Suite Version**: 2.1.0
+

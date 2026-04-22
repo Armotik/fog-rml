@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### TODO
 
 #### Demo & Use Cases
-- Exemple avec structure JSON bien plus complexe (niveaux imbriqués, tableaux dans tableaux)
-- Exemple avec des règles plus compliquées et utiliser chaque Operator (Project, Join, Union, Extend)
+- Exemple avec structure JSON bien plus complexe (niveaux imbriquÃ©s, tableaux dans tableaux)
+- Exemple avec des rÃ¨gles plus compliquÃ©es et utiliser chaque Operator (Project, Join, Union, Extend)
 - Faire une commande exemple cli source + mapping -> output (pas le use case)
 - **Implement "Multi-Repo Issues" Demo Scenario**:
   - **Goal**: Aggregate issues from multiple heterogeneous sources (GitHub & GitLab) into a single Knowledge Graph.
@@ -70,12 +70,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   single space changes in `explain()` formatting, the test breaks. `test_11` (JSON) is much more robust and relevant. *
   *Suggested fix**: Consider relaxing string comparisons in `test_10` (e.g., check for key substrings rather than exact
   matches) or rely primarily on `test_11` for validation.
-- `test_13_equijoin_operator.py`: Add load/performance test: Since the implementation uses O(N×M) Nested Loop, current
+- `test_13_equijoin_operator.py`: Add load/performance test: Since the implementation uses O(NÃ—M) Nested Loop, current
   tests pass instantly with only 4 rows. Missing a test with 1000+ rows on each side to "feel" the slowness and justify
   the need for Hash Join optimization.
 - `test_13_equijoin_operator.py`: Verify NULL join semantics: In `test_equijoin_with_null_values`, `None = None` appears
   to match (True). In standard SQL, `NULL = NULL` is False. This is a debatable semantic choice for joins. The paper
-  does not specify this case (since `ε` typically does not propagate in strict equality). **Action**: Document the
+  does not specify this case (since `Îµ` typically does not propagate in strict equality). **Action**: Document the
   chosen semantics or align with SQL NULL behavior.
 
 #### Testing & Quality
@@ -87,32 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - [Morph-KGC Test Suite](https://github.com/morph-kgc/morph-kgc)
   - (test cases)
 
-#### General Improvements
-
-##### Logging vs Print (Improvement)
-
-- Replace `print()` with `logging` module: In `MappingParser.py` (and elsewhere), `print(f"Error: ...")` or try/except
-  blocks print errors. This pollutes stdout, which is problematic if users want to redirect output (
-  `python -m pyhartig ... > output.nt`). **Suggested fix**: Use standard `logging` module with
-  `logger = logging.getLogger(__name__)`.
-
-##### Output Serialization (Missing)
-
-- Add RDF Serializer: `execute()` returns `List[MappingTuple]`, which is good for algebra but not RDF. Need a Serializer
-  class/function that takes final tuples and writes them in N-Triples or Turtle format. For each tuple, extract
-  `subject`, `predicate`, `object` (and `graph`), verify they are valid RDF terms (`IRI`, `Literal`, `BNode`), and
-  format the line (e.g., `<http://s> <http://p> "o" .`).
-
 #### Architectural Improvements
-
-##### Visitor Pattern for `explain()` and `execute()` (Refactoring)
-
-- Implement Visitor Pattern: Currently, each operator class (`Source`, `Project`, `Union`...) contains its own logic for
-  `explain()` and `explain_json()`. This violates the Single Responsibility Principle (SRP) - an operator should only
-  know how to perform its operation, not how to display itself. If we want to export the plan to GraphViz (`.dot`) or
-  Mermaid.js in the future, we would need to modify all operator classes. **Suggested fix**: Operators should only have
-  an `accept(visitor)` method. Create `ExplainVisitor`, `JsonExplainVisitor`, and later `OptimizationVisitor` classes.
-  This separates structure from algorithm and is academically appreciated for manipulating expression trees.
 
 ##### Code Quality and Standardization (DevOps)
 
@@ -130,16 +105,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   absolute or relative paths (relative to the mapping file) without requiring `os.chdir()`. **Suggested fix**: Use
   `pathlib.Path` everywhere for robust path resolution.
 
-##### Function Ontology (FnO) Extension (Feature)
-
-- Implement dynamic function registry: Currently, functions (`concat`, `to_iri`) are hardcoded in `builtins.py`. RML
-  normally allows calling any custom function via FnO (Function Ontology). If a user wants `to_uppercase` or
-  `convert_currency`, they cannot add it without modifying pyhartig source code. **Suggested fix**: Implement a plugin
-  mechanism to dynamically register external functions:
-  ```python
-  FunctionRegistry.register("http://ex.org/functions#toUpper", my_python_func)
-  ```
-
 ##### Technical Documentation (Enhancement)
 
 - Generate API documentation with Sphinx/MkDocs: The README is excellent for an overview, but docstrings are high
@@ -147,21 +112,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   documentation site would be a significant improvement for project presentation. **Action**: Set up Sphinx or MkDocs
   with autodoc to generate documentation from docstrings.
 
-##### Serialization Module (Missing - Critical)
+## [0.3.7] - 2026-04-22
 
-- Extract serialization logic from tests: In `github_gitlab_test.py` (lines 90-135), RDF serialization code is written
-  manually in the test file. This logic should be in the library, not in tests. **Action**: Create
-  `src/pyhartig/serializers/NTriplesSerializer.py` with proper character escaping handling. Tests should not contain
-  business logic.
-- Implement proper RDF serializers: Create serializer classes for N-Triples, Turtle, and potentially N-Quads formats
-  with proper escaping and validation.
+### Added
+- Introduced an operator visitor architecture under `src/fog_rml/operators/visitors/` with `ExecutionVisitor`, `ExplainVisitor`, and `JsonExplainVisitor`.
+- Added serializer support for Turtle (`src/fog_rml/serializers/TurtleSerializer.py`) alongside existing N-Triples and N-Quads serializers.
+- Added the canonical package entrypoint `src/fog_rml/__main__.py` and completed the `src/fog_rml/` package layout as the only engine source tree.
 
-##### Memory Management and Streaming (Critical - Architecture)
+### Changed
+- Finalized the engine rename from `pyhartig` to `fog_rml` across source imports, commands, tests/use-cases assets, repository metadata, and documentation references.
+- Refactored operator `execute()`, `explain()`, and `explain_json()` dispatch to use visitor-based traversal instead of duplicating explain/execute logic per operator class.
+- Switched execution paths to generator-based streaming across source and algebra operators, while keeping `StreamRows` for lazy materialization and test compatibility.
+- Standardized logging usage in parser/commands/use-case scripts and test runners to reduce stdout noise during CLI pipelines.
+- Updated command serialization flow to auto-select serializer by extension (`.nt`, `.nq`, `.ttl`) and keep duplicate suppression between triples and quads.
+- Moved ad-hoc RDF serialization in GitHub/GitLab use-case tests to reusable library serializers.
 
-- **[CRITICAL]** Switch to Generator-based streaming: The entire project relies on `List[]`. Loading a 500 MB JSON file
-  will likely consume 2-3 GB of RAM and crash Python. This is the most important architectural improvement for project
-  viability. **Action**: Replace `List[MappingTuple]` returns with `Iterator[MappingTuple]` using `yield` throughout the
-  codebase. This differentiates a "student project" from a viable "ETL engine".
+### Removed
+- Removed the legacy `src/pyhartig/` package tree after migration to `src/fog_rml/`.
+- Removed the mirrored `tests/test_suite/pyhartig/` test tree in favor of the renamed mirrored suite.
 
 ## [0.3.6] - 2026-04-15
 
@@ -171,7 +139,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `list-articles` CLI: default output now placed alongside the mapping file and named using a sanitized `<author>.nq` (N-Quads). Serializer selection follows the output extension.
-- Registered and improved extension functions in `src/pyhartig/functions/fog_plugins.py` for `http://fog-rml.org/functions#subject_for_row` and `#graph_for_source`.
+- Registered and improved extension functions in `src/fog_rml/functions/fog_plugins.py` for `http://fog-rml.org/functions#subject_for_row` and `#graph_for_source`.
 - Normalization improvements: extension helpers now accept Term-like objects, strip angle-bracketed IRIs, and filter explicit error markers before producing identifiers or graph IRIs.
 
 ### Fixed
@@ -184,7 +152,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Reorganized the test suite into explicit `coverage` and `edge_case` categories, added runner support for `--suite`, and aligned the SonarCloud workflow with the coverage category.
-- Rebuilt `tests/test_suite` as a mirrored `src/pyhartig` test tree, with one dedicated test module per source file and separate `coverage_suite` / `edge_case` checks in each mirrored area.
+- Rebuilt `tests/test_suite` as a mirrored `src/fog_rml` test tree, with one dedicated test module per source file and separate `coverage_suite` / `edge_case` checks in each mirrored area.
 - Expanded the mirrored test suite with targeted branch coverage on factories, source operators, serializers, joins, and builtins to raise local source coverage above 90%.
 - Reclassified branch-covering edge-case tests so the SonarQube `coverage` suite includes them while preserving the dedicated `edge_case` marker.
 - Fixed invalid helper calls in `ExtendOperator.explain()` / `_explain_expression()` to match the actual helper signature.
@@ -238,7 +206,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.1] - 2026-03-19
 
 ### Added
-- **SonarQube code quality analysis**: Added SonarQube Cloud integration through CI to analyze the `src/pyhartig` codebase automatically on pushes and pull requests.
+- **SonarQube code quality analysis**: Added SonarQube Cloud integration through CI to analyze the `src/fog_rml` codebase automatically on pushes and pull requests.
 
 ### Changed
 - **Coverage reporting pipeline**: Added automated `pytest` coverage export (`coverage.xml`) for SonarQube analysis.
@@ -249,17 +217,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Full RML conformance runner**: Added and stabilized `scripts/run_rml_conformance.py` to execute external RML test-cases end-to-end, compare RDF outputs via graph isomorphism, and report coverage.
 - **Expected-error semantics**: Integrated `metadata.csv` handling (`error expected?`) so expected failures are counted correctly and surfaced explicitly in summaries.
-- **Per-case output colocation**: Runner now materializes each case under `external/rml-test-cases/results/<case>/` with copied mapping/resources and generated `output_pyhartig.*` for direct inspection.
-- **N-Quads serialization support**: Added `src/pyhartig/serializers/NQuadsSerializer.py` and output-format-aware serialization in `run` command when target extension is `.nq`.
+- **Per-case output colocation**: Runner now materializes each case under `external/rml-test-cases/results/<case>/` with copied mapping/resources and generated `output_fog_rml.*` for direct inspection.
+- **N-Quads serialization support**: Added `src/fog_rml/serializers/NQuadsSerializer.py` and output-format-aware serialization in `run` command when target extension is `.nq`.
 - **Database source operators**: Added relational source support with
-  - `src/pyhartig/operators/sources/MysqlSourceOperator.py`
-  - `src/pyhartig/operators/sources/PostgresqlSourceOperator.py`
-  - `src/pyhartig/operators/sources/SqlserverSourceOperator.py`
-  - `src/pyhartig/operators/sources/sql_fixture_fallback.py` for SQL fixture emulation.
-- **SPARQL local emulation path**: Added `src/pyhartig/operators/sources/SparqlSourceOperator.py` support path in `SourceFactory` for service/query cases backed by local `resource*.ttl` where applicable.
+  - `src/fog_rml/operators/sources/MysqlSourceOperator.py`
+  - `src/fog_rml/operators/sources/PostgresqlSourceOperator.py`
+  - `src/fog_rml/operators/sources/SqlserverSourceOperator.py`
+  - `src/fog_rml/operators/sources/sql_fixture_fallback.py` for SQL fixture emulation.
+- **SPARQL local emulation path**: Added `src/fog_rml/operators/sources/SparqlSourceOperator.py` support path in `SourceFactory` for service/query cases backed by local `resource*.ttl` where applicable.
 
 ### Changed
-- **Mapping normalization/runtime resilience** (`src/pyhartig/mapping/MappingParser.py`):
+- **Mapping normalization/runtime resilience** (`src/fog_rml/mapping/MappingParser.py`):
   - Kept Query 4 and Query 5 normalization blocks aligned with required canonical text.
   - Added runtime fallback/provenance handling for no-join parentTriplesMap and TM clone reconstruction after destructive normalization.
   - Improved parent resolution heuristics and join attribute handling to preserve semantics across edge cases.
@@ -267,16 +235,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added per-branch projection to `{subject, predicate, object, graph}` before union to align pipeline shape.
   - Added `rr:datatype` handling for reference/template-valued term maps, with validation for invalid language+datatype combinations.
   - Preserved typed and language-tagged `rr:constant` literals when constructing extend expressions.
-- **Source dispatch and DB wiring** (`src/pyhartig/operators/SourceFactory.py`):
+- **Source dispatch and DB wiring** (`src/fog_rml/operators/SourceFactory.py`):
   - Expanded logical source detection for SPARQL and relational sources.
   - Added DB operator routing and mapping directory propagation for fixture fallback flows.
-- **Join execution behavior** (`src/pyhartig/operators/EquiJoinOperator.py`):
+- **Join execution behavior** (`src/fog_rml/operators/EquiJoinOperator.py`):
   - Improved join-key normalization and overlap handling to avoid false-negative joins caused by type/lexical mismatches.
 - **Source extraction robustness**:
-  - `src/pyhartig/operators/sources/CsvSourceOperator.py`: improved JSONPath-like/case-insensitive key handling.
-  - `src/pyhartig/operators/sources/JsonSourceOperator.py`: improved tolerant query parsing and fallback behavior.
-  - `src/pyhartig/operators/sources/XmlSourceOperator.py`: improved iterator/extraction fallbacks for common XPath forms.
-- **CLI run serialization flow** (`src/pyhartig/commands/run.py`):
+  - `src/fog_rml/operators/sources/CsvSourceOperator.py`: improved JSONPath-like/case-insensitive key handling.
+  - `src/fog_rml/operators/sources/JsonSourceOperator.py`: improved tolerant query parsing and fallback behavior.
+  - `src/fog_rml/operators/sources/XmlSourceOperator.py`: improved iterator/extraction fallbacks for common XPath forms.
+- **CLI run serialization flow** (`src/fog_rml/commands/run.py`):
   - Serializer auto-selection by output extension.
   - Post-processing to avoid duplicate triple/quad emission for same `(s,p,o)` key where quads are present.
 - **Documentation consistency** (`README.md`):
@@ -284,7 +252,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Default graph handling in N-Quads**: `rr:defaultGraph` now serializes as default graph (triple form, no 4th term), matching expected conformance outputs.
-- **Blank node identifiers**: Updated `to_bnode` behavior in `src/pyhartig/functions/builtins.py` to emit readable deterministic labels when valid (e.g., `_:Venus`, `_:BobSmith`) with hashed fallback only for unsafe labels.
+- **Blank node identifiers**: Updated `to_bnode` behavior in `src/fog_rml/functions/builtins.py` to emit readable deterministic labels when valid (e.g., `_:Venus`, `_:BobSmith`) with hashed fallback only for unsafe labels.
 - **Conformance result accounting**: Compare exceptions are now correctly counted as failures.
 
 ### Tests
@@ -337,7 +305,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   join attributes and using them to resolve parent TriplesMaps that lacked an explicit logical source node after
   normalization.
 - **JSON iterator edge-case**: `JsonSourceOperator` now unwraps a root JSON array returned by an iterator so the
-  operator iterates over elements (not the array object) — fixes missed rows when the iterator points at the root
+  operator iterates over elements (not the array object) â€” fixes missed rows when the iterator points at the root
   list.
 
 ### Tests
@@ -352,12 +320,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Added
-- **SourceFactory dispatch registry**: `src/pyhartig/operators/SourceFactory.py` now includes a registry to select the correct `SourceOperator` implementation from `rml:referenceFormulation` (e.g., `ql:JSONPath`, `ql:CSV`, `ql:XPath`).
-- **CSV and XML Source Operators**: Added `src/pyhartig/operators/sources/CsvSourceOperator.py` and `src/pyhartig/operators/sources/XmlSourceOperator.py` to support `ql:CSV` and `ql:XPath` reference formulations.
+- **SourceFactory dispatch registry**: `src/fog_rml/operators/SourceFactory.py` now includes a registry to select the correct `SourceOperator` implementation from `rml:referenceFormulation` (e.g., `ql:JSONPath`, `ql:CSV`, `ql:XPath`).
+- **CSV and XML Source Operators**: Added `src/fog_rml/operators/sources/CsvSourceOperator.py` and `src/fog_rml/operators/sources/XmlSourceOperator.py` to support `ql:CSV` and `ql:XPath` reference formulations.
 - **Unit tests for CSV/XML sources**: Added `tests/test_sources/test_csv_xml_sources.py` to validate CSV and XML source handling.
 
 ### Changed
-- **Fail-fast file handling in MappingParser**: `src/pyhartig/mapping/MappingParser.py` now checks the mapping file existence and raises `FileNotFoundError` immediately if the RML file is missing (stops the pipeline rather than producing silent empty results).
+- **Fail-fast file handling in MappingParser**: `src/fog_rml/mapping/MappingParser.py` now checks the mapping file existence and raises `FileNotFoundError` immediately if the RML file is missing (stops the pipeline rather than producing silent empty results).
 - **Source IO errors surface**: `SourceFactory` now re-raises `FileNotFoundError` and other IO errors when loading source files instead of falling back to empty data.
 
 ### Fixed
@@ -369,7 +337,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.6] - 2026-01-28
 
 ### Added
-- **Source Factory Pattern**: Implemented `src/pyhartig/operators/SourceFactory.py` to decouple the `MappingParser` from specific data source implementations.
+- **Source Factory Pattern**: Implemented `src/fog_rml/operators/SourceFactory.py` to decouple the `MappingParser` from specific data source implementations.
     - The factory automatically detects `rml:referenceFormulation` (e.g., `ql:JSONPath`) and instantiates the correct operator.
 - **Blank Node Support**: Updated `MappingParser` to correctly handle `rr:termType rr:BlankNode`. It now maps these terms to the `to_bnode` function (generating Skolemized Blank Nodes) instead of incorrectly treating them as Literals.
 
@@ -383,9 +351,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.5] - 2026-01-26
 
 ### Added
-- **NTriples Serializer**: Created `src/pyhartig/serializers/NTriplesSerializer.py` to handle the conversion of algebraic execution results (`MappingTuple`) into valid N-Triples string format, with proper character escaping and term handling.
+- **NTriples Serializer**: Created `src/fog_rml/serializers/NTriplesSerializer.py` to handle the conversion of algebraic execution results (`MappingTuple`) into valid N-Triples string format, with proper character escaping and term handling.
 - **Robust Error Handling**: Added generic exception handling in `MappingParser` during source loading to catch unexpected errors (e.g., malformed JSON) in addition to `FileNotFoundError`.
-- **Plugin-based CLI Architecture**: Completely refactored `__main__.py` and the `src/pyhartig/commands/` package.
+- **Plugin-based CLI Architecture**: Completely refactored `__main__.py` and the `src/fog_rml/commands/` package.
     - Implemented a command discovery system that automatically loads any class inheriting from `BaseCommand` located in the commands directory.
     - This allows for easy extension of the CLI functionality by third-party developers without modifying the core engine.
     - **Implemented shared argument parsing to allow global flags (like `-v`) to be placed before or after subcommands.**
@@ -403,8 +371,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Relative Path Resolution**: Fixed source file path resolution in `MappingParser`. Paths are now correctly resolved relative to the mapping file's directory, ensuring the CLI works correctly regardless of the user's current working directory.
 
 ### Refactored
-- **Namespace Centralization**: Refactored `MappingParser.py` to import namespace constants from `src/pyhartig/namespaces.py` instead of using hardcoded URI strings and prefixes. This ensures a Single Source of Truth for RDF/RML namespaces.
-- **CLI Structure**: Moved the standard execution logic from `__main__.py` to `src/pyhartig/commands/run.py` to maintain separation of concerns.
+- **Namespace Centralization**: Refactored `MappingParser.py` to import namespace constants from `src/fog_rml/namespaces.py` instead of using hardcoded URI strings and prefixes. This ensures a Single Source of Truth for RDF/RML namespaces.
+- **CLI Structure**: Moved the standard execution logic from `__main__.py` to `src/fog_rml/commands/run.py` to maintain separation of concerns.
 
 ### Documentation
 - **README Overhaul**: Completely refactored `README.md` to prioritize "Quick Start", installation instructions, and CLI usage examples.
@@ -414,49 +382,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Operators Module (`src/pyhartig/operators/`)**
+- **Operators Module (`src/fog_rml/operators/`)**
   - `Operator.py`: Switched from eager to lazy execution. `execute()` now returns an `Iterator[MappingTuple]` (generator) and operators stream rows using `yield`. Added `StreamRows` helper to provide lazy iteration plus on-demand materialization (`len()` and indexing). This reduces peak memory usage for large datasets and enables streaming pipelines.
   - `SourceOperator.py`: `execute()` now streams rows via generators and returns a `StreamRows` wrapper. This avoids building large in-memory lists in multi-stage pipelines.
 
-- **Source / JSON parsing (`src/pyhartig/operators/` + `src/pyhartig/operators/sources/`)**
+- **Source / JSON parsing (`src/fog_rml/operators/` + `src/fog_rml/operators/sources/`)**
   - `JsonSourceOperator.py`: JSONPath expressions are now compiled and cached in `__init__` (compiled iterator and per-attribute extraction cache) to avoid reparsing the same query for every context object. This significantly reduces CPU overhead when extraction queries are applied many times (e.g., for large sources).
 
-- **Union semantics (`src/pyhartig/operators/UnionOperator.py`)**
+- **Union semantics (`src/fog_rml/operators/UnionOperator.py`)**
   - Added an optional `distinct` parameter (default `False`) to control Bag vs Set semantics. By default the operator preserves Bag semantics for performance; setting `distinct=True` enables Set semantics (duplicate elimination) when needed.
 
-- **Join algorithm (`src/pyhartig/operators/EquiJoinOperator.py`)**
-  - Reworked join execution to use a hash-join style algorithm: the implementation builds an index (hash map) on the smaller side and probes it with the other side, yielding matches. This reduces worst-case behavior from O(N×M) nested loops to near O(N+M) in typical scenarios and is suitable for large relations.
+- **Join algorithm (`src/fog_rml/operators/EquiJoinOperator.py`)**
+  - Reworked join execution to use a hash-join style algorithm: the implementation builds an index (hash map) on the smaller side and probes it with the other side, yielding matches. This reduces worst-case behavior from O(NÃ—M) nested loops to near O(N+M) in typical scenarios and is suitable for large relations.
 
 ### Fixed
 
-- **Extend operator (`src/pyhartig/operators/ExtendOperator.py`)**
+- **Extend operator (`src/fog_rml/operators/ExtendOperator.py`)**
   - Fixed incorrect in-place mutation of `MappingTuple`. `MappingTuple` is immutable by design; `ExtendOperator` now uses `MappingTuple.extend()` (or constructs a new `MappingTuple`) to produce extended rows, avoiding `TypeError` and preserving immutability guarantees.
 
 ## [0.2.3] - 2026-01-21
 
 ### Changed
 
-- **Expressions Module (`src/pyhartig/expressions/`)**
+- **Expressions Module (`src/fog_rml/expressions/`)**
   - `Expression.py`: Documented the `evaluate()` method's behavior in the docstring: it must never raise an exception for data issues and should return `EPSILON` when evaluation is undefined, aligning implementation with the formal semantics.
   - `Constant.py`: Enforced strict typing in `Constant.__init__()` so that only RDF term instances (`IRI`, `Literal`, `BlankNode`) are accepted; raw Python primitives (e.g. `str`, `int`) are rejected to avoid ambiguity between plain strings and typed `xsd:string` literals.
-  - `FunctionCall.py`: Added EPSILON propagation in `FunctionCall.evaluate()` — the function now returns `EPSILON` immediately if any evaluated argument is `EPSILON`, ensuring strict propagation and simplifying builtin implementations.
+  - `FunctionCall.py`: Added EPSILON propagation in `FunctionCall.evaluate()` â€” the function now returns `EPSILON` immediately if any evaluated argument is `EPSILON`, ensuring strict propagation and simplifying builtin implementations.
 
 ### Fixed
 
-- **Expressions Module (`src/pyhartig/expressions/`)**
+- **Expressions Module (`src/fog_rml/expressions/`)**
   - `Reference.py`: Fixed error handling per Definition 9: when an attribute is not present in a tuple, `Reference.evaluate()` now returns `EPSILON` instead of raising `KeyError` (implementation uses safe lookup or explicit handling), improving pipeline robustness for incomplete data.
 
 ## [0.2.2] - 2026-01-20
 
 ### Added
 
-- **Centralized Namespace Management**: Created `src/pyhartig/namespaces.py` to manage RDF namespaces (XSD, RDF, RDFS,
+- **Centralized Namespace Management**: Created `src/fog_rml/namespaces.py` to manage RDF namespaces (XSD, RDF, RDFS,
   RML, RR) and common IRIs as constant objects. This eliminates "magic strings" and prevents URI typos throughout the
   codebase.
 - **Automatic Type Inference**: `JsonSourceOperator` now automatically infers the correct XSD datatype from JSON values:
-    - JSON `12` (int) → `"12"^^xsd:integer`
-    - JSON `true` (bool) → `"true"^^xsd:boolean`
-    - JSON `3.14` (float) → `"3.14"^^xsd:double`
+    - JSON `12` (int) â†’ `"12"^^xsd:integer`
+    - JSON `true` (bool) â†’ `"true"^^xsd:boolean`
+    - JSON `3.14` (float) â†’ `"3.14"^^xsd:double`
 - **Blank Node Generation**: Implemented `to_bnode` in `builtins.py`. It uses SHA-1 hashing (Skolemization) to
   generate deterministic Blank Node identifiers from input values, enabling the future implementation of joins via
   Referencing Object Maps.
@@ -473,7 +441,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Refactored
 
-- **Built-in Functions Cleanup**: Refactored `src/pyhartig/functions/builtins.py`. Validation is now delegated to the
+- **Built-in Functions Cleanup**: Refactored `src/fog_rml/functions/builtins.py`. Validation is now delegated to the
   `IRI` class, complying with the DRY (Don't Repeat Yourself) principle.
 - **Type Safety in Functions**: `to_iri`, `to_literal`, and `concat` no longer perform "loose" type checking on raw
   Python types. They rely entirely on the strict `AlgebraicValue` types provided by the upstream pipeline.
@@ -524,18 +492,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-#### Project Operator (Opérateur de Projection)
+#### Project Operator (OpÃ©rateur de Projection)
 
 - **New Operator**: Added `ProjectOperator` for restricting mapping relations to specified attributes
     - Based on Definition 11 of relational algebra for mapping relations
     - Formal notation: `Project^P(r) : (A, I) -> (P, I')`
-    - Input: Mapping relation `r = (A, I)` and non-empty subset `P ⊆ A`
-    - Output: New mapping relation `(P, I')` where `I' = { t[P] | t ∈ I }`
-    - For each tuple `t`, creates `t[P]` with `dom(t[P]) = P` and `t[P](a) = t(a)` for all `a ∈ P`
+    - Input: Mapping relation `r = (A, I)` and non-empty subset `P âŠ† A`
+    - Output: New mapping relation `(P, I')` where `I' = { t[P] | t âˆˆ I }`
+    - For each tuple `t`, creates `t[P]` with `dom(t[P]) = P` and `t[P](a) = t(a)` for all `a âˆˆ P`
 
 - **Strict Mode (Default)**:
     - Raises `KeyError` when projecting attributes not present in tuple
-    - Enforces constraint `P ⊆ A` from classical relational algebra
+    - Enforces constraint `P âŠ† A` from classical relational algebra
     - Safer behavior: detects bugs early
     - Heterogeneous schemas handled via `Union` + multiple `Project` operations
 
@@ -546,17 +514,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Use Case**: Useful for retaining only attributes needed in subsequent mapping steps
 
-#### EquiJoin Operator (Opérateur d'Équi-jointure)
+#### EquiJoin Operator (OpÃ©rateur d'Ã‰qui-jointure)
 
 - **New Operator**: Implemented `EquiJoinOperator` for combining two mapping relations based on join conditions
     - Based on Definition 12 of relational algebra for mapping relations
-    - Formal notation: `EqJoin^J(r₁, r₂) : Operator × Operator → Operator`
-    - Input: Two mapping relations `r₁ = (A₁, I₁)` and `r₂ = (A₂, I₂)`
-    - Join Conditions: Set `J ⊆ A₁ × A₂` defining attribute pairs for equality testing
-    - Precondition: `A₁ ∩ A₂ = ∅` (attribute sets must be disjoint)
+    - Formal notation: `EqJoin^J(râ‚, râ‚‚) : Operator Ã— Operator â†’ Operator`
+    - Input: Two mapping relations `râ‚ = (Aâ‚, Iâ‚)` and `râ‚‚ = (Aâ‚‚, Iâ‚‚)`
+    - Join Conditions: Set `J âŠ† Aâ‚ Ã— Aâ‚‚` defining attribute pairs for equality testing
+    - Precondition: `Aâ‚ âˆ© Aâ‚‚ = âˆ…` (attribute sets must be disjoint)
     - Output: New mapping relation `(A, I)` where:
-        - `A = A₁ ∪ A₂` (union of all attributes)
-        - `I = { t₁ ∪ t₂ | t₁ ∈ I₁, t₂ ∈ I₂, ∀(a₁, a₂) ∈ J : t₁(a₁) = t₂(a₂) }`
+        - `A = Aâ‚ âˆª Aâ‚‚` (union of all attributes)
+        - `I = { tâ‚ âˆª tâ‚‚ | tâ‚ âˆˆ Iâ‚, tâ‚‚ âˆˆ Iâ‚‚, âˆ€(aâ‚, aâ‚‚) âˆˆ J : tâ‚(aâ‚) = tâ‚‚(aâ‚‚) }`
 
 - **Join Condition Semantics**:
     - Supports multiple join conditions (compound keys)
@@ -569,7 +537,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `explain_json()`: Machine-readable JSON format for API/tools
 
 - **Validation**:
-    - Raises `ValueError` if attribute sets are not disjoint (A₁ ∩ A₂ ≠ ∅)
+    - Raises `ValueError` if attribute sets are not disjoint (Aâ‚ âˆ© Aâ‚‚ â‰  âˆ…)
     - Raises `ValueError` if join attribute lists have different lengths
 
 - **Use Case**: Particularly relevant for referencing object maps (referencing object maps) in RML translation, where
@@ -615,17 +583,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       ```
       Union(
         operators: 2
-        ├─ [0]:
+        â”œâ”€ [0]:
           Extend(
             attribute: subject
             expression: to_iri(Ref(person_id), Const('http://example.org/'))
             parent:
-              └─ Source(
+              â””â”€ Source(
                    iterator: $.team[*]
                    mappings: ['person_id', 'person_name']
                  )
           )
-        └─ [1]:
+        â””â”€ [1]:
           Source(...)
       )
       ```
@@ -712,7 +680,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated test suite documentation
     - Added test category for explain functionality
-    - Updated test count (95 → 107 tests)
+    - Updated test count (95 â†’ 107 tests)
 
 ## [0.1.14] - 2025-12-09
 
@@ -735,3 +703,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Modified `_create_ext_expr()` to accept `default_term_type` parameter
 - Updated method calls in `parse()` to specify appropriate defaults based on map type
+

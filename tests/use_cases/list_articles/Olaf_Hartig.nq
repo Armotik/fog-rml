@@ -1,0 +1,832 @@
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Olaf Hartig, Pierre-Antoine Champin. Metadata for RDF Statements: The RDF-star Approach. Lotico, Mar 2021, (online), United States. &#x27E8;hal-03325632&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Olivier Curé, Olaf Hartig. Semantic Data Management in Practice. the 26th International Conference, Apr 2017, Perth, France. &#x27E8;10.1145/3041021.3051096&#x27E9;. &#x27E8;hal-01806746&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Minh-Hoang Dang, Julien Aimonier-Davat, Pascal Molli, Olaf Hartig, Hala Skaf-Molli, et al.. FedShop: A Benchmark for Testing the Scalability of SPARQL Federation Engines. ISWC 2023, Nov 2023, Athens, Greece. &#x27E8;10.5281/zenodo.7919872&#x27E9;. &#x27E8;hal-04180506&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Albert Meroño Peñuela, Anastasia Dimou, Raphaël Troncy, Olaf Hartig, Maribel Acosta, et al.. The Semantic Web : 21st International Conference, ESWC 2024, Hersonissos, Crete, Greece, May 26–30, 2024, Proceedings, Part II. The Semantic Web, 21st International Conference, ESWC 2024, Hersonissos, Crete, Greece, May 26–30, 2024, Proceedings, Part II, May 2024, Crete Island, Greece. 14665, pp.XXVI, 252, 2024, Lecture Notes in Computer Science, 978-3-031-60635-9. &#x27E8;10.1007/978-3-031-60635-9&#x27E9;. &#x27E8;hal-05113239&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Albert Meroño Peñuela, Anastasia Dimou, Raphaël Troncy, Olaf Hartig, Maribel Acosta, et al.. The Semantic Web : 21st International Conference, ESWC 2024, Hersonissos, Crete, Greece, May 26–30, 2024, Proceedings, Part I. The Semantic Web, 21st International Conference, ESWC 2024, Hersonissos, Crete, Greece, May 26–30, 2024, Proceedings, Part I, May 2024, Crete, Greece. 14664, Springer, pp.XXVI, 344, 2024, Lecture Notes in Computer Science, 978-3-031-60626-7. &#x27E8;10.1007/978-3-031-60626-7&#x27E9;. &#x27E8;hal-05113235&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Chiara Ghidini, Olaf Hartig, Maria Maleshkova, Vojtech Svatek, Isabel Cruz, et al.. The Semantic Web – ISWC 2019 : part I. Lecture Notes in Computer Science, 11778, pp.754, 2019, 18th International Semantic Web Conference, Auckland, New Zealand, October 26–30, 2019, Proceedings, Part I, &#x27E8;10.1007/978-3-030-30793-6&#x27E9;. &#x27E8;hal-02328688&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Chiara Ghidini, Olaf Hartig, Maria Maleshkova, Vojtech Svatek, Isabel Cruz, et al.. The Semantic Web – ISWC 2019 : part II. Lecture Notes in Computer Science, 11779, pp.550, 2019, 18th International Semantic Web Conference, Auckland, New Zealand, October 26–30, 2019, Proceedings, Part I, &#x27E8;10.1007/978-3-030-30796-7&#x27E9;. &#x27E8;hal-02329358&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Mehwish Alam, Cassia Trojahn, Sven Hertling, Catia Pesquita, Christian Aebeloe, et al.. ESWC 2023 Workshops and Tutorials Joint Proceedings. ESWC 2023, 3443, 2023. &#x27E8;hal-04195950&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Sherif Sakr, Angela Bonifati, Hannes Voigt, Alexandru Iosup, Khaled Ammar, et al.. The future is big graphs: a community view on graph processing systems. Communications of the ACM, 2021, 64 (9), pp.62-71. &#x27E8;10.1145/3434642&#x27E9;. &#x27E8;hal-03128601&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://openalex.org/> <http://schema.org/name> "Transforming Event Knowledge Graph to Object-Centric Event Logs: A Comparative Study for Multi-dimensional Process Analysis" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "FedQPL" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "LinGBM: A Performance Benchmark for Approaches to Build GraphQL Servers" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Converting property graphs to RDF" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Transforming Object-Centric Event Logs to Temporal Event Knowledge Graphs" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Linked Data Management" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Quo vadis – Social Media. Eine Analyse der Nutzung von Social Media am Beispiel von Facebook bei den Sparkassen in Deutschland" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Towards Query Processing over Heterogeneous Federations of RDF Data Sources" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Capturing and Querying Uncertainty in RDF Stream Processing" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "The materials design ontology" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Ontology-based GraphQL server generation for data access and data integration" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "An Algebraic Foundation for Knowledge Graph Construction" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Optimizing RDF Stream Processing for Uncertainty Management" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "The future is big graphs" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "GRADES-NDA'23: 6th Joint Workshop on Graph Data Management Experiences &amp; Systems (GRADES) and Network Data Analytics (NDA)" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "The OneGraph vision: Challenges of breaking the graph model lock-in1" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "FedShop: A Benchmark for Testing the Scalability of SPARQL Federation Engines" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Considering Vocabulary Mappings in Query Plans for Federations of RDF Data Sources" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Datatypes for Lists and Maps in RDF Literals" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "FedQPL: A Language for Logical Query Plans over Heterogeneous Federations of RDF Data Sources (Extended Version)" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "New Trends in Database and Information Systems" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Assessing the Solid Protocol in Relation to Security &amp; Privacy Obligations" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "GRADES-NDA'24: 7th Joint Workshop on Graph Data Management Experiences &amp; Systems (GRADES) and Network Data Analytics (NDA)" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Tutorials at The Web Conference 2023" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "The Semantic Web: ESWC 2020 Satellite Events" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "NCT/DKFZ MASTER handbook of interpreting whole-genome, transcriptome, and methylome data for precision oncology" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "The Semantic Web" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "The Future is Big Graphs! A Community View on Graph Processing Systems" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Exploring Exploratory Querying" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "ESWC 2023 Workshops and Tutorials Joint Proceedings: Joint Proceedings of the ESWC 2023 Workshops and Tutorials co-located with the 20th European Semantic Web Conference (ESWC 2023)" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "LinGBM: A Performance Benchmark for Approaches to Build GraphQL Servers (Extended Version)" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Query-Specific Pruning of RML Mappings (Extended Version)" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Metadata for RDF Statements: The RDF-star Approach" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Transforming Object-Centric Event Logs to Temporal Event Knowledge Graphs (Extended Version)" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "The results of direct mappings of panama paper to RDF and RDF-star" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "FedShop200" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "FedShop - Hackathon" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Towards Computer-Using Personal Agents" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/name> "Abstract 1028: A tumor-agnostic YAP/TAZ score predicts TEAD inhibitor sensitivity independent of Hippo alterations" <https://fog-rml.org/graph/openalex> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/datePublished> "2026" <https://fog-rml.org/graph/dblp/2026> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/datePublished> "2025" <https://fog-rml.org/graph/dblp/2025> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/datePublished> "2024" <https://fog-rml.org/graph/dblp/2024> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/datePublished> "2023" <https://fog-rml.org/graph/dblp/2023> .
+<https://openalex.org/W4388180941> <http://schema.org/url> "https://openalex.org/W4388180941" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4388180941> .
+<https://openalex.org/W3121179324> <http://schema.org/url> "https://openalex.org/W3121179324" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW3121179324> .
+<https://openalex.org/W4313067469> <http://schema.org/url> "https://openalex.org/W4313067469" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4313067469> .
+<https://openalex.org/W4281383069> <http://schema.org/url> "https://openalex.org/W4281383069" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4281383069> .
+<https://openalex.org/W4407743895> <http://schema.org/url> "https://openalex.org/W4407743895" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4407743895> .
+<https://openalex.org/W4309934766> <http://schema.org/url> "https://openalex.org/W4309934766" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4309934766> .
+<https://openalex.org/W4390442952> <http://schema.org/url> "https://openalex.org/W4390442952" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4390442952> .
+<https://openalex.org/W4285820834> <http://schema.org/url> "https://openalex.org/W4285820834" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4285820834> .
+<https://openalex.org/W3097815510> <http://schema.org/url> "https://openalex.org/W3097815510" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW3097815510> .
+<https://openalex.org/W4387522349> <http://schema.org/url> "https://openalex.org/W4387522349" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4387522349> .
+<https://openalex.org/W4390731917> <http://schema.org/url> "https://openalex.org/W4390731917" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4390731917> .
+<https://openalex.org/W4410956950> <http://schema.org/url> "https://openalex.org/W4410956950" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4410956950> .
+<https://openalex.org/W3196740805> <http://schema.org/url> "https://openalex.org/W3196740805" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW3196740805> .
+<https://openalex.org/W3112520120> <http://schema.org/url> "https://openalex.org/W3112520120" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW3112520120> .
+<https://openalex.org/W4379390506> <http://schema.org/url> "https://openalex.org/W4379390506" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4379390506> .
+<https://openalex.org/W4310282096> <http://schema.org/url> "https://openalex.org/W4310282096" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4310282096> .
+<https://openalex.org/W4386601675> <http://schema.org/url> "https://openalex.org/W4386601675" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4386601675> .
+<https://openalex.org/W4387904834> <http://schema.org/url> "https://openalex.org/W4387904834" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4387904834> .
+<https://openalex.org/W4406870164> <http://schema.org/url> "https://openalex.org/W4406870164" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4406870164> .
+<https://openalex.org/W3090206893> <http://schema.org/url> "https://openalex.org/W3090206893" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW3090206893> .
+<https://openalex.org/W4230208873> <http://schema.org/url> "https://openalex.org/W4230208873" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4230208873> .
+<https://openalex.org/W4306816406> <http://schema.org/url> "https://openalex.org/W4306816406" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4306816406> .
+<https://openalex.org/W4398233653> <http://schema.org/url> "https://openalex.org/W4398233653" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4398233653> .
+<https://openalex.org/W4367310414> <http://schema.org/url> "https://openalex.org/W4367310414" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4367310414> .
+<https://openalex.org/W4243538485> <http://schema.org/url> "https://openalex.org/W4243538485" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4243538485> .
+<https://openalex.org/W4387966631> <http://schema.org/url> "https://openalex.org/W4387966631" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4387966631> .
+<https://openalex.org/W4397029680> <http://schema.org/url> "https://openalex.org/W4397029680" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4397029680> .
+<https://openalex.org/W4397048906> <http://schema.org/url> "https://openalex.org/W4397048906" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4397048906> .
+<https://openalex.org/W3193434541> <http://schema.org/url> "https://openalex.org/W3193434541" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW3193434541> .
+<https://openalex.org/W7118650181> <http://schema.org/url> "https://openalex.org/W7118650181" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW7118650181> .
+<https://openalex.org/W4389238413> <http://schema.org/url> "https://openalex.org/W4389238413" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4389238413> .
+<https://openalex.org/W4290802903> <http://schema.org/url> "https://openalex.org/W4290802903" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4290802903> .
+<https://openalex.org/W7144391557> <http://schema.org/url> "https://openalex.org/W7144391557" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW7144391557> .
+<https://openalex.org/W4288076127> <http://schema.org/url> "https://openalex.org/W4288076127" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4288076127> .
+<https://openalex.org/W7143321513> <http://schema.org/url> "https://openalex.org/W7143321513" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW7143321513> .
+<https://openalex.org/W4399694329> <http://schema.org/url> "https://openalex.org/W4399694329" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4399694329> .
+<https://openalex.org/W4393795501> <http://schema.org/url> "https://openalex.org/W4393795501" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4393795501> .
+<https://openalex.org/W4394022897> <http://schema.org/url> "https://openalex.org/W4394022897" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4394022897> .
+<https://openalex.org/W4392149082> <http://schema.org/url> "https://openalex.org/W4392149082" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4392149082> .
+<https://openalex.org/W4393875752> <http://schema.org/url> "https://openalex.org/W4393875752" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4393875752> .
+<https://openalex.org/W4393677533> <http://schema.org/url> "https://openalex.org/W4393677533" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4393677533> .
+<https://openalex.org/W4393839220> <http://schema.org/url> "https://openalex.org/W4393839220" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4393839220> .
+<https://openalex.org/W4393613431> <http://schema.org/url> "https://openalex.org/W4393613431" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4393613431> .
+<https://openalex.org/W4393779656> <http://schema.org/url> "https://openalex.org/W4393779656" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4393779656> .
+<https://openalex.org/W4393447410> <http://schema.org/url> "https://openalex.org/W4393447410" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4393447410> .
+<https://openalex.org/W4393588499> <http://schema.org/url> "https://openalex.org/W4393588499" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4393588499> .
+<https://openalex.org/W4393526152> <http://schema.org/url> "https://openalex.org/W4393526152" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4393526152> .
+<https://openalex.org/W4415286534> <http://schema.org/url> "https://openalex.org/W4415286534" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4415286534> .
+<https://openalex.org/W7149000039> <http://schema.org/url> "https://openalex.org/W7149000039" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW7149000039> .
+<https://openalex.org/W4226423933> <http://schema.org/url> "https://openalex.org/W4226423933" <https://fog-rml.org/graph/openalex/https%3A%2F%2Fopenalex.org%2FW4226423933> .
+<https://hal.science/hal-03325632v1> <http://schema.org/url> "https://hal.science/hal-03325632v1" <https://fog-rml.org/graph/hal/https%3A%2F%2Fhal.science%2Fhal-03325632v1> .
+<https://hal.science/hal-01806746v1> <http://schema.org/url> "https://hal.science/hal-01806746v1" <https://fog-rml.org/graph/hal/https%3A%2F%2Fhal.science%2Fhal-01806746v1> .
+<https://hal.science/hal-04180506v1> <http://schema.org/url> "https://hal.science/hal-04180506v1" <https://fog-rml.org/graph/hal/https%3A%2F%2Fhal.science%2Fhal-04180506v1> .
+<https://hal.science/hal-05113239v1> <http://schema.org/url> "https://hal.science/hal-05113239v1" <https://fog-rml.org/graph/hal/https%3A%2F%2Fhal.science%2Fhal-05113239v1> .
+<https://hal.science/hal-05113235v1> <http://schema.org/url> "https://hal.science/hal-05113235v1" <https://fog-rml.org/graph/hal/https%3A%2F%2Fhal.science%2Fhal-05113235v1> .
+<https://hal.science/hal-02328688v1> <http://schema.org/url> "https://hal.science/hal-02328688v1" <https://fog-rml.org/graph/hal/https%3A%2F%2Fhal.science%2Fhal-02328688v1> .
+<https://hal.science/hal-02329358v1> <http://schema.org/url> "https://hal.science/hal-02329358v1" <https://fog-rml.org/graph/hal/https%3A%2F%2Fhal.science%2Fhal-02329358v1> .
+<https://telecom-paris.hal.science/hal-04195950v1> <http://schema.org/url> "https://telecom-paris.hal.science/hal-04195950v1" <https://fog-rml.org/graph/hal/https%3A%2F%2Ftelecom-paris.hal.science%2Fhal-04195950v1> .
+<https://inria.hal.science/hal-03128601v1> <http://schema.org/url> "https://inria.hal.science/hal-03128601v1" <https://fog-rml.org/graph/hal/https%3A%2F%2Finria.hal.science%2Fhal-03128601v1> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Olaf Hartig, Pierre-Antoine Champin. Metadata for RDF Statements: The RDF-star Approach. Lotico, Mar 2021, (online), United States. &#x27E8;hal-03325632&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Olivier Curé, Olaf Hartig. Semantic Data Management in Practice. the 26th International Conference, Apr 2017, Perth, France. &#x27E8;10.1145/3041021.3051096&#x27E9;. &#x27E8;hal-01806746&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Minh-Hoang Dang, Julien Aimonier-Davat, Pascal Molli, Olaf Hartig, Hala Skaf-Molli, et al.. FedShop: A Benchmark for Testing the Scalability of SPARQL Federation Engines. ISWC 2023, Nov 2023, Athens, Greece. &#x27E8;10.5281/zenodo.7919872&#x27E9;. &#x27E8;hal-04180506&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Albert Meroño Peñuela, Anastasia Dimou, Raphaël Troncy, Olaf Hartig, Maribel Acosta, et al.. The Semantic Web : 21st International Conference, ESWC 2024, Hersonissos, Crete, Greece, May 26–30, 2024, Proceedings, Part II. The Semantic Web, 21st International Conference, ESWC 2024, Hersonissos, Crete, Greece, May 26–30, 2024, Proceedings, Part II, May 2024, Crete Island, Greece. 14665, pp.XXVI, 252, 2024, Lecture Notes in Computer Science, 978-3-031-60635-9. &#x27E8;10.1007/978-3-031-60635-9&#x27E9;. &#x27E8;hal-05113239&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Albert Meroño Peñuela, Anastasia Dimou, Raphaël Troncy, Olaf Hartig, Maribel Acosta, et al.. The Semantic Web : 21st International Conference, ESWC 2024, Hersonissos, Crete, Greece, May 26–30, 2024, Proceedings, Part I. The Semantic Web, 21st International Conference, ESWC 2024, Hersonissos, Crete, Greece, May 26–30, 2024, Proceedings, Part I, May 2024, Crete, Greece. 14664, Springer, pp.XXVI, 344, 2024, Lecture Notes in Computer Science, 978-3-031-60626-7. &#x27E8;10.1007/978-3-031-60626-7&#x27E9;. &#x27E8;hal-05113235&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Chiara Ghidini, Olaf Hartig, Maria Maleshkova, Vojtech Svatek, Isabel Cruz, et al.. The Semantic Web – ISWC 2019 : part I. Lecture Notes in Computer Science, 11778, pp.754, 2019, 18th International Semantic Web Conference, Auckland, New Zealand, October 26–30, 2019, Proceedings, Part I, &#x27E8;10.1007/978-3-030-30793-6&#x27E9;. &#x27E8;hal-02328688&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Chiara Ghidini, Olaf Hartig, Maria Maleshkova, Vojtech Svatek, Isabel Cruz, et al.. The Semantic Web – ISWC 2019 : part II. Lecture Notes in Computer Science, 11779, pp.550, 2019, 18th International Semantic Web Conference, Auckland, New Zealand, October 26–30, 2019, Proceedings, Part I, &#x27E8;10.1007/978-3-030-30796-7&#x27E9;. &#x27E8;hal-02329358&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Mehwish Alam, Cassia Trojahn, Sven Hertling, Catia Pesquita, Christian Aebeloe, et al.. ESWC 2023 Workshops and Tutorials Joint Proceedings. ESWC 2023, 3443, 2023. &#x27E8;hal-04195950&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Sherif Sakr, Angela Bonifati, Hannes Voigt, Alexandru Iosup, Khaled Ammar, et al.. The future is big graphs: a community view on graph processing systems. Communications of the ACM, 2021, 64 (9), pp.62-71. &#x27E8;10.1145/3434642&#x27E9;. &#x27E8;hal-03128601&#x27E9;" <https://fog-rml.org/graph/hal> .
+<https://dblp.org/rec/conf/coopis/2025> <http://schema.org/url> "https://dblp.org/rec/conf/coopis/2025" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fcoopis%2F2025> .
+<https://dblp.org/rec/journals/corr/abs-2603-26269> <http://schema.org/url> "https://dblp.org/rec/journals/corr/abs-2603-26269" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fjournals%2Fcorr%2Fabs-2603-26269> .
+<https://dblp.org/rec/journals/pvldb/ArenasFHHHKKLMSSTW25> <http://schema.org/url> "https://dblp.org/rec/journals/pvldb/ArenasFHHHKKLMSSTW25" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fjournals%2Fpvldb%2FArenasFHHHKKLMSSTW25> .
+<https://dblp.org/rec/conf/edbt/ElhalawatiDHH25> <http://schema.org/url> "https://dblp.org/rec/conf/edbt/ElhalawatiDHH25" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fedbt%2FElhalawatiDHH25> .
+<https://dblp.org/rec/conf/esws/OoH25> <http://schema.org/url> "https://dblp.org/rec/conf/esws/OoH25" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fesws%2FOoH25> .
+<https://dblp.org/rec/journals/corr/abs-2503-10385> <http://schema.org/url> "https://dblp.org/rec/journals/corr/abs-2503-10385" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fjournals%2Fcorr%2Fabs-2503-10385> .
+<https://dblp.org/rec/journals/corr/abs-2503-15515> <http://schema.org/url> "https://dblp.org/rec/journals/corr/abs-2503-15515" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fjournals%2Fcorr%2Fabs-2503-15515> .
+<https://dblp.org/rec/journals/corr/abs-2510-11166> <http://schema.org/url> "https://dblp.org/rec/journals/corr/abs-2510-11166" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fjournals%2Fcorr%2Fabs-2510-11166> .
+<https://dblp.org/rec/journals/semweb/LambrixALHPL24> <http://schema.org/url> "https://dblp.org/rec/journals/semweb/LambrixALHPL24" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fjournals%2Fsemweb%2FLambrixALHPL24> .
+<https://dblp.org/rec/journals/semweb/LiHAL24> <http://schema.org/url> "https://dblp.org/rec/journals/semweb/LiHAL24" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fjournals%2Fsemweb%2FLiHAL24> .
+<https://dblp.org/rec/conf/bpm/KhayatbashiH024> <http://schema.org/url> "https://dblp.org/rec/conf/bpm/KhayatbashiH024" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fbpm%2FKhayatbashiH024> .
+<https://dblp.org/rec/conf/esws/HartigWSLET24> <http://schema.org/url> "https://dblp.org/rec/conf/esws/HartigWSLET24" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fesws%2FHartigWSLET24> .
+<https://dblp.org/rec/conf/kg4s/MulderVMCH24> <http://schema.org/url> "https://dblp.org/rec/conf/kg4s/MulderVMCH24" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fkg4s%2FMulderVMCH24> .
+<https://dblp.org/rec/conf/sigmod/HartigK24> <http://schema.org/url> "https://dblp.org/rec/conf/sigmod/HartigK24" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fsigmod%2FHartigK24> .
+<https://dblp.org/rec/conf/esws/2024-1> <http://schema.org/url> "https://dblp.org/rec/conf/esws/2024-1" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fesws%2F2024-1> .
+<https://dblp.org/rec/conf/esws/2024-2> <http://schema.org/url> "https://dblp.org/rec/conf/esws/2024-2" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fesws%2F2024-2> .
+<https://dblp.org/rec/conf/grades/2024> <http://schema.org/url> "https://dblp.org/rec/conf/grades/2024" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fgrades%2F2024> .
+<https://dblp.org/rec/journals/corr/abs-2406-07596> <http://schema.org/url> "https://dblp.org/rec/journals/corr/abs-2406-07596" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fjournals%2Fcorr%2Fabs-2406-07596> .
+<https://dblp.org/rec/journals/semweb/LassilaSHBBBKLL23> <http://schema.org/url> "https://dblp.org/rec/journals/semweb/LassilaSHBBBKLL23" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fjournals%2Fsemweb%2FLassilaSHBBBKLL23> .
+<https://dblp.org/rec/conf/coopis/ChengFH23> <http://schema.org/url> "https://dblp.org/rec/conf/coopis/ChengFH23" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fcoopis%2FChengFH23> .
+<https://dblp.org/rec/conf/er/KhayatbashiHJ23> <http://schema.org/url> "https://dblp.org/rec/conf/er/KhayatbashiHJ23" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fer%2FKhayatbashiHJ23> .
+<https://dblp.org/rec/conf/esws/AebeloeAHH23> <http://schema.org/url> "https://dblp.org/rec/conf/esws/AebeloeAHH23" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fesws%2FAebeloeAHH23> .
+<https://dblp.org/rec/conf/esws/ChengH23> <http://schema.org/url> "https://dblp.org/rec/conf/esws/ChengH23" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fesws%2FChengH23> .
+<https://dblp.org/rec/conf/semweb/0001HAL23> <http://schema.org/url> "https://dblp.org/rec/conf/semweb/0001HAL23" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fsemweb%2F0001HAL23> .
+<https://dblp.org/rec/conf/semweb/DangAMHSC23> <http://schema.org/url> "https://dblp.org/rec/conf/semweb/DangAMHSC23" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fsemweb%2FDangAMHSC23> .
+<https://dblp.org/rec/conf/sigmod/HartigY23> <http://schema.org/url> "https://dblp.org/rec/conf/sigmod/HartigY23" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fsigmod%2FHartigY23> .
+<https://dblp.org/rec/conf/www/FiondaHAACCC0DE23> <http://schema.org/url> "https://dblp.org/rec/conf/www/FiondaHAACCC0DE23" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fwww%2FFiondaHAACCC0DE23> .
+<https://dblp.org/rec/conf/esws/2023w> <http://schema.org/url> "https://dblp.org/rec/conf/esws/2023w" <https://fog-rml.org/graph/dblp/https%3A%2F%2Fdblp.org%2Frec%2Fconf%2Fesws%2F2023w> .
+<https://doi.org/10.1007/978-3-032-15538-2> <http://schema.org/identifier> "10.1007/978-3-032-15538-2" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.48550/ARXIV.2603.26269> <http://schema.org/identifier> "10.48550/ARXIV.2603.26269" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.1007/978-3-031-94575-5_1> <http://schema.org/identifier> "10.1007/978-3-031-94575-5_1" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.48550/ARXIV.2503.10385> <http://schema.org/identifier> "10.48550/ARXIV.2503.10385" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.48550/ARXIV.2503.15515> <http://schema.org/identifier> "10.48550/ARXIV.2503.15515" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.48550/ARXIV.2510.11166> <http://schema.org/identifier> "10.48550/ARXIV.2510.11166" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.3233/SW-233340> <http://schema.org/identifier> "10.3233/SW-233340" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.3233/SW-233550> <http://schema.org/identifier> "10.3233/SW-233550" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.1007/978-3-031-78666-2_23> <http://schema.org/identifier> "10.1007/978-3-031-78666-2_23" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.1007/978-3-031-78952-6_33> <http://schema.org/identifier> "10.1007/978-3-031-78952-6_33" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.1145/3626246.3655015> <http://schema.org/identifier> "10.1145/3626246.3655015" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.1007/978-3-031-60626-7> <http://schema.org/identifier> "10.1007/978-3-031-60626-7" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.1007/978-3-031-60635-9> <http://schema.org/identifier> "10.1007/978-3-031-60635-9" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.1145/3661304> <http://schema.org/identifier> "10.1145/3661304" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.48550/ARXIV.2406.07596> <http://schema.org/identifier> "10.48550/ARXIV.2406.07596" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.3233/SW-223273> <http://schema.org/identifier> "10.3233/SW-223273" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.1007/978-3-031-46846-9_2> <http://schema.org/identifier> "10.1007/978-3-031-46846-9_2" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.1007/978-3-031-47262-6_12> <http://schema.org/identifier> "10.1007/978-3-031-47262-6_12" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.1007/978-3-031-47243-5_16> <http://schema.org/identifier> "10.1007/978-3-031-47243-5_16" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.1145/3555041.3590820> <http://schema.org/identifier> "10.1145/3555041.3590820" <https://fog-rml.org/graph/dblp> .
+<https://doi.org/10.1145/3543873.3587713> <http://schema.org/identifier> "10.1145/3543873.3587713" <https://fog-rml.org/graph/dblp> .
+<https://openalex.org/> <http://schema.org/datePublished> "2023" <https://fog-rml.org/graph/openalex/2023> .
+<https://openalex.org/> <http://schema.org/datePublished> "2020" <https://fog-rml.org/graph/openalex/2020> .
+<https://openalex.org/> <http://schema.org/datePublished> "2022" <https://fog-rml.org/graph/openalex/2022> .
+<https://openalex.org/> <http://schema.org/datePublished> "2025" <https://fog-rml.org/graph/openalex/2025> .
+<https://openalex.org/> <http://schema.org/datePublished> "2024" <https://fog-rml.org/graph/openalex/2024> .
+<https://openalex.org/> <http://schema.org/datePublished> "2021" <https://fog-rml.org/graph/openalex/2021> .
+<https://openalex.org/> <http://schema.org/datePublished> "2026" <https://fog-rml.org/graph/openalex/2026> .
+<https://link.springer.com/chapter/10.1007/978-3-642-21034-1_11> <http://schema.org/url> "https://link.springer.com/chapter/10.1007/978-3-642-21034-1_11" <https://fog-rml.org/graph/serpapi/https%3A%2F%2Flink.springer.com%2Fchapter%2F10.1007%2F978-3-642-21034-1_11> .
+<https://journals.sagepub.com/doi/abs/10.3233/SW-233340> <http://schema.org/url> "https://journals.sagepub.com/doi/abs/10.3233/SW-233340" <https://fog-rml.org/graph/serpapi/https%3A%2F%2Fjournals.sagepub.com%2Fdoi%2Fabs%2F10.3233%2FSW-233340> .
+<https://www.researchgate.net/profile/Olaf-Hartig/publication/228985691_Trustworthiness_of_Data_on_the_Web/links/588c68c392851cef13615172/Trustworthiness-of-Data-on-the-Web.pdf> <http://schema.org/url> "https://www.researchgate.net/profile/Olaf-Hartig/publication/228985691_Trustworthiness_of_Data_on_the_Web/links/588c68c392851cef13615172/Trustworthiness-of-Data-on-the-Web.pdf" <https://fog-rml.org/graph/serpapi/https%3A%2F%2Fwww.researchgate.net%2Fprofile%2FOlaf-Hartig%2Fpublication%2F228985691_Trustworthiness_of_Data_on_the_Web%2Flinks%2F588c68c392851cef13615172%2FTrustworthiness-of-Data-on-the-Web.pdf> .
+<https://link.springer.com/chapter/10.1007/978-3-319-18818-8_5> <http://schema.org/url> "https://link.springer.com/chapter/10.1007/978-3-319-18818-8_5" <https://fog-rml.org/graph/serpapi/https%3A%2F%2Flink.springer.com%2Fchapter%2F10.1007%2F978-3-319-18818-8_5> .
+<https://dl.acm.org/doi/abs/10.1145/3534540.3534695> <http://schema.org/url> "https://dl.acm.org/doi/abs/10.1145/3534540.3534695" <https://fog-rml.org/graph/serpapi/https%3A%2F%2Fdl.acm.org%2Fdoi%2Fabs%2F10.1145%2F3534540.3534695> .
+<https://ceur-ws.org/Vol-2369/short04.pdf> <http://schema.org/url> "https://ceur-ws.org/Vol-2369/short04.pdf" <https://fog-rml.org/graph/serpapi/https%3A%2F%2Fceur-ws.org%2FVol-2369%2Fshort04.pdf> .
+<http://www.olafhartig.de/files/VerborghEtAl_ISWC14Demo.pdf> <http://schema.org/url> "http://www.olafhartig.de/files/VerborghEtAl_ISWC14Demo.pdf" <https://fog-rml.org/graph/serpapi/http%3A%2F%2Fwww.olafhartig.de%2Ffiles%2FVerborghEtAl_ISWC14Demo.pdf> .
+<https://drops.dagstuhl.de/entities/document/10.4230/DagRep.7.6.135> <http://schema.org/url> "https://drops.dagstuhl.de/entities/document/10.4230/DagRep.7.6.135" <https://fog-rml.org/graph/serpapi/https%3A%2F%2Fdrops.dagstuhl.de%2Fentities%2Fdocument%2F10.4230%2FDagRep.7.6.135> .
+<https://olafhartig.de/files/HartigEtAl_2019_LDMgmt.pdf> <http://schema.org/url> "https://olafhartig.de/files/HartigEtAl_2019_LDMgmt.pdf" <https://fog-rml.org/graph/serpapi/https%3A%2F%2Folafhartig.de%2Ffiles%2FHartigEtAl_2019_LDMgmt.pdf> .
+<http://ftp.informatik.rwth-aachen.de/Publications/CEUR-WS/Vol-576/paper5.pdf> <http://schema.org/url> "http://ftp.informatik.rwth-aachen.de/Publications/CEUR-WS/Vol-576/paper5.pdf" <https://fog-rml.org/graph/serpapi/http%3A%2F%2Fftp.informatik.rwth-aachen.de%2FPublications%2FCEUR-WS%2FVol-576%2Fpaper5.pdf> .
+<https://doi.org/10.1007/978-3-031-47262-6_12> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-031-47262-6_12" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1145/3428757.3429120> <http://schema.org/identifier> "https://doi.org/10.1145/3428757.3429120" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-031-20891-1_16> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-031-20891-1_16" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1145/3534540.3534695> <http://schema.org/identifier> "https://doi.org/10.1145/3534540.3534695" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-031-78666-2_23> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-031-78666-2_23" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-319-63962-8_76-3> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-319-63962-8_76-3" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-658-42563-0_10> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-658-42563-0_10" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-031-11609-4_11> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-031-11609-4_11" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-030-61244-3_3> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-030-61244-3_3" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.3233/sw-233340> <http://schema.org/identifier> "https://doi.org/10.3233/sw-233340" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.3233/sw-233550> <http://schema.org/identifier> "https://doi.org/10.3233/sw-233550" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-031-94575-5_1> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-031-94575-5_1" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.3233/ssw210039> <http://schema.org/identifier> "https://doi.org/10.3233/ssw210039" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1145/3434642> <http://schema.org/identifier> "https://doi.org/10.1145/3434642" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1145/3555041.3590820> <http://schema.org/identifier> "https://doi.org/10.1145/3555041.3590820" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.3233/sw-223273> <http://schema.org/identifier> "https://doi.org/10.3233/sw-223273" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-031-47243-5_16> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-031-47243-5_16" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-031-46846-9_2> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-031-46846-9_2" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-031-78952-6_33> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-031-78952-6_33" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.48550/arxiv.2010.01190> <http://schema.org/identifier> "https://doi.org/10.48550/arxiv.2010.01190" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-030-85082-1> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-030-85082-1" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.48550/arxiv.2210.08270> <http://schema.org/identifier> "https://doi.org/10.48550/arxiv.2210.08270" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1145/3626246.3655015> <http://schema.org/identifier> "https://doi.org/10.1145/3626246.3655015" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1145/3543873.3587713> <http://schema.org/identifier> "https://doi.org/10.1145/3543873.3587713" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-030-62327-2> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-030-62327-2" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1038/s41698-023-00458-w> <http://schema.org/identifier> "https://doi.org/10.1038/s41698-023-00458-w" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-031-60626-7> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-031-60626-7" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1007/978-3-031-60635-9> <http://schema.org/identifier> "https://doi.org/10.1007/978-3-031-60635-9" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.3929/ethz-b-000504426> <http://schema.org/identifier> "https://doi.org/10.3929/ethz-b-000504426" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.14778/3773731.3773746> <http://schema.org/identifier> "https://doi.org/10.14778/3773731.3773746" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.48550/arxiv.2208.04784> <http://schema.org/identifier> "https://doi.org/10.48550/arxiv.2208.04784" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.48550/arxiv.2603.26269> <http://schema.org/identifier> "https://doi.org/10.48550/arxiv.2603.26269" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.48550/arxiv.2406.07596> <http://schema.org/identifier> "https://doi.org/10.48550/arxiv.2406.07596" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.5281/zenodo.6524084> <http://schema.org/identifier> "https://doi.org/10.5281/zenodo.6524084" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.5281/zenodo.6524085> <http://schema.org/identifier> "https://doi.org/10.5281/zenodo.6524085" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.5281/zenodo.7919872> <http://schema.org/identifier> "https://doi.org/10.5281/zenodo.7919872" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.5281/zenodo.8324923> <http://schema.org/identifier> "https://doi.org/10.5281/zenodo.8324923" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.5281/zenodo.8059923> <http://schema.org/identifier> "https://doi.org/10.5281/zenodo.8059923" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.5281/zenodo.8144084> <http://schema.org/identifier> "https://doi.org/10.5281/zenodo.8144084" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.5281/zenodo.8059913> <http://schema.org/identifier> "https://doi.org/10.5281/zenodo.8059913" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.5281/zenodo.8339384> <http://schema.org/identifier> "https://doi.org/10.5281/zenodo.8339384" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.5281/zenodo.7919871> <http://schema.org/identifier> "https://doi.org/10.5281/zenodo.7919871" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.5281/zenodo.7925526> <http://schema.org/identifier> "https://doi.org/10.5281/zenodo.7925526" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.5281/zenodo.7925525> <http://schema.org/identifier> "https://doi.org/10.5281/zenodo.7925525" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.48550/arxiv.2503.15515> <http://schema.org/identifier> "https://doi.org/10.48550/arxiv.2503.15515" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.1158/1538-7445.am2026-1028> <http://schema.org/identifier> "https://doi.org/10.1158/1538-7445.am2026-1028" <https://fog-rml.org/graph/openalex> .
+<https://doi.org/10.31244/jero.2021.02> <http://schema.org/identifier> "https://doi.org/10.31244/jero.2021.02" <https://fog-rml.org/graph/openalex> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Zero-knowledge query planning for an iterator implementation of link traversal based query execution" <https://fog-rml.org/graph/serpapi> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "The materials design ontology" <https://fog-rml.org/graph/serpapi> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Trustworthiness of data on the web" <https://fog-rml.org/graph/serpapi> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "A context-based semantics for SPARQL property paths over the web" <https://fog-rml.org/graph/serpapi> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Converting property graphs to RDF: a preliminary study of the practical impact of different mappings" <https://fog-rml.org/graph/serpapi> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "An Empirical Analysis of GraphQL API Schemas in Open Code Repositories and Package Registries." <https://fog-rml.org/graph/serpapi> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Low-Cost Queryable Linked Data through Triple Pattern Fragments." <https://fog-rml.org/graph/serpapi> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Federated semantic data management (dagstuhl seminar 17262)" <https://fog-rml.org/graph/serpapi> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Linked Data Management." <https://fog-rml.org/graph/serpapi> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Towards a data-centric notion of trust in the semantic web" <https://fog-rml.org/graph/serpapi> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Cinzia Cappiello" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Olaf Hartig" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Mohamed Sellami" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ali Ouni 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Sitt Min Oo" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Marcelo Arenas" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Enrico Franconi" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Janik Hammerer" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Katja Hose" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Laura Koesten" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "George Konstantinidis 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Leonid Libkin" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Wim Martens" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Yuya Sasaki 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Stefanie Scherzinger" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Katherine Thornton" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Hsiang-Yun Wu" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ali Elhalawati" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Anastasia Dimou" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Daniel Hernández 0002" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Piero A. Bonatti" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "John Domingue" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Anna Lisa Gentile" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Andreas Harth" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Aidan Hogan" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ernesto Jiménez-Ruiz" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Deborah L. McGuinness" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Chang Sun 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ruben Verborgh" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Jesse Wright" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Brad Bebee" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ümit V. Çatalyürek" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ankesh Khandelwal" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Simone Rondelli" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Michael Schmidt 0002" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Lefteris Sidirourgos" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Bryan Thompson 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Patrick Lambrix" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Rickard Armiento" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Huanyu Li 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Mina Abd Nikooie Pour" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ying Li 0029" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Shahrzad Khayatbashi" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Amin Jalali 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Gregory Todd Williams" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ora Lassila" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Carlos Manuel López Enríquez" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Gertjan De Mulder" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Els de Vleeschauwer" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ben De Meester" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Pieter Colpaert" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Zoi Kaoudi" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Albert Meroño-Peñuela" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Raphaël Troncy" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Maribel Acosta" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Mehwish Alam" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Heiko Paulheim" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Pasquale Lisena" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Dave Bechberger" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Willem Broekema" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Kelvin Lawrence" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ronak Sharda" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Bryan B. Thompson" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Sijin Cheng" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Sebastián Ferrada" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Christian Aebeloe" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Amr Azzam" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Minh Hoang Dang" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Julien Aimonier-Davat" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Pascal Molli" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Hala Skaf-Molli" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Yotlan Le Crom" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Yuichi Yoshida" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Valeria Fionda" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Reyhaneh Abdolazimi" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Sihem Amer-Yahia" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Hongzhi Chen" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Xiao Chen 0016" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Peng Cui 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Jeffrey Dalton 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Xin Luna Dong" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Lisette Espín-Noboa" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Wenqi Fan" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Manuela Fritz" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Quan Gan" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Jingtong Gao" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Xiaojie Guo 0002" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Torsten Hahmann" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Jiawei Han 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Soyeon Caren Han" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Estevam Hruschka" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Liang Hu 0004" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Jiaxin Huang 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Utkarshani Jaimini" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Olivier Jeunen" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Yushan Jiang" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Fariba Karimi 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "George Karypis" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Krishnaram Kenthapadi" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Himabindu Lakkaraju" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Hady W. Lauw" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Thai Le" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Trung-Hoang Le" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Dongwon Lee 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Geon Lee" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Liat Levontin" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Cheng-Te Li" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Haoyang Li 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ying Li 0124" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Jay Chiehen Liao" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Qidong Liu 0002" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Usha Lokala" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ben London 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Siqu Long" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Hande Küçük-McGinty" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Yu Meng 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Seungwhan Moon" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Usman Naseem" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Pradeep Natarajan" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Behrooz Omidvar-Tehrani" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Zijie Pan" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Devesh Parekh" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Jian Pei 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Tiago Peixoto" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Steven Pemberton" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Josiah Poon" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Filip Radlinski" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Federico Rossetto" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Kaushik Roy 0009" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Aghiles Salah" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Mehrnoosh Sameki" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Amit P. Sheth" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Cogan Shimizu" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Kijung Shin" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Dongjin Song" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Julia Stoyanovich" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Dacheng Tao" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Johanne R. Trippas" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Quoc Truong" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Yu-Che Tsai" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Adaku Uchendu" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Bram van den Akker" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Lin Wang 0040" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Minjie Wang" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Shoujin Wang" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Xin Wang 0019" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ingmar Weber" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Henry Weld" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Lingfei Wu 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Da Xu 0008" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Yifan Ethan Xu" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Shuyuan Xu" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Bo Yang 0062" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ke Yang 0003" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Elad Yom-Tov" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Jaemin Yoo" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Zhou Yu 0005" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Reza Zafarani" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Hamed Zamani" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Meike Zehlike" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Qi Zhang 0020" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Xikun Zhang 0002" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Yongfeng Zhang 0003" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Yu Zhang 0044" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Zheng Zhang 0047" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Liang Zhao 0002" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Xiangyu Zhao 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Wenwu Zhu 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Cássia Trojahn" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Sven Hertling" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Catia Pesquita" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Hidir Aras" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Juan Cano" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Simon Gottschalk 0001" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Sabrina Kirrane" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Francesco Osborne" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Philipp D. Rohde" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Luc Steels" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ruben Taelman" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Aisling Third" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Ilaria Tiddi" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/author> "Rima Türker" <https://fog-rml.org/graph/dblp> .
+<https://openalex.org/> <http://schema.org/author> "Shahrzad Khayatbashi" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Olaf Hartig" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Amin Jalali" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Sijin Cheng" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Sebastián Ferrada" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Katja Hose" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Juan Sequeda" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Carsten Giebe" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Robin Keskisärkkä" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Eva Blomqvist" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Leili Lind" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Patrick Lambrix" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Rickard Armiento" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Huanyu Li" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Mina Abd Nikooie Pour" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ying Li" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Sitt Min Oo" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Sherif Sakr" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Angela Bonifati" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hannes Voigt" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Alexandru Iosup" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Khaled Ammar" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Renzo Angles" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Walid G. Aref" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Marcelo Arenas" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Maciej Besta" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Peter Boncz" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Khuzaima Daudjee" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Emanuele Della Valle" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Stefania Dumbrava" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Bernhard Haslhofer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Tim Hegeman" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jan Hidders" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Adriana Iamnitchi" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Vasiliki Kalavri" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hugo Kapp" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Wim Martens" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "M. TAMER ÖZSU" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Eric Peukert" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Stefan Plantikow" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Mohamed Ragab" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Matei Ripeanu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Semih Salihoğlu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Christian Schulz" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Petra Selmer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Joshua Shinavier" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Gábor Szárnyas" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Riccardo Tommasini" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Antonino Tumeo" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Alexandru Uta" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ana Lucia Vărbănescu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hsiang‐Yun Wu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Nikolay Yakovets" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Da Yan" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Eiko Yoneki" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Yuichi Yoshida" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ora Lassila" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Michael Schmidt" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Brad Bebee" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Dave Bechberger" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Willem Broekema" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ankesh Khandelwal" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Kelvin Lawrence" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Carlos Manuel Lopez Enriquez" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ronak Sharda" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Bryan Thompson" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Minh-Hoang Dang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Julien Aimonier-Davat" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Pascal Molli" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hala Skaf‐Molli" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Yotlan Le Crom" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Gregory Todd Williams" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Bellatreche, Ladjel" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Dumas, Marlon" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Karras, Panagiotis" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Matulevičius, Raimundas" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Awad, Ahmed" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Weidlich, Matthias" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ivanović, Mirjana" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hartig, Olaf" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Christian Esposito" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ross Horne" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Changqing Sun" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Zoi Kaoudi" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Valeria Fionda" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Reyhaneh Abdolazimi" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Sihem Amer-Yahia" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hongzhi Chen" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Xiao Chen" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Peng Cui" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jeff Dalton" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Xin Luna Dong" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Lisette Espín-Noboa" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Wenqi Fan" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Manuela Fritz" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Quan Gan" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jingtong Gao" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Xiaojie Guo" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Torsten Hahmann" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jiawei Han" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Soyeon Caren Han" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Estevam Hruschka" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Liang Hu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jiaxin Huang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Utkarshani Jaimini" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Olivier Jeunen" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Yushan Jiang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Fariba Karimi" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "George Karypis" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Krishnaram Kenthapadi" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Himabindu Lakkaraju" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hady W. Lauw" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Thai Le" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Trung-Hoang Le" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Dongwon Lee" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Geon Lee" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Liat Levontin" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Cheng–Te Li" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Haoyang Li" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jay Chiehen Liao" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Qidong Liu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Usha Lokala" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ben London" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Siqu Long" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hande Küçük Mcginty" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Meng Yu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Seungwhan Moon" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Usman Naseem" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Pradeep Natarajan" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Behrooz Omidvar-Tehrani" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Zijie Pan" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Devesh Parekh" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jian Pei" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Tiago P. Peixoto" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Steven Pemberton" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Josiah Poon" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Filip Radlinski" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Federico Rossetto" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Kaushik Roy" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Aghiles Salah" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Mehrnoosh Sameki" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Amit Sheth" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Cogan Shimizu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Kijung Shin" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Dongjin Song" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Julia Stoyanovich" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Dacheng Tao" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Johanne R. Trippas" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Quoc Truong" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Yu-Che Tsai" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Adaku Uchendu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Bram van den Akker" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Lin Wang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Minjie Wang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Shoujin Wang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Xin Wang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ingmar Weber" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Henry Weld" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Lingfei Wu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Da Xu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Yifan Ethan Xu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Shuyuan Xu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Bo Yang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ke Yang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Elad Yom‐Tov" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jaemin Yoo" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Zhou Yu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Reza Zafarani" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hamed Zamani" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Meike Zehlike" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Qi Zhang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Xikun Zhang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Yongfeng Zhang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Yu Zhang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Zheng Zhang" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Liang Zhao" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Xiangyu Zhao" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Wenwu Zhu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Harth, Andreas" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Presutti, Valentina" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Troncy, Raphaël" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Acosta, Maribel" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Polleres, Axel" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Fernández, Javier D." <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Xavier Parreira, Josiane" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hose, Katja" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Cochez, Michael" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Andreas Möck" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Maria‐Veronica Teleanu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Simon Kreutzfeldt" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Christoph E. Heilig" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jennifer Hüllein" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Lino Möhrmann" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Arne Jahn" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Dorothea Hanf" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Irina Kerle" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hans Martin Singh" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Barbara Hutter" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Sebastian Uhrig" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Martina Fröhlich" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Olaf Neumann" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Andreas Hartig" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Sascha Brückmann" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Steffen Hirsch" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Kerstin Grund" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Nicola Dikow" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Daniel B. Lipka" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Marcus Renner" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Irfan Ahmed Bhatti" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Leonidas Apostolidis" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Richard F. Schlenk" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Christian P. Schaaf" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Albrecht Stenzinger" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Evelin Schröck" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Daniel Hübschmann" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Christoph Heining" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Peter Horak" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hanno Glimm" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Stefan Fröhling" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Meroño Peñuela, Albert" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Dimou, Anastasia" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Alam, Mehwish" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Paulheim, Heiko" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Lisena, Pasquale" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Albert Meroño-Peñuela" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Anastasia Dimou" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Raphaël Troncy" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Maribel Acosta" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Mehwish Alam" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Heiko Paulheim" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Pasquale Lisena" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Enrico Franconi" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Janik Hammerer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Laura Koesten" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "George Konstantinidis" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Leonid Libkin" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Yuya Sasaki" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Stefanie Scherzinger" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Katherine Thornton" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Trojahn, Cassia" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Sven Hertling" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Cátia Pesquita" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Christian Aebeloe" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Hidir Aras" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Amr Azzam" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Juan Cano-Benito" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "John Domingue" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Simon Gottschalk" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Sabrina Kirrane" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Francesco Osborne" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Philipp D. Rohde" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Luc Steels" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ruben Taelman" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Allan Third" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ilaria Tiddi" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Rima Türker" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Pierre-Antoine Champin" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Piero A. Bonatti" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Anna Lisa Gentile" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Andreas Harth" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Aidan Hogan" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ernesto Jiménez-Ruiz" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Deborah L. McGuinness" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Chang Sun" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ruben Verborgh" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jesse H. Wright" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Michael Wegert-Verhoeven" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Mathea Fransisca" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Sylvia Martin" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Attila Jády" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Daniela Richter" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Małgorzata Oleś" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Timon A. Blindauer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jan‐Philipp Mallm" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jasmina Paluncic" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Claudia Dagostino" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Olga Ermakova" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Annika Schneider" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Matthew The" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Annika Baude-Müller" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Katja Beck" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Maximilian Bullemer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Victor Didier Meza" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Vivek Venkataramani" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ralf C. Bargou" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "H. Becker" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Melanie Boerries" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Armin Tuchscherer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Martin Wermke" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Andreas Brunschweiger" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Mohammed Al-Saeedi" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "D. Jäger" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "O Witt" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Denis Schapiro" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Bernhard Küster" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Michael Allgäeuer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Alexander Brobeil" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Maria Veronica Teleanu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Wolfgang Hartmann" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Marcel Trautmann" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ina Oehme" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Claudia R. Ball" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Stefan M. Pfister" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Sebastian M. Dieter" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Olaf Kller" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Armin Jentsch" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Jrg Doll" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Dennis Meyer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Gabriele Kaiser" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Ilse Stangen" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Mehrsprachigkeit" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Marcel Helbig" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Anna Marczuk" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Nanine Lilla" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Wim Nieuwenboom" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Marianne Schpbach" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Sebastian Threr" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Amelie Labsch" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "M Korrespondenzautorin" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Monja Schmitt" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Lena Nusser" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "J Baumert" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "M Kunter" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "W Blum" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "M Brunner" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "T Voss" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "A Jordan" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "Y.-M Tsai" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "D Berliner" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "S Blmeke" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "- Bremerich" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "C Buchholtz" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "A Bremerich-Vos" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "J Dmmer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "J Cummins" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "J Doll" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "N Buchholtz" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "G Kaiser" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "J Knig" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "A Jentsch" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "D Meyer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "N Dring" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "J Bortz" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "R Floden" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "D Frey" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "D Dauenheimer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "O Parge" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "J Haisch" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "S Hammer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "S Carlson" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "T Ehmke" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "B Koch-Priewe" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "A Kker" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "U Ohm" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "N Schulze" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "A Helmke" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "F.-W Schrader" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "H.-G Hesse" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "K Gbel" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "J Hartig" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "L Hu" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "P Bentler" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "S Jentges" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "S Lammerding" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "S Strau" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "I Fladung" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "C Schleiffer" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "S Frster" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "K Kaspar" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "A.-M Rhl" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "R Ligtvoet" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "S Klemenz" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "M Rothland" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "S Tachtsoglou" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "A Seifert" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "S Krauss" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "M Neubrand" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "O Kunina-Habenicht" <https://fog-rml.org/graph/openalex> .
+<https://openalex.org/> <http://schema.org/author> "F Schulze-Stocker" <https://fog-rml.org/graph/openalex> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Cooperative Information Systems - 31st International Conference, CoopIS 2025, Marbella, Spain, October 20-22, 2025, Proceedings" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Query-Specific Pruning of RML Mappings (Extended Version)." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Exploring Exploratory Querying." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Flexible RML-Based Mapping of Property Graphs to RDF." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "An Algebraic Foundation for Knowledge Graph Construction." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "An Algebraic Foundation for Knowledge Graph Construction (Extended Version)." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Towards Computer-Using Personal Agents." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Poseidon: A OneGraph Engine." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "The materials design ontology." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Ontology-based GraphQL server generation for data access and data integration." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Transforming Object-Centric Event Logs to Temporal Event Knowledge Graphs." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Datatypes for Lists and Maps in RDF Literals." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "The Open Circularity Platform: a Decentralized Data Sharing Platform for Circular Value Networks." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "GRADES-NDA&apos;24: 7th Joint Workshop on Graph Data Management Experiences &amp; Systems (GRADES) and Network Data Analytics (NDA)." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "The Semantic Web - 21st International Conference, ESWC 2024, Hersonissos, Crete, Greece, May 26-30, 2024, Proceedings, Part I" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "The Semantic Web - 21st International Conference, ESWC 2024, Hersonissos, Crete, Greece, May 26-30, 2024, Proceedings, Part II" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Proceedings of the 7th Joint Workshop on Graph Data Management Experiences &amp; Systems (GRADES) and Network Data Analytics (NDA), Santiago, Chile, 14 June 2024" <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Transforming Object-Centric Event Logs to Temporal Event Knowledge Graphs (Extended Version)." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "The OneGraph vision: Challenges of breaking the graph model lock-in." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Considering Vocabulary Mappings in Query Plans for Federations of RDF Data Sources." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Transforming Event Knowledge Graph to Object-Centric Event Logs: A Comparative Study for Multi-dimensional Process Analysis." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Preface." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "A Cost Model to Optimize Queries over Heterogeneous Federations of RDF Data Sources." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "OBG-gen: Ontology-Based GraphQL Server Generation for Data Integration." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "FedShop: A Benchmark for Testing the Scalability of SPARQL Federation Engines." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "GRADES-NDA&apos;23: 6th Joint Workshop on Graph Data Management Experiences &amp; Systems (GRADES) and Network Data Analytics (NDA)." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Tutorials at The Web Conference 2023." <https://fog-rml.org/graph/dblp> .
+<https://fog-rml.org/id/bae04093fb322cf4e8828a9e145651000c0c8045bd7d41fc70e68d0691b7cb8f> <http://schema.org/name> "Joint Proceedings of the ESWC 2023 Workshops and Tutorials co-located with 20th European Semantic Web Conference (ESWC 2023), Hersonissos, Greece, May 28-29, 2023." <https://fog-rml.org/graph/dblp> .

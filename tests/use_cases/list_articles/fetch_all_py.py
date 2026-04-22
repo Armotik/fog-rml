@@ -1,19 +1,44 @@
 import json
+import logging
+import shlex
 from pathlib import Path
 import requests
 
 BASE = Path(__file__).parent
-env = {}
-# load possible .env files: parent folder and data/ subfolder (data/.env commonly used)
-for candidate in [BASE / '.env', BASE / 'data' / '.env', BASE / 'data' ]:
-    try:
-        if candidate.is_file():
-            for line in candidate.read_text(encoding='utf-8').splitlines():
-                if '=' in line:
-                    k,v = line.split('=',1)
-                    env[k.strip()] = v.strip()
-    except FileNotFoundError:
-        continue
+logger = logging.getLogger(__name__)
+
+
+def _parse_env_value(raw: str) -> str:
+    value = raw.strip()
+    if not value:
+        return ""
+    if value[0] in ("'", '"'):
+        try:
+            parts = shlex.split(value, posix=True)
+        except ValueError:
+            return value
+        if parts:
+            return parts[0]
+    return value
+
+
+def _load_env_files() -> dict:
+    env = {}
+    # Prefer the checked-in data/.env for shared secrets, then let the
+    # command-generated parent .env override author/year values.
+    for candidate in [BASE / 'data' / '.env', BASE / '.env']:
+        try:
+            if candidate.is_file():
+                for line in candidate.read_text(encoding='utf-8').splitlines():
+                    if '=' in line:
+                        k, v = line.split('=', 1)
+                        env[k.strip()] = _parse_env_value(v)
+        except FileNotFoundError:
+            continue
+    return env
+
+
+env = _load_env_files()
 
 DATA_DIR = BASE / 'data'
 
@@ -32,7 +57,7 @@ def fetch_openalex():
     url = f"https://api.openalex.org/works?filter=raw_author_name.search:{q},from_publication_date:{from_date},to_publication_date:{until_date}&per-page=200"
     r = requests.get(url, timeout=30)
     write(Path('openalex_works.json'), r.text)
-    print('openalex saved', (DATA_DIR / 'openalex_works.json'))
+    logger.info("openalex saved %s", DATA_DIR / 'openalex_works.json')
 
 def fetch_hal():
     author = env.get('HAL_AUTHOR')
@@ -40,7 +65,7 @@ def fetch_hal():
     url = f"https://api.archives-ouvertes.fr/search/?q=authFullName_t:{q}&wt=json&rows=100"
     r = requests.get(url, timeout=30)
     write(Path('hal_results.json'), r.text)
-    print('hal saved', (DATA_DIR / 'hal_results.json'))
+    logger.info("hal saved %s", DATA_DIR / 'hal_results.json')
 
 def fetch_dblp():
     author = env.get('DBLP_AUTHOR')
@@ -48,7 +73,7 @@ def fetch_dblp():
     url = f"https://dblp.org/search/publ/api?q={q}&format=json"
     r = requests.get(url, timeout=30)
     write(Path('dblp_results.json'), r.text)
-    print('dblp saved', (DATA_DIR / 'dblp_results.json'))
+    logger.info("dblp saved %s", DATA_DIR / 'dblp_results.json')
 
 def fetch_serpapi():
     key = env.get('SERPAPI_KEY')
@@ -57,9 +82,10 @@ def fetch_serpapi():
     url = f"https://serpapi.com/search.json?engine=google_scholar&q={q}&api_key={key}"
     r = requests.get(url, timeout=30)
     write(Path('serpapi_scholar.json'), r.text)
-    print('serpapi saved', (DATA_DIR / 'serpapi_scholar.json'))
+    logger.info("serpapi saved %s", DATA_DIR / 'serpapi_scholar.json')
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     fetch_openalex()
     fetch_hal()
     fetch_dblp()

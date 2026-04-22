@@ -1,11 +1,11 @@
 [
   {
-    "url": "https://api.github.com/repos/Armotik/pyhartig/issues/4",
-    "repository_url": "https://api.github.com/repos/Armotik/pyhartig",
-    "labels_url": "https://api.github.com/repos/Armotik/pyhartig/issues/4/labels{/name}",
-    "comments_url": "https://api.github.com/repos/Armotik/pyhartig/issues/4/comments",
-    "events_url": "https://api.github.com/repos/Armotik/pyhartig/issues/4/events",
-    "html_url": "https://github.com/Armotik/pyhartig/issues/4",
+    "url": "https://api.github.com/repos/Armotik/fog-rml/issues/4",
+    "repository_url": "https://api.github.com/repos/Armotik/fog-rml",
+    "labels_url": "https://api.github.com/repos/Armotik/fog-rml/issues/4/labels{/name}",
+    "comments_url": "https://api.github.com/repos/Armotik/fog-rml/issues/4/comments",
+    "events_url": "https://api.github.com/repos/Armotik/fog-rml/issues/4/events",
+    "html_url": "https://github.com/Armotik/fog-rml/issues/4",
     "id": 3666561739,
     "node_id": "I_kwDOQWcmhs7ai0rL",
     "number": 4,
@@ -61,7 +61,7 @@
     "body": "Just a test issue",
     "closed_by": null,
     "reactions": {
-      "url": "https://api.github.com/repos/Armotik/pyhartig/issues/4/reactions",
+      "url": "https://api.github.com/repos/Armotik/fog-rml/issues/4/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -72,17 +72,17 @@
       "rocket": 0,
       "eyes": 0
     },
-    "timeline_url": "https://api.github.com/repos/Armotik/pyhartig/issues/4/timeline",
+    "timeline_url": "https://api.github.com/repos/Armotik/fog-rml/issues/4/timeline",
     "performed_via_github_app": null,
     "state_reason": null
   },
   {
-    "url": "https://api.github.com/repos/Armotik/pyhartig/issues/3",
-    "repository_url": "https://api.github.com/repos/Armotik/pyhartig",
-    "labels_url": "https://api.github.com/repos/Armotik/pyhartig/issues/3/labels{/name}",
-    "comments_url": "https://api.github.com/repos/Armotik/pyhartig/issues/3/comments",
-    "events_url": "https://api.github.com/repos/Armotik/pyhartig/issues/3/events",
-    "html_url": "https://github.com/Armotik/pyhartig/issues/3",
+    "url": "https://api.github.com/repos/Armotik/fog-rml/issues/3",
+    "repository_url": "https://api.github.com/repos/Armotik/fog-rml",
+    "labels_url": "https://api.github.com/repos/Armotik/fog-rml/issues/3/labels{/name}",
+    "comments_url": "https://api.github.com/repos/Armotik/fog-rml/issues/3/comments",
+    "events_url": "https://api.github.com/repos/Armotik/fog-rml/issues/3/events",
+    "html_url": "https://github.com/Armotik/fog-rml/issues/3",
     "id": 3666560796,
     "node_id": "I_kwDOQWcmhs7ai0cc",
     "number": 3,
@@ -112,7 +112,7 @@
       {
         "id": 9653754766,
         "node_id": "LA_kwDOQWcmhs8AAAACP2ibjg",
-        "url": "https://api.github.com/repos/Armotik/pyhartig/labels/bug",
+        "url": "https://api.github.com/repos/Armotik/fog-rml/labels/bug",
         "name": "bug",
         "color": "d73a4a",
         "default": true,
@@ -121,7 +121,7 @@
       {
         "id": 9653754771,
         "node_id": "LA_kwDOQWcmhs8AAAACP2ibkw",
-        "url": "https://api.github.com/repos/Armotik/pyhartig/labels/documentation",
+        "url": "https://api.github.com/repos/Armotik/fog-rml/labels/documentation",
         "name": "documentation",
         "color": "0075ca",
         "default": true,
@@ -155,7 +155,7 @@
     "body": "Just a test issue",
     "closed_by": null,
     "reactions": {
-      "url": "https://api.github.com/repos/Armotik/pyhartig/issues/3/reactions",
+      "url": "https://api.github.com/repos/Armotik/fog-rml/issues/3/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -166,7 +166,7 @@
       "rocket": 0,
       "eyes": 0
     },
-    "timeline_url": "https://api.github.com/repos/Armotik/pyhartig/issues/3/timeline",
+    "timeline_url": "https://api.github.com/repos/Armotik/fog-rml/issues/3/timeline",
     "performed_via_github_app": null,
     "state_reason": null
   }

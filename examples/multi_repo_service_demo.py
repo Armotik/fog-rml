@@ -1,22 +1,28 @@
-"""Demo: emulate SERVICE-CALL behavior by loading per-repo named graphs
+﻿"""Demo: emulate SERVICE-CALL behavior by loading per-repo named graphs
 
 Run:
-    python pyhartig/examples/multi_repo_service_demo.py
+    python fog_rml/examples/multi_repo_service_demo.py
 
 This script loads TTL files for repos r1,r2,r3 into named graphs and
 executes a SPARQL query that selects triples from the graph bound to
 each repo. It demonstrates the equivalent of binding a graph via
 `SERVICE-CALL(... ) as ?g` by using named graphs in an rdflib dataset.
 """
+import logging
 from pathlib import Path
 import sys
 from rdflib import Dataset, Namespace, URIRef, Graph as RDFGraph, Literal as RDFLiteral, BNode as RDFBNode
 
 EX = Namespace("http://example.org/")
+logger = logging.getLogger(__name__)
+
+
+def configure_logging() -> None:
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 
 def _ensure_src_on_path():
-    # Ensure `src/` is on sys.path so imports like `pyhartig.mapping` work
+    # Ensure `src/` is on sys.path so imports like `fog_rml.mapping` work
     here = Path(__file__).resolve()
     project_root = here.parent.parent
     src_dir = project_root / "src"
@@ -25,11 +31,11 @@ def _ensure_src_on_path():
 
 
 def term_to_rdflib(term):
-    """Convert pyhartig algebra terms to rdflib terms."""
+    """Convert fog_rml algebra terms to rdflib terms."""
     if term is None:
         return None
-    from pyhartig.algebra.Tuple import EPSILON
-    from pyhartig.algebra.Terms import IRI, Literal, BlankNode
+    from fog_rml.algebra.Tuple import EPSILON
+    from fog_rml.algebra.Terms import IRI, Literal, BlankNode
 
     if term == EPSILON:
         return None
@@ -46,10 +52,11 @@ def term_to_rdflib(term):
 
 
 def main():
+    configure_logging()
     _ensure_src_on_path()
 
     # local imports after ensuring src is on path
-    from pyhartig.mapping.MappingParser import MappingParser
+    from fog_rml.mapping.MappingParser import MappingParser
 
     base = Path(__file__).parent / "data"
     cg = Dataset()
@@ -67,7 +74,7 @@ def main():
         ttl_path = base / f"{r}.ttl"
 
         if mapping_path.exists():
-            print(f"Running mapping for {r} from {mapping_path}")
+            logger.info("Running mapping for %s from %s", r, mapping_path)
             parser = MappingParser(str(mapping_path))
             op = parser.parse()
             for mt in op.execute():
@@ -98,13 +105,14 @@ def main():
     }}
     """
 
-    print("Running query with SERVICE-CALL support:\n", query)
+    logger.info("Running query with SERVICE-CALL support:\n%s", query)
     # use the SERVICE-CALL handler to execute the query -- it will run mappings
-    from pyhartig.sparql.service_call import execute_query_with_service_call
+    from fog_rml.sparql.service_call import execute_query_with_service_call
 
     # We executed mappings into the dataset above. Print resulting quads
     # (graph, subject, predicate, object) so callers see the materialized data.
-    print('\nResulting quads:')
+    logger.info("")
+    logger.info("Resulting quads:")
     try:
         for g, s, p, o in cg.quads((None, None, None, None)):
             g_label = str(g) if g is not None else 'urn:x-rdflib:default'
@@ -116,7 +124,7 @@ def main():
                 s_txt = str(s)
                 p_txt = str(p)
                 o_txt = str(o)
-            print(f"Graph: {g_label}  |  {s_txt} {p_txt} {o_txt}")
+            logger.info("Graph: %s  |  %s %s %s", g_label, s_txt, p_txt, o_txt)
     except Exception:
         # Fallback for older rdflib versions: iterate graphs and triples
         for g in cg.graphs():
@@ -130,8 +138,9 @@ def main():
                     s_txt = str(s)
                     p_txt = str(p)
                     o_txt = str(o)
-                print(f"Graph: {g_label}  |  {s_txt} {p_txt} {o_txt}")
+                logger.info("Graph: %s  |  %s %s %s", g_label, s_txt, p_txt, o_txt)
 
 
 if __name__ == '__main__':
     main()
+

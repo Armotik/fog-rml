@@ -1,11 +1,15 @@
 import pytest
 import os
 import json
+import logging
 from pathlib import Path
-from pyhartig.mapping.MappingParser import MappingParser
-from pyhartig.algebra.Terms import IRI, Literal
-from pyhartig.namespaces import XSD_STRING
+from fog_rml.mapping.MappingParser import MappingParser
+from fog_rml.algebra.Terms import IRI, Literal
+from fog_rml.serializers.NTriplesSerializer import NTriplesSerializer
 from datetime import datetime
+
+
+logger = logging.getLogger(__name__)
 
 
 class TestGithubGitlabUseCase:
@@ -22,11 +26,13 @@ class TestGithubGitlabUseCase:
     @pytest.fixture
     def debug_logger(self):
         def log(section, message):
-            print(f"\n{'=' * 80}")
-            print(f"[DEBUG] {section}")
-            print(f"{'-' * 80}")
-            print(message)
-            print(f"{'=' * 80}\n")
+            logger.info("")
+            logger.info("%s", "=" * 80)
+            logger.info("[DEBUG] %s", section)
+            logger.info("%s", "-" * 80)
+            logger.info("%s", message)
+            logger.info("%s", "=" * 80)
+            logger.info("")
 
         return log
 
@@ -62,7 +68,7 @@ class TestGithubGitlabUseCase:
 
             parser = MappingParser(mapping_file)
             pipeline = parser.parse()
-            results = pipeline.execute()
+            results = list(pipeline.execute())
 
             graph = parser.explain()
             debug_logger("Pipeline Explanation", graph)
@@ -108,41 +114,14 @@ class TestGithubGitlabUseCase:
 
         # 2. Save results as N-Triples (RDF format)
         nt_output = output_dir / f"graph_{timestamp}.nt"
+        serializer = NTriplesSerializer()
         with open(nt_output, 'w', encoding='utf-8') as f:
             for row in results:
-                subject = row.get("subject")
-                predicate = row.get("predicate")
-                obj = row.get("object")
-
-                if subject and predicate and obj:
-                    # Format subject
-                    if isinstance(subject, IRI):
-                        subj_str = f"<{subject.value}>"
-                    else:
-                        subj_str = f"<{str(subject)}>"
-
-                    # Format predicate
-                    if isinstance(predicate, IRI):
-                        pred_str = f"<{predicate.value}>"
-                    else:
-                        pred_str = f"<{str(predicate)}>"
-
-                    # Format object
-                    if isinstance(obj, IRI):
-                        obj_str = f"<{obj.value}>"
-                    elif isinstance(obj, Literal):
-                        # Escape quotes and backslashes
-                        lex = obj.lexical_form.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
-                        if obj.datatype_iri and obj.datatype_iri != XSD_STRING.value:
-                            obj_str = f'"{lex}"^^<{obj.datatype_iri}>'
-                        else:
-                            obj_str = f'"{lex}"'
-                    else:
-                        # Fallback for strings
-                        obj_val = str(obj).replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
-                        obj_str = f'"{obj_val}"'
-
-                    f.write(f"{subj_str} {pred_str} {obj_str} .\n")
+                serialized = serializer.serialize(row)
+                if not serialized:
+                    continue
+                line, _key, _is_quad = serialized
+                f.write(line + "\n")
 
         debug_logger("Output Files", f"N-Triples graph saved to: {nt_output}")
 
@@ -215,12 +194,9 @@ class TestGithubGitlabUseCase:
                 f.write(f"\n[Triple {i+1}]\n")
                 for key, value in row.items():
                     if isinstance(value, IRI):
-                        f.write(f"  {key}: <{value.value}>\n")
+                        f.write(f"  {key}: {serializer.format_term(value, allowed_types=(IRI,))}\n")
                     elif isinstance(value, Literal):
-                        f.write(f"  {key}: \"{value.lexical_form}\"")
-                        if value.datatype_iri and value.datatype_iri != XSD_STRING.value:
-                            f.write(f"^^<{value.datatype_iri}>")
-                        f.write("\n")
+                        f.write(f"  {key}: {serializer.format_term(value, allowed_types=(Literal,))}\n")
                     else:
                         f.write(f"  {key}: {value}\n")
 

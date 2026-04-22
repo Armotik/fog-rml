@@ -1,4 +1,4 @@
-# pyhartig
+﻿# fog-rml
 
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://python.org/downloads)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -26,9 +26,9 @@
 
 This library is a research project developed for the **"Engineering For Research I"** module.
 
-It is part of the **M1 Computer Science, SMART Computing Master's Program** at **Nantes Université**.
+It is part of the **M1 Computer Science, SMART Computing Master's Program** at **Nantes UniversitÃ©**.
 
-The project is hosted by the **LS2N (Laboratoire des Sciences du Numérique de Nantes)**, within the **GDD (Gestion des Données Distribuées) team**.
+The project is hosted by the **LS2N (Laboratoire des Sciences du NumÃ©rique de Nantes)**, within the **GDD (Gestion des DonnÃ©es DistribuÃ©es) team**.
 
 It serves as the core logical component for the **MCP-SPARQLLM** project, aiming to translate heterogeneous data sources
 into RDF Knowledge Graphs via algebraic operators.
@@ -43,8 +43,8 @@ This project is designed to be installed in "editable" mode for development.
 
 ```bash
 # Clone the repository
-git clone [https://github.com/Armotik/pyhartig](https://github.com/Armotik/pyhartig)
-cd pyhartig
+git clone [https://github.com/Armotik/fog-rml](https://github.com/Armotik/fog-rml)
+cd fog-rml
 
 # Create a virtual environment
 python -m venv .venv
@@ -59,7 +59,13 @@ pip install -e '.[test]'
 Run the help command to ensure everything is set up correctly:
 
 ```bash
-python -m pyhartig --help
+fog-rml --help
+```
+
+Console script alias:
+
+```bash
+fog-rml --help
 ```
 
 ---
@@ -67,7 +73,7 @@ python -m pyhartig --help
 
 ## 3. Features
 
-`pyhartig` provides a set of composable Python objects representing the core algebraic operators for querying
+`fog-rml` provides a set of composable Python objects representing the core algebraic operators for querying
 heterogeneous data sources.
 
 Current implementation status covers the foundations required to reproduce **Source**, **Extend**, **Union**, and **Project** operators as defined in the paper:
@@ -77,14 +83,14 @@ Current implementation status covers the foundations required to reproduce **Sou
     * Extracts data from heterogeneous sources (JSON support implemented).
     * Handles iteration logic (JSONPath) and Cartesian Product flattening for multivalued attributes.
 * **Extend Operator**:
-    * Dynamically creates new attributes based on expressions (φ).
+    * Dynamically creates new attributes based on expressions (Ï†).
     * Used to generate IRIs, Literals, or derived values.
 * **Union Operator**:
     * Merges data streams from multiple pipelines.
     * Supports Bag Semantics (preserves duplicates) and maintains tuple order.
 * **Project Operator**:
     * Restricts the relation to a specific subset of attributes.
-    * Enforces strict schema validation (P⊆A).
+    * Enforces strict schema validation (PâŠ†A).
 * **EquiJoin Operator**
     * Joins two data streams based on equality conditions
     * Essential for handling RML Referencing Object Maps (Foreign Keys).
@@ -105,13 +111,13 @@ Current implementation status covers the foundations required to reproduce **Sou
 
 ## 4. Command Line Interface (CLI)
 
-PyHartig provides a plugin-based CLI architecture for executing mappings and utility tasks.
+fog-rml provides a plugin-based CLI architecture for executing mappings and utility tasks.
 
 ### 3.1. Execute a Mapping (`run`)
 
 The standard command to execute an RML file and generate N-Triples.
 ```bash
-python -m -v pyhartig run \
+fog-rml -v run \
     -m mappings/my_mapping.ttl \
     -o output.nt
 ```
@@ -123,7 +129,7 @@ python -m -v pyhartig run \
 ### 3.2. Multi-Repo Aggregation (list-issues)
 A specialized command demonstrating the dynamic generation of Knowledge Graphs from multiple GitHub/GitLab repositories.
 ```bash
-python -m pyhartig -vv list-issues \
+fog-rml -vv list-issues \
      https://github.com/facebook/react \
      https://github.com/tensorflow/tensorflow \
      https://gitlab.com/gitlab-org/gitlab \
@@ -136,7 +142,7 @@ python -m pyhartig -vv list-issues \
 * **Templating**: Injects data into the provided RML template before execution.
 
 ### 3.3. Run External RML Conformance Tests
-Use the conformance runner to execute external RML test cases and compare pyhartig output with expected RDF.
+Use the conformance runner to execute external RML test cases and compare fog-rml output with expected RDF.
 
 ```bash
 python scripts/run_rml_conformance.py \
@@ -163,7 +169,7 @@ A convenience command to fetch article metadata from several external sources (O
 Usage:
 
 ```bash
-python -m pyhartig list-articles "<Author Name>" \
+fog-rml list-articles "<Author Name>" \
     -m <mapping.ttl> \
     -o <outdir> \
     --sources openalex,hal,dblp,serpapi \
@@ -171,7 +177,7 @@ python -m pyhartig list-articles "<Author Name>" \
 ```
 
 Flags and arguments:
-- `<Author Name>`: Positional argument — the author to search for (quoted if it contains spaces).
+- `<Author Name>`: Positional argument â€” the author to search for (quoted if it contains spaces).
 - `-m`, `--mapping`: Path to the RML mapping file (Turtle). The mapping is expected to reference local JSON source files (see `tests/use_cases/list_articles/data/`).
 - `-o`, `--outdir`: Directory where output will be written. By default the command writes beside the mapping file.
 - `--sources`: Comma-separated list of sources to fetch. Supported values: `openalex`, `hal`, `dblp`, `serpapi`.
@@ -181,13 +187,13 @@ Flags and arguments:
 
 Behavior and notes:
 - The command will run fetch scripts (shell or the Python fallback) to populate `*.json` files expected by the mapping. If SerpAPI is used, set `SERPAPI_KEY` in the environment or place it in a `.env` file in the mapping data folder.
-- Output filename: the command writes N-Quads named after the sanitized author, e.g. `Pascal_Molli.nq`, colocated with the mapping by default (or under `--outdir` if provided). Serializer selection follows the output extension (`.nq` → N-Quads).
+- Output filename: the command writes N-Quads named after the sanitized author, e.g. `Pascal_Molli.nq`, colocated with the mapping by default (or under `--outdir` if provided). Serializer selection follows the output extension (`.nq` â†’ N-Quads).
 - Extension points: The mapping may call FnML/FnO extension functions; register any required functions (see the `functions` package) before running.
 
 Example (run for `Pascal Molli` mapping in tests):
 
 ```powershell
-python.exe -m pyhartig list-articles "Pascal Molli" \
+fog-rml list-articles "Pascal Molli" \
     --mapping tests/use_cases/list_articles/data/mapping.ttl \
     --outdir tests/use_cases/list_articles \
     --sources openalex,hal,dblp,serpapi \
@@ -196,17 +202,17 @@ python.exe -m pyhartig list-articles "Pascal Molli" \
 
 Behavior summary:
 * Detects mapping + expected output files per case.
-* Executes `pyhartig run` with an output format matching the expected file extension.
+* Executes `fog-rml run` with an output format matching the expected file extension.
 * Compares output via RDF graph isomorphism (triples/quads aware).
 * Uses `metadata.csv` when available to track expected-error cases.
-* Writes per-case artifacts to `results/<case>/` (mapping/resources + `output_pyhartig.*`).
+* Writes per-case artifacts to `results/<case>/` (mapping/resources + `output_fog_rml.*`).
 
 ## 5. Python API Usage
 You can embed the engine directly in your own Python scripts.
 
 ### 4.1. **Basic Pipeline Execution**
 ```python
-from pyhartig.mapping.MappingParser import MappingParser
+from fog_rml.mapping.MappingParser import MappingParser
 
 # 1. Initialize the parser
 parser = MappingParser("data/mappings/fusion_mapping.ttl")
@@ -228,10 +234,10 @@ for row in results:
 
 ### 4.2. **Manual Pipeline Construction**
 ```python
-from pyhartig.operators.sources.JsonSourceOperator import JsonSourceOperator
-from pyhartig.operators.ExtendOperator import ExtendOperator
-from pyhartig.functions.builtins import to_iri, concat
-from pyhartig.expressions import FunctionCall, Reference, Constant
+from fog_rml.operators.sources.JsonSourceOperator import JsonSourceOperator
+from fog_rml.operators.ExtendOperator import ExtendOperator
+from fog_rml.functions.builtins import to_iri, concat
+from fog_rml.expressions import FunctionCall, Reference, Constant
 
 # 1. Define Source
 source = JsonSourceOperator(
@@ -258,7 +264,7 @@ for row in pipeline.execute():
 
 This project supports FnML/FnO style extension functions by exposing a small plugin registry and
 runtime resolution mechanism. The goal is to let mapping authors refer to functions by standard FnO URIs
-while implementers supply Python callables that perform the actual work — without editing core code.
+while implementers supply Python callables that perform the actual work â€” without editing core code.
 
 What it does
 - Provides a global `FunctionRegistry` to bind FnO URI strings to Python callables.
@@ -272,14 +278,14 @@ How it works
 - Resolve: when `FunctionCall.evaluate()` runs, if its `function` is a string IRI the registry is queried
     for the corresponding callable; resolution is lazy so registration may occur before or after parsing.
 - Execute: the callable is invoked with evaluated positional arguments; its return value is inserted into the
-    algebraic pipeline (preferably as a `pyhartig` RDF term).
+    algebraic pipeline (preferably as a `fog_rml` RDF term).
 
 Inputs and outputs
 - Mapping-time input: a term map node using `fnml:functionValue` and an `fno:executes` URI, plus any
     predicateObjectMap parameters (constants, `rml:reference`, nested functionValues).
-- Runtime input to the Python callable: evaluated argument values (often `pyhartig.algebra.Terms.Literal`,
+- Runtime input to the Python callable: evaluated argument values (often `fog_rml.algebra.Terms.Literal`,
     `IRI`, or `BlankNode` objects). Callables should unwrap `.lexical_form` / `.value` as needed.
-- Output from the callable: ideally a `pyhartig` RDF term (`IRI`, `Literal`, `BlankNode`) so the pipeline can
+- Output from the callable: ideally a `fog_rml` RDF term (`IRI`, `Literal`, `BlankNode`) so the pipeline can
     use it directly. Returning raw Python primitives is tolerated but may require normalization.
 
 Error semantics
@@ -287,13 +293,13 @@ Error semantics
     the `FunctionCall` returns `EPSILON` to preserve strict error propagation across the algebra.
 
 Security and best practices
-- Registered callables execute arbitrary Python code — only register trusted code in production.
-- Validate and coerce inputs inside the callable; prefer returning `pyhartig` RDF term objects.
+- Registered callables execute arbitrary Python code â€” only register trusted code in production.
+- Validate and coerce inputs inside the callable; prefer returning `fog_rml` RDF term objects.
 - Catch exceptions and return `EPSILON` or a controlled default to avoid crashing the pipeline.
 
 Example
 ```python
-from pyhartig.functions.registry import FunctionRegistry
+from fog_rml.functions.registry import FunctionRegistry
 
 def my_upper(arg):
         val = getattr(arg, 'lexical_form', None) or getattr(arg, 'value', None) or arg
@@ -303,13 +309,13 @@ FunctionRegistry.register("http://example.com/fn/upper", my_upper)
 ```
 
 References / where to look in the codebase
-- `pyhartig/functions/registry.py` — registry API and storage
-- `pyhartig/expressions/FunctionCall.py` — evaluation and EPSILON semantics
-- `pyhartig/mapping/MappingParser.py` — FnML parsing and `FunctionCall` construction
-- `tests/test_suite/test_18_fnml_plugins.py` and `tests/test_suite/test_19_fno.py` — concrete examples and tests
+- `fog_rml/functions/registry.py` â€” registry API and storage
+- `fog_rml/expressions/FunctionCall.py` â€” evaluation and EPSILON semantics
+- `fog_rml/mapping/MappingParser.py` â€” FnML parsing and `FunctionCall` construction
+- `tests/test_suite/test_18_fnml_plugins.py` and `tests/test_suite/test_19_fno.py` â€” concrete examples and tests
 
 Notes
-- Registration is lazy — functions can be registered at any time before evaluation.
+- Registration is lazy â€” functions can be registered at any time before evaluation.
 - Prefer returning RDF term objects from callables to avoid ambiguity and preserve typing.
 
 ## 5.4. SPARQL SERVICE-CALL Example
@@ -328,11 +334,11 @@ source .venv/bin/activate          # Unix/macOS
 pip install rdflib
 
 # run the example demo (prints resulting quads)
-python pyhartig/examples/multi_repo_service_demo.py
+python examples/multi_repo_service_demo.py
 ```
 
 What the demo does
-- Locates example mapping files under `pyhartig/examples/data/` for repositories (r1, r2, r3).
+- Locates example mapping files under `fog_rml/examples/data/` for repositories (r1, r2, r3).
 - For each `?repo` token it runs the corresponding mapping (via `MappingParser`) and materializes output into
     a named graph (IRI derived from the repo token).
 - Executes a SPARQL query using `BIND SERVICE-CALL(?repo, "mapping.ttl") AS ?g` plus `GRAPH ?g { ... }`
@@ -343,7 +349,7 @@ Using the handler from Python code
 ```python
 from rdflib import Dataset
 from pathlib import Path
-from pyhartig.sparql.service_call import execute_query_with_service_call
+from fog_rml.sparql.service_call import execute_query_with_service_call
 
 ds = Dataset()
 query = '''
@@ -355,7 +361,7 @@ SELECT ?repo ?x ?y ?title WHERE {
 }
 '''
 
-res = execute_query_with_service_call(ds, query, Path('pyhartig/examples/data'))
+res = execute_query_with_service_call(ds, query, Path('fog_rml/examples/data'))
 for row in res:
         print(row)
 ```
@@ -370,51 +376,51 @@ Notes and recommendations
 ## 6. Project Structure
 
 ```text
-src/pyhartig/
-├── algebra/            # Core algebraic definitions
-│   ├── Terms.py        # RDF Terms (IRI, Literal, BlankNode)
-│   └── Tuple.py        # MappingTuple and Epsilon
-├── commands/          # CLI command implementations
-│   ├── base.py         # Base command class
-│   ├── run.py          # Standard mapping execution command
-│   └── list_issues.py  # Multi-repo GitHub/GitLab
-├── expressions/        # Recursive expression system 
-│   ├── Expression.py   # Abstract base class
-│   ├── Constant.py     # Constant values
-│   ├── Reference.py    # Attribute references
-│   └── FunctionCall.py # Extension function applications
-├── functions/          # Extension functions
-│   └── builtins.py     # Implementation of toIRI, concat, etc.
-├── mapping/            # RML Mapping Parser
-│   └── MappingParser.py # Parses RML files into operator pipelines
-├── serializers/      # Serialization utilities
-│   ├── NTriplesSerializer.py # N-Triples output
-│   └── NQuadsSerializer.py # N-Quads output
-├── operators/          # Algebraic Operators
-│   ├── Operator.py     # Abstract base class for all operators
-│   ├── SourceFactory.py # Factory for creating Source operators
-│   ├── EquiJoinOperator.py # EquiJoin operator implementation
-│   ├── ExtendOperator.py # Extend operator implementation
-│   ├── ProjectOperator.py # Project operator implementation
-│   ├── UnionOperator.py  # Union operator implementation
-│   ├── SourceOperator.py # Abstract Source operator
-│   └── sources/        # Source operator implementations
-│       └── CsvSourceOperator.py # CSV data source operator
-│       └── JsonSourceOperator.py # JSON data source operator
-│       └── XmlSourceOperator.py # XML data source operator
-│       └── SparqlSourceOperator.py # SPARQL source operator
-│       └── MysqlSourceOperator.py # MySQL source operator
-│       └── PostgresqlSourceOperator.py # PostgreSQL source operator
-│       └── SqlserverSourceOperator.py # SQL Server source operator
-├── namespaces.py    # Common RDF namespaces
-└── __main__.py       # Entry point for CLI
+src/fog_rml/
+â”œâ”€â”€ algebra/            # Core algebraic definitions
+â”‚   â”œâ”€â”€ Terms.py        # RDF Terms (IRI, Literal, BlankNode)
+â”‚   â””â”€â”€ Tuple.py        # MappingTuple and Epsilon
+â”œâ”€â”€ commands/          # CLI command implementations
+â”‚   â”œâ”€â”€ base.py         # Base command class
+â”‚   â”œâ”€â”€ run.py          # Standard mapping execution command
+â”‚   â””â”€â”€ list_issues.py  # Multi-repo GitHub/GitLab
+â”œâ”€â”€ expressions/        # Recursive expression system 
+â”‚   â”œâ”€â”€ Expression.py   # Abstract base class
+â”‚   â”œâ”€â”€ Constant.py     # Constant values
+â”‚   â”œâ”€â”€ Reference.py    # Attribute references
+â”‚   â””â”€â”€ FunctionCall.py # Extension function applications
+â”œâ”€â”€ functions/          # Extension functions
+â”‚   â””â”€â”€ builtins.py     # Implementation of toIRI, concat, etc.
+â”œâ”€â”€ mapping/            # RML Mapping Parser
+â”‚   â””â”€â”€ MappingParser.py # Parses RML files into operator pipelines
+â”œâ”€â”€ serializers/      # Serialization utilities
+â”‚   â”œâ”€â”€ NTriplesSerializer.py # N-Triples output
+â”‚   â””â”€â”€ NQuadsSerializer.py # N-Quads output
+â”œâ”€â”€ operators/          # Algebraic Operators
+â”‚   â”œâ”€â”€ Operator.py     # Abstract base class for all operators
+â”‚   â”œâ”€â”€ SourceFactory.py # Factory for creating Source operators
+â”‚   â”œâ”€â”€ EquiJoinOperator.py # EquiJoin operator implementation
+â”‚   â”œâ”€â”€ ExtendOperator.py # Extend operator implementation
+â”‚   â”œâ”€â”€ ProjectOperator.py # Project operator implementation
+â”‚   â”œâ”€â”€ UnionOperator.py  # Union operator implementation
+â”‚   â”œâ”€â”€ SourceOperator.py # Abstract Source operator
+â”‚   â””â”€â”€ sources/        # Source operator implementations
+â”‚       â””â”€â”€ CsvSourceOperator.py # CSV data source operator
+â”‚       â””â”€â”€ JsonSourceOperator.py # JSON data source operator
+â”‚       â””â”€â”€ XmlSourceOperator.py # XML data source operator
+â”‚       â””â”€â”€ SparqlSourceOperator.py # SPARQL source operator
+â”‚       â””â”€â”€ MysqlSourceOperator.py # MySQL source operator
+â”‚       â””â”€â”€ PostgresqlSourceOperator.py # PostgreSQL source operator
+â”‚       â””â”€â”€ SqlserverSourceOperator.py # SQL Server source operator
+â”œâ”€â”€ namespaces.py    # Common RDF namespaces
+â””â”€â”€ __main__.py       # Entry point for CLI
 tests/                  # Unit tests for all components
-├── use_cases/        # Example usage scripts
-│   └── github_gitlab/ # Example with GitHub and GitLab data
-└── test_suite/     # Comprehensive test suite
+â”œâ”€â”€ use_cases/        # Example usage scripts
+â”‚   â””â”€â”€ github_gitlab/ # Example with GitHub and GitLab data
+â””â”€â”€ test_suite/     # Comprehensive test suite
 data/               # Sample data files for testing
-└── mappings/       # RML mapping files
-    └── commands/   # Mappings for CLI commands
+â””â”€â”€ mappings/       # RML mapping files
+    â””â”€â”€ commands/   # Mappings for CLI commands
 LICENSE                 # MIT License
 README.md               # Project documentation
 CHANGELOG.md            # Project changelog
@@ -469,7 +475,7 @@ Generated outputs are retained under `external/rml-test-cases/results` in per-ca
 This project is developed by:
 
 * **Anthony MUDET**
-* **Léo FERMÉ**
+* **LÃ©o FERMÃ‰**
 * **Mohamed Lamine MERAH**
 
 ### 8.1. Supervision
@@ -492,4 +498,5 @@ We also acknowledge the foundational work of Olaf Hartig, which inspired this im
 ## 11. Contact
 
 For any questions or contributions, please open an issue or contact the authors directly.
+
 
