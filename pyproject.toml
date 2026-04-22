@@ -58,7 +58,7 @@ fog-rml = "fog_rml.__main__:main"
 # 6. Tool Configuration for pytest
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q"
+addopts = "-ra -q --ignore=tests/test_suite/fog_rml"
 testpaths = [
     "tests",
 ]

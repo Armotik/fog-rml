@@ -133,6 +133,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Centralized FOG plugin error markers in `fog_plugins.py` constants and reused the shared marker predicate for subject and graph identifier filtering.
 - Added docstrings for the new helper methods introduced by the complexity refactoring.
 
+### Fixed
+- Updated pytest collection options to ignore the duplicate `tests/test_suite/fog_rml` mirror and prevent import-file mismatch errors when generating coverage from `tests/test_suite`.
+
 ### Removed
 - Removed the legacy `src/pyhartig/` package tree after migration to `src/fog_rml/`.
 - Removed the mirrored `tests/test_suite/pyhartig/` test tree in favor of the renamed mirrored suite.
