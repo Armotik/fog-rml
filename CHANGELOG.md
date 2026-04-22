@@ -135,6 +135,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Updated pytest collection options to ignore the duplicate `tests/test_suite/fog_rml` mirror and prevent import-file mismatch errors when generating coverage from `tests/test_suite`.
+- Removed the UTF-8 BOM from `sonar-project.properties` so SonarQube Cloud correctly reads `sonar.projectKey`, and updated the CI coverage path from `src/pyhartig` to `src/fog_rml`.
 
 ### Removed
 - Removed the legacy `src/pyhartig/` package tree after migration to `src/fog_rml/`.

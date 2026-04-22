@@ -1,4 +1,4 @@
-﻿name: CI & SonarCloud Coverage
+name: CI & SonarCloud Coverage
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
       - name: Run tests and generate coverage report
         run: |
           # Exécute la suite de tests et génère coverage.xml
-          pytest tests/test_suite --suite coverage --cov=src/pyhartig --cov-report=xml
+          pytest tests/test_suite --suite coverage --cov=src/fog_rml --cov-report=xml
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8
