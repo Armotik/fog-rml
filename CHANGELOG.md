@@ -112,6 +112,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   documentation site would be a significant improvement for project presentation. **Action**: Set up Sphinx or MkDocs
   with autodoc to generate documentation from docstrings.
 
+## [1.0.0] - 2026-04-22
+
+### Added
+- Added SonarCloud project badges to `README.md` for Quality Gate, coverage, bugs, vulnerabilities, code smells, duplication, ratings, technical debt, and lines of code.
+- Declared `fog-rml` as the official 1.0.0 package release.
+
+### Changed
+- Updated package metadata version to `1.0.0` for the official package launch.
+
 ## [0.3.7] - 2026-04-22
 
 ### Added

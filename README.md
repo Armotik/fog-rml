@@ -2,6 +2,17 @@
 
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://python.org/downloads)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Armotik_fog_rml&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Armotik_fog_rml)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Armotik_fog_rml&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Armotik_fog_rml)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Armotik_fog_rml&metric=bugs)](https://sonarcloud.io/summary/new_code?id=Armotik_fog_rml)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Armotik_fog_rml&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=Armotik_fog_rml)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Armotik_fog_rml&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Armotik_fog_rml)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=Armotik_fog_rml&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=Armotik_fog_rml)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Armotik_fog_rml&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=Armotik_fog_rml)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Armotik_fog_rml&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Armotik_fog_rml)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Armotik_fog_rml&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Armotik_fog_rml)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=Armotik_fog_rml&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=Armotik_fog_rml)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Armotik_fog_rml&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=Armotik_fog_rml)
 
 > A Python implementation of the formal algebra for Knowledge Graph Construction, based on the work of Olaf
 > Hartig. [An Algebraic Foundation for Knowledge Graph Construction](https://arxiv.org/abs/2503.10385)
