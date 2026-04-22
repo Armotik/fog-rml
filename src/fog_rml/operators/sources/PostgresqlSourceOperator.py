@@ -84,38 +84,21 @@ class PostgresqlSourceOperator(CsvSourceOperator):
 		mapping_dir: Optional[Path],
 	) -> list:
 		normalized_dsn = cls._normalize_dsn(dsn)
-
-		allow_fixture_fallback = (os.getenv("FOG_RML_DB_SQLITE_FALLBACK") or os.getenv("FOG_RML_DB_SQLITE_FALLBACK", "1")) != "0"
+		allow_fixture_fallback = cls._allow_fixture_fallback()
 		if not normalized_dsn:
-			if allow_fixture_fallback and mapping_dir is not None:
-				return load_rows_from_sql_fixture(mapping_dir=mapping_dir, query=query, table_name=table_name)
-			raise ValueError("PostgreSQL DSN is missing. Set rml:source DSN or environment variable POSTGRES_DSN.")
+			return cls._load_fixture_or_raise_missing_dsn(
+				allow_fixture_fallback,
+				mapping_dir,
+				query,
+				table_name,
+			)
 
-		sql = (query or "").strip()
-		if not sql:
-			if table_name:
-				sql = f"SELECT * FROM {table_name}"
-			else:
-				raise ValueError("PostgreSQL logical source requires rml:query or rr:tableName.")
-
-		try:
-			psycopg2 = importlib.import_module("psycopg2")
-			extras = importlib.import_module("psycopg2.extras")
-		except Exception as exc:
-			raise ModuleNotFoundError(
-				"psycopg2 is required for PostgresqlSourceOperator. Install it with 'pip install psycopg2-binary'."
-			) from exc
-
+		sql = cls._resolve_sql_query(query, table_name)
+		psycopg2, extras = cls._import_psycopg2()
 		conn_kwargs = cls._build_connection_kwargs(normalized_dsn, username=username, password=password)
 
 		try:
-			connection = psycopg2.connect(**conn_kwargs)
-			try:
-				with connection.cursor(cursor_factory=extras.RealDictCursor) as cursor:
-					cursor.execute(sql)
-					rows = cursor.fetchall() or []
-			finally:
-				connection.close()
+			rows = cls._fetch_rows(psycopg2, extras, conn_kwargs, sql)
 		except Exception:
 			if allow_fixture_fallback and mapping_dir is not None:
 				return load_rows_from_sql_fixture(mapping_dir=mapping_dir, query=query, table_name=table_name)
@@ -123,6 +106,80 @@ class PostgresqlSourceOperator(CsvSourceOperator):
 
 		return normalize_db_rows([dict(r) for r in rows])
 
+	@staticmethod
+	def _allow_fixture_fallback() -> bool:
+		"""
+		Checks whether local SQL fixture fallback is enabled.
+		:return: True when the SQLite fixture fallback can be used.
+		"""
+		return os.getenv("FOG_RML_DB_SQLITE_FALLBACK", "1") != "0"
+
+	@staticmethod
+	def _load_fixture_or_raise_missing_dsn(
+		allow_fixture_fallback: bool,
+		mapping_dir: Optional[Path],
+		query: Optional[str],
+		table_name: Optional[str],
+	) -> list:
+		"""
+		Loads fallback fixture rows when no DSN is configured, otherwise raises a DSN error.
+		:param allow_fixture_fallback: Whether fixture fallback is enabled.
+		:param mapping_dir: Optional mapping directory used for SQL fixture fallback.
+		:param query: Optional SQL query.
+		:param table_name: Optional table name.
+		:return: Rows loaded from the SQL fixture fallback.
+		"""
+		if allow_fixture_fallback and mapping_dir is not None:
+			return load_rows_from_sql_fixture(mapping_dir=mapping_dir, query=query, table_name=table_name)
+		raise ValueError("PostgreSQL DSN is missing. Set rml:source DSN or environment variable POSTGRES_DSN.")
+
+	@staticmethod
+	def _resolve_sql_query(query: Optional[str], table_name: Optional[str]) -> str:
+		"""
+		Resolves the SQL query to execute for the logical source.
+		:param query: Optional SQL query.
+		:param table_name: Optional table name used when no explicit query is provided.
+		:return: SQL query string.
+		"""
+		sql = (query or "").strip()
+		if sql:
+			return sql
+		if table_name:
+			return f"SELECT * FROM {table_name}"
+		raise ValueError("PostgreSQL logical source requires rml:query or rr:tableName.")
+
+	@staticmethod
+	def _import_psycopg2():
+		"""
+		Imports the `psycopg2` modules required for PostgreSQL access.
+		:return: Imported `psycopg2` and `psycopg2.extras` modules.
+		"""
+		try:
+			psycopg2 = importlib.import_module("psycopg2")
+			extras = importlib.import_module("psycopg2.extras")
+			return psycopg2, extras
+		except Exception as exc:
+			raise ModuleNotFoundError(
+				"psycopg2 is required for PostgresqlSourceOperator. Install it with 'pip install psycopg2-binary'."
+			) from exc
+
+	@staticmethod
+	def _fetch_rows(psycopg2, extras, conn_kwargs: Dict[str, Any], sql: str) -> list:
+		"""
+		Executes a SQL query through psycopg2 and returns row dictionaries.
+		:param psycopg2: Imported `psycopg2` module.
+		:param extras: Imported `psycopg2.extras` module.
+		:param conn_kwargs: psycopg2 connection keyword arguments.
+		:param sql: SQL query string.
+		:return: List of row dictionaries.
+		"""
+		connection = psycopg2.connect(**conn_kwargs)
+		try:
+			with connection.cursor(cursor_factory=extras.RealDictCursor) as cursor:
+				cursor.execute(sql)
+				return cursor.fetchall() or []
+		finally:
+			connection.close()
+
 	def explain_json(self) -> Dict[str, Any]:
 		return super().explain_json()
-

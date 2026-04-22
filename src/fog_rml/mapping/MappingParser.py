@@ -38,6 +38,7 @@ FNML = Namespace(FNML_BASE)
 FNO = Namespace(FNO_BASE)
 
 logger = logging.getLogger(__name__)
+FINAL_QUAD_ATTRIBUTES = frozenset(("subject", "predicate", "object", "graph"))
 
 
 class MappingParser:
@@ -969,88 +970,156 @@ class MappingParser:
         :param tm: TriplesMap node.
         :return: Final projected branch.
         """
+        branch = self._add_graph_extension(branch, pom, sm, tm)
+        branch = self._try_push_project_below_last_extend(branch)
+        return ProjectOperator(branch, set(FINAL_QUAD_ATTRIBUTES))
+
+    def _add_graph_extension(self, branch: Operator, pom: Node, sm: Node, tm: Node) -> Operator:
+        """
+        Adds an explicit graph map or the default graph to a branch.
+        :param branch: Branch to extend.
+        :param pom: Predicate-object map node.
+        :param sm: Subject map node.
+        :param tm: TriplesMap node.
+        :return: Branch extended with a graph attribute when graph expression creation succeeds.
+        """
         gm_node = self.graph.value(pom, RR.graphMap) or (sm and self.graph.value(sm, RR.graphMap))
         if gm_node:
-            try:
-                phi_graph = self._create_ext_expr(gm_node, default_term_type="IRI")
-                branch = ExtendOperator(branch, "graph", phi_graph)
-            except Exception as e:
-                logger.error(f"Failed to create graph extension for POM {pom} in TM {tm}: {e}")
-        else:
-            branch = ExtendOperator(branch, "graph", Constant(AlgebraIRI(str(RR.defaultGraph))))
+            return self._extend_graph_map(branch, gm_node, pom, tm)
+        return ExtendOperator(branch, "graph", Constant(AlgebraIRI(str(RR.defaultGraph))))
 
+    def _extend_graph_map(self, branch: Operator, gm_node: Node, pom: Node, tm: Node) -> Operator:
+        """
+        Extends a branch with a graph map expression.
+        :param branch: Branch to extend.
+        :param gm_node: Graph map node.
+        :param pom: Predicate-object map node used for diagnostics.
+        :param tm: TriplesMap node used for diagnostics.
+        :return: Branch extended with graph when possible, otherwise the original branch.
+        """
+        try:
+            phi_graph = self._create_ext_expr(gm_node, default_term_type="IRI")
+            return ExtendOperator(branch, "graph", phi_graph)
+        except Exception as e:
+            logger.error(f"Failed to create graph extension for POM {pom} in TM {tm}: {e}")
+            return branch
+
+    def _try_push_project_below_last_extend(self, branch: Operator) -> Operator:
+        """
+        Applies a conservative projection pushdown below the final Extend when it is algebraically safe.
+        :param branch: Candidate branch.
+        :return: Rewritten branch, or the original branch when pushdown is not applicable.
+        """
+        if not isinstance(branch, ExtendOperator):
+            return branch
+
+        try:
+            refs = self._project_pushdown_refs(branch)
+        except Exception:
+            return branch
+        if refs is None:
+            return branch
+
+        try:
+            return ExtendOperator(ProjectOperator(branch.parent_operator, refs), branch.new_attribute, branch.expression)
+        except Exception:
+            return branch
+
+    def _project_pushdown_refs(self, ext: ExtendOperator) -> set[str] | None:
+        """
+        Computes source references that allow projection pushdown for a final Extend.
+        :param ext: Final ExtendOperator candidate.
+        :return: Referenced source attributes when pushdown is safe, otherwise None.
+        """
         # Try to apply algebraic equivalence: Project^{P U {a}}(Extend_phi^a(r)) = Extend_phi^a(Project^P(r))
         # We conservatively push a Project below an Extend when:
         # - the operator is a single Extend (parent is not another Extend)
         # - the extended attribute is in the final projection
         # - the extension expression only references source attributes (not produced by deeper Extends)
-        final_proj = {"subject", "predicate", "object", "graph"}
+        if ext.new_attribute not in FINAL_QUAD_ATTRIBUTES:
+            return None
+        if isinstance(ext.parent_operator, ExtendOperator):
+            return None
 
-        def _collect_expr_refs(expr) -> set:
-            refs = set()
-            from fog_rml.expressions.Reference import Reference as RefExpr
-            from fog_rml.expressions.FunctionCall import FunctionCall as FuncExpr
-            from fog_rml.expressions.Constant import Constant as ConstExpr
+        refs = self._collect_expr_refs(ext.expression)
+        if not refs:
+            return None
 
-            if isinstance(expr, RefExpr):
-                refs.add(expr.attribute_name)
-                return refs
-            if isinstance(expr, FuncExpr):
-                for a in expr.arguments:
-                    refs.update(_collect_expr_refs(a))
-                return refs
-            if isinstance(expr, ConstExpr):
-                return refs
-            # conservative fallback: no refs discovered
-            try:
-                # Some expression types may expose subexpressions via .arguments
-                args = getattr(expr, "arguments", None)
-                if args:
-                    for a in args:
-                        refs.update(_collect_expr_refs(a))
-            except Exception:
-                pass
-            return refs
+        parent_ext_names = self._parent_extend_attributes(ext.parent_operator)
+        if not refs.isdisjoint(parent_ext_names):
+            return None
+        return refs
 
-        def _parent_has_extends(op: Operator) -> set:
-            # collect new_attribute names of any ExtendOperator in the subtree rooted at op
-            names = set()
-            from fog_rml.operators.ExtendOperator import ExtendOperator as _Ext
-            try:
-                if isinstance(op, _Ext):
-                    names.add(op.new_attribute)
-                    names.update(_parent_has_extends(op.parent_operator))
-                else:
-                    # try to inspect known binary/leaf operators for parents
-                    parent = getattr(op, "operator", None) or getattr(op, "parent_operator", None)
-                    if parent is not None:
-                        names.update(_parent_has_extends(parent))
-            except Exception:
-                pass
+    @classmethod
+    def _collect_expr_refs(cls, expr) -> set[str]:
+        """
+        Collects source attribute references used by an expression tree.
+        :param expr: Expression tree.
+        :return: Referenced source attribute names.
+        """
+        if isinstance(expr, Reference):
+            return {expr.attribute_name}
+        if isinstance(expr, FunctionCall):
+            return cls._collect_argument_refs(expr.arguments)
+        if isinstance(expr, Constant):
+            return set()
+        return cls._collect_unknown_expr_refs(expr)
+
+    @classmethod
+    def _collect_unknown_expr_refs(cls, expr) -> set[str]:
+        """
+        Conservatively collects references from expression-like objects exposing an arguments attribute.
+        :param expr: Expression-like object.
+        :return: Referenced source attribute names.
+        """
+        try:
+            args = getattr(expr, "arguments", None)
+        except Exception:
+            return set()
+        if not args:
+            return set()
+        return cls._collect_argument_refs(args)
+
+    @classmethod
+    def _collect_argument_refs(cls, arguments) -> set[str]:
+        """
+        Collects references from expression arguments.
+        :param arguments: Iterable expression arguments.
+        :return: Referenced source attribute names.
+        """
+        refs = set()
+        for arg in arguments:
+            refs.update(cls._collect_expr_refs(arg))
+        return refs
+
+    @classmethod
+    def _parent_extend_attributes(cls, op: Operator) -> set[str]:
+        """
+        Collects attributes produced by ExtendOperator nodes in a parent subtree.
+        :param op: Operator subtree root.
+        :return: Attribute names produced by parent ExtendOperator nodes.
+        """
+        if isinstance(op, ExtendOperator):
+            names = {op.new_attribute}
+            names.update(cls._parent_extend_attributes(op.parent_operator))
             return names
 
-        try:
-            from fog_rml.operators.ExtendOperator import ExtendOperator as _ExtOp
-            if isinstance(branch, _ExtOp):
-                ext = branch
-                # only push if parent is not itself an Extend (conservative)
-                if ext.new_attribute in final_proj and not isinstance(ext.parent_operator, _ExtOp):
-                    refs = _collect_expr_refs(ext.expression)
-                    if refs:
-                        parent_ext_names = _parent_has_extends(ext.parent_operator)
-                        # ensure expression doesn't depend on attributes produced by deeper Extends
-                        if refs.isdisjoint(parent_ext_names):
-                            try:
-                                branch = ExtendOperator(ProjectOperator(ext.parent_operator, refs), ext.new_attribute,
-                                                        ext.expression)
-                            except Exception:
-                                # if projection fails (e.g., empty/ref mismatch), fall back to original
-                                branch = ext
-        except Exception:
-            # any error in attempting the rewrite should not break parsing
-            pass
+        parent = cls._operator_parent(op)
+        if parent is None:
+            return set()
+        return cls._parent_extend_attributes(parent)
 
-        return ProjectOperator(branch, final_proj)
+    @staticmethod
+    def _operator_parent(op: Operator) -> Operator | None:
+        """
+        Returns the known parent/child operator reference for unary operator wrappers.
+        :param op: Operator to inspect.
+        :return: Nested operator, or None.
+        """
+        try:
+            return getattr(op, "operator", None) or getattr(op, "parent_operator", None)
+        except Exception:
+            return None
 
     def _normalize_graph(self):
         """
@@ -1690,4 +1759,3 @@ class MappingParser:
             explanation = pipeline.explain()
             with open(output_path, 'w', encoding='utf-8') as f:
                 f.write(explanation)
-

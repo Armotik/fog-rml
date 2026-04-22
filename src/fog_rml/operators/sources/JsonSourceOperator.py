@@ -130,43 +130,61 @@ class JsonSourceOperator(SourceOperator):
         :param query: Iterator query.
         :return: Iterator of context objects.
         """
-        jsonpath_expr = self._compiled_iterator
+        jsonpath_expr = self._get_iterator_expr(query)
         if jsonpath_expr is None:
-            try:
-                jsonpath_expr = parse(query)
-                self._compiled_iterator = jsonpath_expr
-            except Exception:
-                return iter(())
-
+            return iter(())
         source = self._data if self._data is not None else data
         if source is None:
             return iter(())
+        return self._iter_iterator_values(jsonpath_expr, source)
 
-        def _gen():
-            try:
-                matches = iter(jsonpath_expr.find(source))
-                try:
-                    first = next(matches)
-                except StopIteration:
-                    return
+    def _get_iterator_expr(self, query: str):
+        """
+        Returns the cached iterator JSONPath expression, compiling it once when needed.
+        :param query: Iterator query.
+        :return: Compiled JSONPath expression, or None.
+        """
+        if self._compiled_iterator is not None:
+            return self._compiled_iterator
 
-                try:
-                    second = next(matches)
-                except StopIteration:
-                    if isinstance(first.value, list):
-                        yield from first.value
-                    else:
-                        yield first.value
-                    return
+        try:
+            self._compiled_iterator = parse(query)
+            return self._compiled_iterator
+        except Exception:
+            return None
 
-                yield first.value
-                yield second.value
-                for match in matches:
-                    yield match.value
-            except Exception:
-                return
+    @staticmethod
+    def _iter_iterator_values(jsonpath_expr, source: Any) -> Iterator[Any]:
+        """
+        Converts JSONPath iterator matches to source contexts.
+        :param jsonpath_expr: Compiled JSONPath iterator expression.
+        :param source: JSON source payload.
+        :return: Iterator of source contexts.
+        """
+        try:
+            matches = jsonpath_expr.find(source)
+        except Exception:
+            return iter(())
+        return JsonSourceOperator._iter_match_values(matches)
 
-        return _gen()
+    @staticmethod
+    def _iter_match_values(matches) -> Iterator[Any]:
+        """
+        Applies RML iterator semantics to JSONPath matches.
+        :param matches: JSONPath matches.
+        :return: Iterator of source contexts.
+        """
+        matches = list(matches or ())
+        if not matches:
+            return iter(())
+
+        first = matches[0]
+        if len(matches) == 1:
+            if isinstance(first.value, list):
+                return iter(first.value)
+            return iter((first.value,))
+
+        return (match.value for match in matches)
 
     def _apply_extraction(self, context: Any, query: str) -> List[Any]:
         """
@@ -246,4 +264,3 @@ class JsonSourceOperator(SourceOperator):
         :return: Dictionary representing the operator tree structure.
         """
         return super().explain_json()
-
