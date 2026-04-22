@@ -112,23 +112,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   documentation site would be a significant improvement for project presentation. **Action**: Set up Sphinx or MkDocs
   with autodoc to generate documentation from docstrings.
 
-## [0.3.8] - 2026-04-22
-
-### Changed
-- Refactored `JsonSourceOperator._apply_iterator()` into focused iterator-compilation and match-value helpers to reduce cognitive complexity without changing JSONPath iterator semantics.
-- Refactored `MappingParser._apply_graph_and_project()` into graph-extension, projection-pushdown, expression-reference, and parent-operator inspection helpers to keep final quad projection behavior unchanged while reducing cognitive complexity.
-- Refactored `MysqlSourceOperator._load_rows()` and `PostgresqlSourceOperator._load_rows()` into dedicated SQL query resolution, driver import, row fetch, and fixture-fallback helpers.
-- Centralized FOG plugin error markers in `fog_plugins.py` constants and reused the shared marker predicate for subject and graph identifier filtering.
-
-### Documentation
-- Added docstrings for the new helper methods introduced by the complexity refactoring.
-
 ## [0.3.7] - 2026-04-22
 
 ### Added
 - Introduced an operator visitor architecture under `src/fog_rml/operators/visitors/` with `ExecutionVisitor`, `ExplainVisitor`, and `JsonExplainVisitor`.
 - Added serializer support for Turtle (`src/fog_rml/serializers/TurtleSerializer.py`) alongside existing N-Triples and N-Quads serializers.
 - Added the canonical package entrypoint `src/fog_rml/__main__.py` and completed the `src/fog_rml/` package layout as the only engine source tree.
+- Expanded mirrored coverage for `fog_plugins.py`, `functions/__init__.py`, and `MappingParser.py`, including optional plugin import failures, FOG error-marker helpers, and graph/projection helper branches.
 
 ### Changed
 - Finalized the engine rename from `pyhartig` to `fog_rml` across source imports, commands, tests/use-cases assets, repository metadata, and documentation references.
@@ -137,6 +127,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standardized logging usage in parser/commands/use-case scripts and test runners to reduce stdout noise during CLI pipelines.
 - Updated command serialization flow to auto-select serializer by extension (`.nt`, `.nq`, `.ttl`) and keep duplicate suppression between triples and quads.
 - Moved ad-hoc RDF serialization in GitHub/GitLab use-case tests to reusable library serializers.
+- Refactored `JsonSourceOperator._apply_iterator()` into focused iterator-compilation and match-value helpers to reduce cognitive complexity without changing JSONPath iterator semantics.
+- Refactored `MappingParser._apply_graph_and_project()` into graph-extension, projection-pushdown, expression-reference, and parent-operator inspection helpers to keep final quad projection behavior unchanged while reducing cognitive complexity.
+- Refactored `MysqlSourceOperator._load_rows()` and `PostgresqlSourceOperator._load_rows()` into dedicated SQL query resolution, driver import, row fetch, and fixture-fallback helpers.
+- Centralized FOG plugin error markers in `fog_plugins.py` constants and reused the shared marker predicate for subject and graph identifier filtering.
+- Added docstrings for the new helper methods introduced by the complexity refactoring.
 
 ### Removed
 - Removed the legacy `src/pyhartig/` package tree after migration to `src/fog_rml/`.

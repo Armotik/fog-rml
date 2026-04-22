@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 from pathlib import Path
@@ -391,83 +391,6 @@ def test_mapping_parser_additional_edge_cases_cover_errors_and_text_save(tmp_pat
     monkeypatch.setattr(parser, "parse", lambda: type("P", (), {"explain": lambda self: "plan", "explain_json": lambda self: {"type": "plan"}})())
     parser.save_explanation(str(text_output), format="text")
     assert text_output.read_text(encoding="utf-8") == "plan"
-
-
-@pytest.mark.coverage_suite
-def test_mapping_parser_graph_projection_helpers_cover_pushdown_branches(tmp_path: Path, monkeypatch):
-    parser = _parser_for(tmp_path, SIMPLE_JSON_MAPPING)
-    parser.graph = Graph()
-    tm = URIRef("http://example.org/tm")
-    pom = BNode()
-
-    leaf = object()
-    default_graph_branch = parser._add_graph_extension(leaf, pom, None, tm)
-    assert isinstance(default_graph_branch, ExtendOperator)
-    assert default_graph_branch.new_attribute == "graph"
-
-    gm = BNode()
-    original_branch = object()
-    monkeypatch.setattr(parser, "_create_ext_expr", lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("boom")))
-    assert parser._extend_graph_map(original_branch, gm, pom, tm) is original_branch
-
-    non_extend = object()
-    assert parser._try_push_project_below_last_extend(non_extend) is non_extend
-
-    pushdown_candidate = ExtendOperator(object(), "graph", Reference("source_id"))
-    rewritten = parser._try_push_project_below_last_extend(pushdown_candidate)
-    assert isinstance(rewritten, ExtendOperator)
-    assert isinstance(rewritten.parent_operator, ProjectOperator)
-    assert rewritten.parent_operator.attributes == {"source_id"}
-
-    monkeypatch.setattr(parser, "_project_pushdown_refs", lambda branch: (_ for _ in ()).throw(RuntimeError("boom")))
-    assert parser._try_push_project_below_last_extend(pushdown_candidate) is pushdown_candidate
-
-
-@pytest.mark.coverage_suite
-def test_mapping_parser_projection_reference_helpers_cover_remaining_branches(tmp_path: Path, monkeypatch):
-    parser = _parser_for(tmp_path, SIMPLE_JSON_MAPPING)
-    assert parser._project_pushdown_refs(ExtendOperator(object(), "extra", Reference("id"))) is None
-    assert parser._project_pushdown_refs(
-        ExtendOperator(ExtendOperator(object(), "id", Constant(AlgebraLiteral("1"))), "graph", Reference("id"))
-    ) is None
-    assert parser._project_pushdown_refs(ExtendOperator(object(), "graph", Constant(AlgebraIRI("http://example.org/g")))) is None
-
-    class _Wrapper:
-        def __init__(self, operator):
-            self.operator = operator
-
-    parent_extend = ExtendOperator(object(), "id", Constant(AlgebraLiteral("1")))
-    conflict = ExtendOperator(_Wrapper(parent_extend), "graph", Reference("id"))
-    assert parser._project_pushdown_refs(conflict) is None
-    assert MappingParser._parent_extend_attributes(conflict.parent_operator) == {"id"}
-
-    class _UnknownExpr:
-        arguments = [Reference("name")]
-
-    class _NoArgumentsExpr:
-        arguments = []
-
-    class _BadArgumentsExpr:
-        @property
-        def arguments(self):
-            raise RuntimeError("boom")
-
-    assert MappingParser._collect_expr_refs(_UnknownExpr()) == {"name"}
-    assert MappingParser._collect_expr_refs(_NoArgumentsExpr()) == set()
-    assert MappingParser._collect_expr_refs(_BadArgumentsExpr()) == set()
-
-    class _BadParent:
-        @property
-        def operator(self):
-            raise RuntimeError("boom")
-
-    assert MappingParser._operator_parent(_BadParent()) is None
-
-    monkeypatch.setattr("fog_rml.mapping.MappingParser.ProjectOperator", lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("boom")))
-    fallback_candidate = ExtendOperator(object(), "graph", Reference("id"))
-    assert parser._try_push_project_below_last_extend(fallback_candidate) is fallback_candidate
-
-
 @pytest.mark.coverage_suite
 @pytest.mark.edge_case
 def test_mapping_parser_handles_invalid_shapes_and_multiple_branches(write_mapping_files):

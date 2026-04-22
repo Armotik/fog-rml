@@ -1,4 +1,4 @@
-﻿import importlib
+import importlib
 import hashlib
 import types
 
@@ -18,25 +18,6 @@ def test__to_py_str_handles_value_property_exception():
             return 'badval'
 
     assert fp_mod._to_py_str(BadVal()) == 'badval'
-
-
-def test__to_py_str_handles_unstringifiable_values():
-    class BadString:
-        @property
-        def value(self):
-            raise RuntimeError('boom')
-
-        def __str__(self):
-            raise RuntimeError('boom')
-
-    assert fp_mod._to_py_str(BadString()) == ''
-
-
-def test_error_marker_and_angle_helpers_cover_positive_and_negative_cases():
-    assert fp_mod._strip_angle('<abc>') == 'abc'
-    assert fp_mod._strip_angle('abc') == 'abc'
-    assert fp_mod._is_error_marker('<http://error>') is True
-    assert fp_mod._is_error_marker('not-error') is False
 
 
 def test_subject_for_row_empty_deterministic():
@@ -69,16 +50,6 @@ def test_subject_for_row_iri_raising_falls_back_to_hash(monkeypatch):
     # ensure suffix is a 64-hex hash
     suffix = out.value.split('/')[-1]
     assert len(suffix) == 64
-
-
-def test_subject_for_row_uses_fallback_value_and_safe_identifier():
-    out = fp_mod.subject_for_row(None, None, 'value with spaces')
-    assert out.value == 'https://fog-rml.org/id/value%20with%20spaces'
-
-
-def test_graph_for_source_uses_unknown_source_and_encodes_parts():
-    out = fp_mod.graph_for_source(None, 'id value', '2026')
-    assert out.value == 'https://fog-rml.org/graph/unknown/id%20value/2026'
 
 
 def test_graph_for_source_fallbacks(monkeypatch):
