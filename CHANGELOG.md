@@ -116,10 +116,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added SonarCloud project badges to `README.md` for Quality Gate, coverage, bugs, vulnerabilities, code smells, duplication, ratings, technical debt, and lines of code.
+- Added a GitHub Actions release workflow that builds, checks, tests, and publishes the package to PyPI through Trusted Publishing.
 - Declared `fog-rml` as the official 1.0.0 package release.
 
 ### Changed
 - Updated package metadata version to `1.0.0` for the official package launch.
+- Declared the supported Python runtime as `>=3.10` in package metadata.
+- Modernized package license metadata to use the `MIT` SPDX expression and explicit license file inclusion.
+- Pinned remaining external GitHub Actions in CI and release workflows to commit hashes for supply-chain hardening.
 
 ## [0.3.7] - 2026-04-22
 
